@@ -1,10 +1,10 @@
 package com.fourbites.backend.service;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.fourbites.backend.entity.Usuario;
 import com.fourbites.backend.repository.UsuarioRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -25,5 +25,19 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Integer id) {
         return usuarioRepository.findById(id).orElse(null);
+    }
+
+    public Usuario atualizar(Integer id, Usuario usuario) {
+        Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
+        if (usuarioExistente != null) {
+            usuarioExistente.setNome(usuario.getNome());
+            usuarioExistente.setUsername(usuario.getUsername());
+            usuarioExistente.setEmail(usuario.getEmail());
+            usuarioExistente.setFotoPerfil(usuario.getFotoPerfil());
+            usuarioExistente.setBio(usuario.getBio());
+            usuarioExistente.setDataNascimento(usuario.getDataNascimento());
+            return usuarioRepository.save(usuarioExistente);
+        }
+        return null;
     }
 }

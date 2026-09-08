@@ -1,15 +1,17 @@
 package com.fourbites.backend.controller;
 
-import com.fourbites.backend.entity.Usuario;
-import com.fourbites.backend.service.UsuarioService;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
+import com.fourbites.backend.entity.Usuario;
+import com.fourbites.backend.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -36,4 +38,8 @@ public class UsuarioController {
         return usuarioService.salvar(usuario);
     }
 
+    @PutMapping("/{id}")
+    public Usuario atualizar(@PathVariable Integer id, @RequestBody Usuario usuario) {
+        return usuarioService.atualizar(id, usuario);
+    }
 }
