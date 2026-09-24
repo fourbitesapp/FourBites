@@ -1,0 +1,121 @@
+### =============================================================
+### Testes do cadastro e perfil - FourBites
+### Use com a extensão "REST Client" do VS Code:
+### clique em "Send Request" acima de cada requisição.
+### =============================================================
+
+@api = http://localhost:8080
+
+### 1) Cadastro válido -> esperado 201 Created, SEM campo "senha" na resposta
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Maria Teste",
+  "username": "mariateste",
+  "email": "Maria.Teste@Email.com",
+  "dataNascimento": "2000-05-10",
+  "telefone": "(13) 99999-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 2) Mesmo e-mail com letras diferentes -> esperado 409 "Este e-mail já está em uso."
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Outra Pessoa",
+  "username": "outrapessoa",
+  "email": "maria.teste@email.com",
+  "dataNascimento": "1999-01-01",
+  "telefone": "(13) 98888-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 3) Username repetido -> esperado 409 "Este nome de usuário já está em uso."
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Outra Pessoa",
+  "username": "mariateste",
+  "email": "outra@email.com",
+  "dataNascimento": "1999-01-01",
+  "telefone": "(13) 98888-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 4) Senhas diferentes -> esperado 400 "A senha e a confirmação de senha não coincidem."
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Joao Teste",
+  "username": "joaoteste",
+  "email": "joao@email.com",
+  "dataNascimento": "2001-03-15",
+  "telefone": "(13) 97777-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "outrasenha"
+}
+
+### 5) Campos vazios / inválidos -> esperado 400 com a lista "campos"
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "",
+  "username": "",
+  "email": "email-invalido",
+  "dataNascimento": "2090-01-01",
+  "telefone": "",
+  "senha": "",
+  "confirmacaoSenha": ""
+}
+
+### 6) Tentativa de virar ADMIN pelo cadastro -> o campo "papel" é ignorado ou recusado:
+###    esperado 201 com "papel": "USUARIO" (ou 400, conforme a configuração do Jackson). NUNCA ADMIN.
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Espertinho",
+  "username": "espertinho",
+  "email": "espertinho@email.com",
+  "dataNascimento": "2000-01-01",
+  "telefone": "(13) 96666-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123",
+  "papel": "ADMIN"
+}
+
+### 7) Perfil público -> esperado 200 SEM e-mail, telefone e data de nascimento
+GET {{api}}/usuarios/mariateste
+
+### 8) Usuário inexistente -> esperado 404 "Usuário não encontrado."
+GET {{api}}/usuarios/naoexiste
+
+### 9) Editar perfil (troque o 1 pelo id retornado no teste 1) -> esperado 200
+PUT {{api}}/usuarios/1
+Content-Type: application/json
+
+{
+  "nome": "Maria Teste Editada",
+  "username": "mariateste",
+  "bio": "Adoro comida japonesa.",
+  "telefone": "(13) 99999-1111"
+}
+
+### 10) Editar usando o username de outro usuário -> esperado 409
+PUT {{api}}/usuarios/1
+Content-Type: application/json
+
+{
+  "nome": "Maria Teste",
+  "username": "espertinho",
+  "bio": "",
+  "telefone": "(13) 99999-1111"
+}

@@ -1,10 +1,28 @@
 package com.fourbites.backend.entity;
-import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "usuario")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -18,82 +36,35 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255) //guarda o hash BCrypt da senha
     private String senha;
 
-    @Column(name = "foto_perfil", length = 255)
+    @Column(nullable = false, length = 20)
+    private String telefone;
+
+    @Column(name = "data_nascimento", nullable = false)
+    private LocalDate dataNascimento;
+    
+    @Column(name = "foto_perfil", length = 500)
     private String fotoPerfil;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Papel papel = Papel.USUARIO;
 
-public Usuario() { 
-}
+    @Column(name = "data_cadastro", nullable = false, updatable = false)
+    private OffsetDateTime dataCadastro;
 
-   public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public String getFotoPerfil() {
-        return fotoPerfil;
-    }
-
-    public void setFotoPerfil(String fotoPerfil) {
-        this.fotoPerfil = fotoPerfil;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
+    @PrePersist
+    void antesDeInserir() {
+        if (dataCadastro == null) {
+            dataCadastro = OffsetDateTime.now();
+        }
+        if (papel == null) {
+            papel = Papel.USUARIO;
+        }
     }
 }
