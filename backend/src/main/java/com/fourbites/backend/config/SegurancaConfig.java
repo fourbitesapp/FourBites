@@ -28,19 +28,22 @@ public class SegurancaConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    // Regras de acesso da API.
     @Bean
     public SecurityFilterChain regrasDeAcesso(HttpSecurity http, JwtService jwtService) throws Exception {
         http
+
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .cors(Customizer.withDefaults()) 
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(regras -> regras
                 .requestMatchers("/auth/**").permitAll()                      
-                .requestMatchers("/usuarios/me/**").authenticated()           
+                .requestMatchers("/usuarios/me/preferencias").hasRole("USUARIO") 
+                .requestMatchers("/usuarios/me/**").authenticated()            
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/meus-restaurantes/**").hasRole("RESTAURANTE")
                 .requestMatchers("/recomendacoes/**").hasRole("USUARIO")
-                .requestMatchers(HttpMethod.GET, "/**").permitAll()          
+                .requestMatchers(HttpMethod.GET, "/**").permitAll()         
                 .anyRequest().authenticated())                                
             .exceptionHandling(erros -> erros
                 .authenticationEntryPoint((request, response, ex) ->

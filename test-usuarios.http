@@ -155,3 +155,155 @@ Authorization: Bearer token.falso.aqui
 ### 16) Rota de admin com token de usuário comum -> esperado 403
 GET {{api}}/admin/restaurantes
 Authorization: Bearer {{login.response.body.token}}
+
+### 17) Cadastro de responsável -> esperado 201 com "papel": "RESTAURANTE" e "dataNascimento": null
+POST {{api}}/auth/cadastro-responsavel
+Content-Type: application/json
+
+{
+  "nome": "Ana Souza",
+  "username": "ana.souza",
+  "email": "ana.restaurante@email.com",
+  "dataNascimento": null,
+  "telefone": "(13) 3333-1111",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 18) Login do responsável -> esperado 200 com "papel": "RESTAURANTE"
+# @name loginResponsavel
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana.restaurante@email.com",
+  "senha": "senha123"
+}
+
+### 19) Responsável com e-mail já usado por outra conta -> esperado 409
+POST {{api}}/auth/cadastro-responsavel
+Content-Type: application/json
+
+{
+  "nome": "Outro Dono",
+  "username": "outrodono",
+  "email": "maria.teste@email.com",
+  "telefone": "(13) 3333-2222",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 20) Cadastro comum SEM data de nascimento -> esperado 400 (continua obrigatória para USUARIO)
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Sem Data",
+  "username": "semdata",
+  "email": "semdata@email.com",
+  "telefone": "(13) 95555-0000",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123"
+}
+
+### 21) Preferências antes de definir -> esperado 404 "Preferências ainda não definidas."
+###     (rode o teste 9 antes, para ter o token da Maria)
+GET {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{login.response.body.token}}
+
+### 22) Definir preferências -> esperado 200 devolvendo o que foi salvo
+PUT {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "categoriaIds": [2, 3],
+  "faixaPreco": "$$",
+  "precisaAcessibilidade": false,
+  "levaPets": true
+}
+
+### 23) Buscar de novo -> esperado 200 com as mesmas preferências
+GET {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{login.response.body.token}}
+
+### 24) Categoria que não existe -> esperado 400 "Uma das categorias escolhidas não existe."
+PUT {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "categoriaIds": [999],
+  "faixaPreco": null,
+  "precisaAcessibilidade": false,
+  "levaPets": false
+}
+
+### 25) Faixa de preço inválida -> esperado 400 com o campo "faixaPreco"
+PUT {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "categoriaIds": [],
+  "faixaPreco": "caro",
+  "precisaAcessibilidade": false,
+  "levaPets": false
+}
+
+### 26) Conta de restaurante tentando ver preferências (rode o teste 18 antes) -> esperado 403
+GET {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{loginResponsavel.response.body.token}}
+
+@emailRecuperacao = fourbitesapp@gmail.com
+
+### 27) Esqueci a senha (e-mail cadastrado) -> esperado 204
+POST {{api}}/auth/esqueci-senha
+Content-Type: application/json
+
+{
+  "email": "{{emailRecuperacao}}"
+}
+
+### 28) Esqueci a senha (e-mail que não existe) -> esperado 204 também (não revela nada)
+POST {{api}}/auth/esqueci-senha
+Content-Type: application/json
+
+{
+  "email": "ninguem@email.com"
+}
+
+### 29) Redefinir com token inventado -> esperado 400 "Este link é inválido ou já expirou."
+POST {{api}}/auth/redefinir-senha
+Content-Type: application/json
+
+{
+  "token": "token-que-nao-existe",
+  "senha": "novasenha123",
+  "confirmacaoSenha": "novasenha123"
+}
+
+### 30) Redefinir com o token real -> esperado 204
+###     Copie o que vem depois de "token=" no link (do e-mail ou do log) e cole abaixo.
+POST {{api}}/auth/redefinir-senha
+Content-Type: application/json
+
+{
+  "token": "COLE_O_TOKEN_AQUI",
+  "senha": "novasenha123",
+  "confirmacaoSenha": "novasenha123"
+}
+
+### 31) Repetir o teste 30 com o mesmo token -> esperado 400 (o token só vale uma vez)
+
+### 32) Login com a senha nova -> esperado 200
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{emailRecuperacao}}",
+  "senha": "novasenha123"
+}
+
+### Atenção: depois do teste 30 a senha da conta passa a ser "novasenha123".
+### Para os testes 9 em diante voltarem a funcionar, repita o 27 e o 30 usando "senha123".

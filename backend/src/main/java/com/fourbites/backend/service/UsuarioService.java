@@ -1,10 +1,13 @@
 package com.fourbites.backend.service;
 
+import java.time.LocalDate;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fourbites.backend.dto.AtualizarUsuarioRequest;
+import com.fourbites.backend.dto.CadastroResponsavelRequest;
 import com.fourbites.backend.dto.CadastroUsuarioRequest;
 import com.fourbites.backend.dto.UsuarioPublicoResponse;
 import com.fourbites.backend.dto.UsuarioResponse;
@@ -26,15 +29,30 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //Cadastrar usuário
+    //Cadastrar usuário comum (papel USUARIO)
     @Transactional
     public UsuarioResponse cadastrar(CadastroUsuarioRequest dados) {
-        if (!dados.senha().equals(dados.confirmacaoSenha())) {
+        return criarConta(dados.nome(), dados.username(), dados.email(), dados.telefone(),
+                dados.senha(), dados.confirmacaoSenha(), dados.dataNascimento(), Papel.USUARIO);
+    }
+
+    //Cadastrar responsável por restaurante (papel RESTAURANTE, sem data de nascimento)
+    @Transactional
+    public UsuarioResponse cadastrarResponsavel(CadastroResponsavelRequest dados) {
+        return criarConta(dados.nome(), dados.username(), dados.email(), dados.telefone(),
+                dados.senha(), dados.confirmacaoSenha(), null, Papel.RESTAURANTE);
+    }
+
+    //Regras comuns aos dois cadastros
+    private UsuarioResponse criarConta(String nome, String usernameInformado, String emailInformado,
+                                       String telefone, String senha, String confirmacaoSenha,
+                                       LocalDate dataNascimento, Papel papel) {
+        if (!senha.equals(confirmacaoSenha)) {
             throw new RegraNegocioException("A senha e a confirmação de senha não coincidem.");
         }
 
-        String email = normalizarEmail(dados.email());
-        String username = dados.username().trim();
+        String email = normalizarEmail(emailInformado);
+        String username = usernameInformado.trim();
 
         if (usuarioRepository.existsByEmail(email)) {
             throw new ConflitoException("Este e-mail já está em uso.");
@@ -44,13 +62,13 @@ public class UsuarioService {
         }
 
         Usuario usuario = new Usuario();
-        usuario.setNome(dados.nome().trim());
+        usuario.setNome(nome.trim());
         usuario.setUsername(username);
         usuario.setEmail(email);
-        usuario.setTelefone(dados.telefone().trim());
-        usuario.setDataNascimento(dados.dataNascimento());
-        usuario.setPapel(Papel.USUARIO); 
-        usuario.setSenha(passwordEncoder.encode(dados.senha())); 
+        usuario.setTelefone(telefone.trim());
+        usuario.setDataNascimento(dataNascimento);
+        usuario.setPapel(papel);
+        usuario.setSenha(passwordEncoder.encode(senha));
 
         Usuario salvo = usuarioRepository.save(usuario);
         return UsuarioResponse.de(salvo);
