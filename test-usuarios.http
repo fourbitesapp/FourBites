@@ -98,8 +98,35 @@ GET {{api}}/usuarios/mariateste
 ### 8) Usuário inexistente -> esperado 404 "Usuário não encontrado."
 GET {{api}}/usuarios/naoexiste
 
-### 9) Editar perfil (troque o 1 pelo id retornado no teste 1) -> esperado 200
-PUT {{api}}/usuarios/1
+### 9) Login válido -> esperado 200 com "token" e "usuario" (sem senha)
+# @name login
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria.teste@email.com",
+  "senha": "senha123"
+}
+
+### 10) Login com senha errada -> esperado 401 "E-mail ou senha incorretos."
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria.teste@email.com",
+  "senha": "senhaerrada"
+}
+
+### 11) Meus dados SEM token -> esperado 401 "Faça login para continuar."
+GET {{api}}/usuarios/me
+
+### 12) Meus dados COM token (rode o teste 9 antes) -> esperado 200 com os dados da Maria
+GET {{api}}/usuarios/me
+Authorization: Bearer {{login.response.body.token}}
+
+### 13) Editar perfil -> esperado 200
+PUT {{api}}/usuarios/me
+Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
 {
@@ -109,8 +136,9 @@ Content-Type: application/json
   "telefone": "(13) 99999-1111"
 }
 
-### 10) Editar usando o username de outro usuário -> esperado 409
-PUT {{api}}/usuarios/1
+### 14) Editar usando o username de outro usuário -> esperado 409
+PUT {{api}}/usuarios/me
+Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
 {
@@ -119,3 +147,11 @@ Content-Type: application/json
   "bio": "",
   "telefone": "(13) 99999-1111"
 }
+
+### 15) Token inventado -> esperado 401
+GET {{api}}/usuarios/me
+Authorization: Bearer token.falso.aqui
+
+### 16) Rota de admin com token de usuário comum -> esperado 403
+GET {{api}}/admin/restaurantes
+Authorization: Bearer {{login.response.body.token}}

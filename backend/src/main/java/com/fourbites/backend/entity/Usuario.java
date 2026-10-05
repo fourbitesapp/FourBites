@@ -42,7 +42,7 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private String telefone;
 
-    @Column(name = "data_nascimento", nullable = false)
+    @Column(name = "data_nascimento") 
     private LocalDate dataNascimento;
     
     @Column(name = "foto_perfil", length = 500)

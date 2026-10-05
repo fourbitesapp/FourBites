@@ -1,5 +1,6 @@
 package com.fourbites.backend.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,14 +25,19 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/{username}") /*busca o perfil público de um usuário pelo username*/
+    @GetMapping("/{username}") 
     public UsuarioPublicoResponse buscarPerfilPublico(@PathVariable String username) {
         return usuarioService.buscarPerfilPublico(username);
     }
     
-    @PutMapping("/{id}")
-    public UsuarioResponse atualizar(@PathVariable Integer id,
-                                     @Valid @RequestBody AtualizarUsuarioRequest dados) {
-        return usuarioService.atualizar(id, dados);
+    @GetMapping("/me")
+    public UsuarioResponse buscarMeusDados(@AuthenticationPrincipal Integer usuarioId) {
+        return usuarioService.buscarPorId(usuarioId);
+    }
+
+    @PutMapping("/me")
+    public UsuarioResponse atualizarMeusDados(@AuthenticationPrincipal Integer usuarioId,
+                                              @Valid @RequestBody AtualizarUsuarioRequest dados) {
+        return usuarioService.atualizar(usuarioId, dados);
     }
 }

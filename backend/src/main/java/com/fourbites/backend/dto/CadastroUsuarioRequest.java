@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CadastroUsuarioRequest(
@@ -16,6 +17,8 @@ public record CadastroUsuarioRequest(
 
         @NotBlank(message = "O nome de usuário é obrigatório.")
         @Size(max = 50, message = "O nome de usuário deve ter no máximo 50 caracteres.")
+        @Pattern(regexp = "^[A-Za-z0-9._]+$",
+                 message = "O nome de usuário só pode ter letras, números, ponto e sublinhado.")
         String username,
 
         @NotBlank(message = "O e-mail é obrigatório.")
@@ -32,7 +35,7 @@ public record CadastroUsuarioRequest(
         String telefone,
         
         @NotBlank(message = "A senha é obrigatória.")
-        @Size(max = 72, message = "A senha deve ter no máximo 72 caracteres.")
+        @Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres.")
         String senha,
 
         @NotBlank(message = "A confirmação de senha é obrigatória.")

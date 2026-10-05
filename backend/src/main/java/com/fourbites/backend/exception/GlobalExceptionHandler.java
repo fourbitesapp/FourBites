@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     public GlobalExceptionHandler() {
     }
 
-    // 400 - falhou alguma validação dos DTOs (@NotBlank, @Email, @Past...)
+    // 400 - falhou alguma validação dos DTOs 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> tratarValidacao(MethodArgumentNotValidException ex) {
         Map<String, String> campos = new LinkedHashMap<>();
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(400, "Existem campos inválidos.", campos));
     }
 
-    //400 - JSON mal formado ou valor em formato errado (ex.: data inválida).
+    //400 - JSON mal formado ou valor em formato errado 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> tratarCorpoInvalido(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest()
@@ -44,6 +44,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResponse> tratarRegraNegocio(RegraNegocioException ex) {
         return ResponseEntity.badRequest()
                 .body(new ErroResponse(400, ex.getMessage()));
+    }
+
+    // 401 - e-mail ou senha errados no login.
+    @ExceptionHandler(CredenciaisInvalidasException.class)
+    public ResponseEntity<ErroResponse> tratarCredenciais(CredenciaisInvalidasException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErroResponse(401, ex.getMessage()));
     }
 
     // 404 - recurso não encontrado.
@@ -60,11 +67,10 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(409, ex.getMessage()));
     }
 
-    //409 - o próprio banco recusou o dado (UNIQUE, CHECK, FK).
+    //409 - o próprio banco recusou o dado.
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> tratarIntegridade(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErroResponse(409, "Os dados informados violam uma regra do sistema ou já existem."));
     }
 }
-

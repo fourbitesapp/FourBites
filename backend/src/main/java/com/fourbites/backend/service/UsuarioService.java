@@ -39,7 +39,7 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmail(email)) {
             throw new ConflitoException("Este e-mail já está em uso.");
         }
-        if (usuarioRepository.existsByUsername(username)) {
+        if (usuarioRepository.existsByUsernameIgnoreCase(username)) {
             throw new ConflitoException("Este nome de usuário já está em uso.");
         }
 
@@ -59,9 +59,17 @@ public class UsuarioService {
     //Perfil público (sem dados privados)
     @Transactional(readOnly = true)
     public UsuarioPublicoResponse buscarPerfilPublico(String username) {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Usuario usuario = usuarioRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
         return UsuarioPublicoResponse.de(usuario);
+    }
+
+    //Dados da própria conta (usuário logado)
+    @Transactional(readOnly = true)
+    public UsuarioResponse buscarPorId(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
+        return UsuarioResponse.de(usuario);
     }
 
     //Editar perfil
@@ -72,7 +80,7 @@ public class UsuarioService {
 
         String username = dados.username().trim();
 
-        if (usuarioRepository.existsByUsernameAndIdNot(username, id)) {
+        if (usuarioRepository.existsByUsernameIgnoreCaseAndIdNot(username, id)) {
             throw new ConflitoException("Este nome de usuário não está disponível.");
         }
 
