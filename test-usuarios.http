@@ -312,3 +312,132 @@ GET {{api}}/categorias
 
 ### 34) Formas de pagamento -> esperado 200 com a lista [ { id, nome } ] (rota pública)
 GET {{api}}/formas-pagamento
+
+### 35) Login do admin -> esperado 200 com "papel": "ADMIN"
+# @name loginAdmin
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{$dotenv ADMIN_EMAIL}}",
+  "senha": "{{$dotenv ADMIN_SENHA}}"
+}
+
+### 36) Cadastrar restaurante -> esperado 201 com "status": "APROVADO", latitude e longitude preenchidas
+###     (demora 1 a 2 segundos: é a consulta ao Nominatim)
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Sabor da Vila",
+  "cnpj": "11.222.333/0001-81",
+  "categoriaId": 1,
+  "categoriaSugerida": null,
+  "descricao": "Comida caseira brasileira no coração do Gonzaga.",
+  "telefone": "(13) 3333-1111",
+  "dataFundacao": "2012-06-01",
+  "endereco": {
+    "cep": "11060-001",
+    "logradouro": "Avenida Ana Costa",
+    "numero": "100",
+    "complemento": "",
+    "bairro": "Gonzaga",
+    "cidade": "Santos",
+    "uf": "SP"
+  },
+  "faixaPreco": "$$",
+  "formasPagamentoIds": [2, 3],
+  "horarios": [
+    { "diaSemana": 2, "abertura": "11:30", "fechamento": "15:00" },
+    { "diaSemana": 2, "abertura": "18:00", "fechamento": "23:00" },
+    { "diaSemana": 6, "abertura": "18:00", "fechamento": "01:00" }
+  ],
+  "aceitaPets": true,
+  "acessivel": false,
+  "fotos": [],
+  "cardapioUrl": null,
+  "cardapioLink": null
+}
+
+### 37) Repetir o teste 36 -> esperado 409 "Já existe um restaurante cadastrado com este CNPJ."
+
+### 38) CNPJ com dígito errado -> esperado 400 com o campo "cnpj"
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "CNPJ Errado",
+  "cnpj": "11.222.333/0001-80",
+  "categoriaId": 1,
+  "descricao": "Teste.",
+  "telefone": "(13) 3333-2222",
+  "dataFundacao": "2020-01-01",
+  "endereco": { "cep": "11060-001", "logradouro": "Avenida Ana Costa", "numero": "200", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$",
+  "formasPagamentoIds": [1],
+  "horarios": [],
+  "aceitaPets": false,
+  "acessivel": false
+}
+
+### 39) Sem CNPJ e com "outra categoria" -> esperado 201; a categoria "Vegana" é criada
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Horta Urbana",
+  "cnpj": null,
+  "categoriaId": null,
+  "categoriaSugerida": "Vegana",
+  "descricao": "Pratos veganos feitos na hora.",
+  "telefone": "(13) 3333-3333",
+  "dataFundacao": "2021-09-01",
+  "endereco": { "cep": "11045-000", "logradouro": "Avenida Conselheiro Nébias", "numero": "500", "bairro": "Boqueirão", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$$",
+  "formasPagamentoIds": [2, 4],
+  "horarios": [ { "diaSemana": 7, "abertura": "12:00", "fechamento": "16:00" } ],
+  "aceitaPets": true,
+  "acessivel": true
+}
+
+### 40) Endereço que não existe -> esperado 400 com o campo "endereco"
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Lugar Nenhum",
+  "categoriaId": 1,
+  "descricao": "Teste.",
+  "telefone": "(13) 3333-4444",
+  "dataFundacao": "2020-01-01",
+  "endereco": { "cep": "00000-000", "logradouro": "Rua Xyzwq Inexistente Qwerty", "numero": "1", "bairro": "Nenhum", "cidade": "Cidade Que Nao Existe Zzz", "uf": "SP" },
+  "faixaPreco": "$",
+  "formasPagamentoIds": [],
+  "horarios": [],
+  "aceitaPets": false,
+  "acessivel": false
+}
+
+### 41) Campos obrigatórios vazios -> esperado 400 com vários campos, incluindo "endereco.cep"
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "",
+  "descricao": "",
+  "telefone": "",
+  "endereco": { "cep": "123", "logradouro": "", "numero": "", "bairro": "", "cidade": "", "uf": "São Paulo" },
+  "faixaPreco": "caro"
+}
+
+### 42) Usuário comum tentando cadastrar (rode o teste 9 antes) -> esperado 403
+POST {{api}}/admin/restaurantes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{}

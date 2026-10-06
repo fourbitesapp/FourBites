@@ -31,12 +31,19 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(400, "Existem campos inválidos.", campos));
     }
 
-    //400 - JSON mal formado ou valor em formato errado 
+    //400 - JSON mal formado ou valor em formato errado (ex.: data inválida).
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> tratarCorpoInvalido(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest()
                 .body(new ErroResponse(400,
                         "Corpo da requisição inválido. Verifique o formato dos dados (datas no formato AAAA-MM-DD)."));
+    }
+
+    // 400 - um campo específico foi recusado pelo service (ex.: CNPJ inválido).
+    @ExceptionHandler(CampoInvalidoException.class)
+    public ResponseEntity<ErroResponse> tratarCampoInvalido(CampoInvalidoException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErroResponse(400, "Existem campos inválidos.", Map.of(ex.getCampo(), ex.getMessage())));
     }
 
     // 400 - regra de negócio violada.
@@ -67,7 +74,7 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(409, ex.getMessage()));
     }
 
-    //409 - o próprio banco recusou o dado.
+    //409 - o próprio banco recusou o dado (UNIQUE, CHECK, FK).
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> tratarIntegridade(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
