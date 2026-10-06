@@ -8,7 +8,6 @@ import com.fourbites.backend.entity.Categoria;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.StatusAnalise;
 
-
 public record RestauranteDetalheResponse(
 
         Integer id,
@@ -40,12 +39,12 @@ public record RestauranteDetalheResponse(
         String cardapioLink,
         RestauranteGestaoResponse.Medias medias, 
         Integer responsavelId,
-        Integer compatibilidade,   
+        Integer compatibilidade,  
         Integer favoritoPosicao,
         Integer minhaAvaliacaoId
 ) {
 
-    public static RestauranteDetalheResponse de(Restaurante r) {
+    public static RestauranteDetalheResponse de(Restaurante r, ResumoNotas notas, Integer minhaAvaliacaoId) {
         Categoria categoria = r.getCategoria();
         List<String> fotos = r.getFotos().stream().map(foto -> foto.getUrl()).toList();
 
@@ -57,8 +56,8 @@ public record RestauranteDetalheResponse(
                 r.getFaixaPreco(),
                 r.getBairro(),
                 r.getCidade(),
-                null,
-                0,
+                notas.notaMedia(),
+                notas.totalAvaliacoes(),
                 fotos.isEmpty() ? null : fotos.get(0),
                 r.getLatitude(),
                 r.getLongitude(),
@@ -83,10 +82,10 @@ public record RestauranteDetalheResponse(
                 fotos,
                 r.getCardapioUrl(),
                 r.getCardapioLink(),
-                null,
+                notas.medias(),
                 r.getResponsavel() == null ? null : r.getResponsavel().getId(),
+                null, 
                 null,
-                null,
-                null);
+                minhaAvaliacaoId);
     }
 }

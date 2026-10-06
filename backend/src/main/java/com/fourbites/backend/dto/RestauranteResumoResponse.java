@@ -15,19 +15,19 @@ public record RestauranteResumoResponse(
         String faixaPreco,
         String bairro,
         String cidade,
-        BigDecimal notaMedia,      
+        BigDecimal notaMedia,       
         long totalAvaliacoes,
         String fotoCapa,
         BigDecimal latitude,
         BigDecimal longitude,
-        BigDecimal distanciaKm,     
+        BigDecimal distanciaKm,    
         boolean aceitaPets,
         boolean acessivel,
         StatusAnalise status,
         boolean ativo
 ) {
 
-    public static RestauranteResumoResponse de(Restaurante r, BigDecimal distanciaKm) {
+    public static RestauranteResumoResponse de(Restaurante r, BigDecimal distanciaKm, ResumoNotas notas) {
         Categoria categoria = r.getCategoria();
         List<String> fotos = r.getFotos().stream().map(foto -> foto.getUrl()).toList();
 
@@ -39,8 +39,8 @@ public record RestauranteResumoResponse(
                 r.getFaixaPreco(),
                 r.getBairro(),
                 r.getCidade(),
-                null,
-                0,
+                notas.notaMedia(),
+                notas.totalAvaliacoes(),
                 fotos.isEmpty() ? null : fotos.get(0),
                 r.getLatitude(),
                 r.getLongitude(),

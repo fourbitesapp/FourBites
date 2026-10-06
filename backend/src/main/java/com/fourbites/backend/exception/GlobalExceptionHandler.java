@@ -60,6 +60,13 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(401, ex.getMessage()));
     }
 
+    // 403 - logado, mas sem permissão para aquele recurso.
+    @ExceptionHandler(SemPermissaoException.class)
+    public ResponseEntity<ErroResponse> tratarSemPermissao(SemPermissaoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErroResponse(403, ex.getMessage()));
+    }
+
     // 404 - recurso não encontrado.
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<ErroResponse> tratarNaoEncontrado(RecursoNaoEncontradoException ex) {
@@ -81,3 +88,4 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(409, "Os dados informados violam uma regra do sistema ou já existem."));
     }
 }
+

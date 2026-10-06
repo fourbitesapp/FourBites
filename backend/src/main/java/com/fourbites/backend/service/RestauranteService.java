@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import com.fourbites.backend.dto.RestauranteFormulario;
 import com.fourbites.backend.dto.RestauranteDetalheResponse;
 import com.fourbites.backend.dto.RestauranteGestaoResponse;
 import com.fourbites.backend.dto.RestauranteResumoResponse;
+import com.fourbites.backend.dto.ResumoNotas;
 import com.fourbites.backend.entity.Categoria;
 import com.fourbites.backend.entity.FormaPagamento;
 import com.fourbites.backend.entity.Restaurante;
@@ -42,18 +44,20 @@ public class RestauranteService {
     private final CategoriaRepository categoriaRepository;
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final NominatimService nominatimService;
+    private final AvaliacaoService avaliacaoService;
 
     public RestauranteService(RestauranteRepository restauranteRepository,
                               CategoriaRepository categoriaRepository,
                               FormaPagamentoRepository formaPagamentoRepository,
-                              NominatimService nominatimService) {
+                              NominatimService nominatimService,
+                              AvaliacaoService avaliacaoService) {
         this.restauranteRepository = restauranteRepository;
         this.categoriaRepository = categoriaRepository;
         this.formaPagamentoRepository = formaPagamentoRepository;
         this.nominatimService = nominatimService;
+        this.avaliacaoService = avaliacaoService;
     }
 
-    // Cadastro direto pelo admin: já nasce APROVADO, sem responsável e com CNPJ opcional.
     @Transactional
     public RestauranteGestaoResponse cadastrarPeloAdmin(RestauranteFormulario dados) {
         Restaurante restaurante = new Restaurante();
@@ -72,13 +76,14 @@ public class RestauranteService {
         return RestauranteGestaoResponse.de(salvo, null);
     }
 
-    // Busca pública: só restaurantes aprovados e ativos.
     @Transactional(readOnly = true)
     public List<RestauranteResumoResponse> buscarPublicos(String busca, Integer categoriaId, String faixaPreco,
-                                                          boolean pets, boolean acessivel,
+                                                          Double notaMin, boolean pets, boolean acessivel,
                                                           Double lat, Double lng, String ordem) {
         String termo = Texto.simplificar(busca);
         boolean temLocalizacao = lat != null && lng != null;
+
+        Map<Integer, ResumoNotas> notasPorRestaurante = avaliacaoService.notasDeTodosOsRestaurantes();
 
         List<RestauranteResumoResponse> resultado = new ArrayList<>();
         for (Restaurante r : restauranteRepository.findByStatusAndAtivoTrue(StatusAnalise.APROVADO)) {
@@ -98,31 +103,41 @@ public class RestauranteService {
                 continue;
             }
 
+            ResumoNotas notas = notasPorRestaurante.getOrDefault(r.getId(), ResumoNotas.SEM_AVALIACOES);
+
+            if (notaMin != null && (notas.notaMedia() == null || notas.notaMedia().doubleValue() < notaMin)) {
+                continue;
+            }
+
             BigDecimal distanciaKm = null;
             if (temLocalizacao) {
                 double km = Distancia.emKm(lat, lng, r.getLatitude().doubleValue(), r.getLongitude().doubleValue());
                 distanciaKm = BigDecimal.valueOf(km).setScale(1, RoundingMode.HALF_UP);
             }
-            resultado.add(RestauranteResumoResponse.de(r, distanciaKm));
+            resultado.add(RestauranteResumoResponse.de(r, distanciaKm, notas));
         }
 
-        // Ordenação: por distância (se pedida e houver localização) ou por nome.
+        resultado.sort(Comparator.comparing(r -> Texto.simplificar(r.nome())));
+
         if ("distancia".equals(ordem) && temLocalizacao) {
             resultado.sort(Comparator.comparing(RestauranteResumoResponse::distanciaKm));
-        } else {
-            resultado.sort(Comparator.comparing(r -> Texto.simplificar(r.nome())));
+        } else if ("nota".equals(ordem)) {
+            
+            resultado.sort(Comparator.comparing(RestauranteResumoResponse::notaMedia,
+                    Comparator.nullsLast(Comparator.<BigDecimal>reverseOrder())));
+        } else if ("avaliacoes".equals(ordem)) {
+            resultado.sort(Comparator.comparing(RestauranteResumoResponse::totalAvaliacoes).reversed());
         }
         return resultado;
     }
 
-    // O texto digitado é procurado no nome, na categoria e no bairro.
     private boolean combinaComABusca(Restaurante r, String termo) {
         return Texto.simplificar(r.getNome()).contains(termo)
                 || Texto.simplificar(r.getCategoria().getNome()).contains(termo)
                 || Texto.simplificar(r.getBairro()).contains(termo);
     }
 
-    // Perfil do restaurante. Se ele não estiver publicado (pendente, rejeitado ou desativado).
+
     @Transactional(readOnly = true)
     public RestauranteDetalheResponse buscarDetalhe(Integer id, Integer usuarioLogadoId, boolean admin) {
         Restaurante restaurante = restauranteRepository.findById(id)
@@ -135,7 +150,12 @@ public class RestauranteService {
         if (!publicado && !dono && !admin) {
             throw new RecursoNaoEncontradoException("Restaurante não encontrado.");
         }
-        return RestauranteDetalheResponse.de(restaurante);
+        ResumoNotas notas = avaliacaoService.notasDoRestaurante(id);
+        Integer minhaAvaliacaoId = usuarioLogadoId == null
+                ? null
+                : avaliacaoService.idDaAvaliacaoDoUsuario(usuarioLogadoId, id);
+
+        return RestauranteDetalheResponse.de(restaurante, notas, minhaAvaliacaoId);
     }
 
     // Copia do formulário para a entidade tudo o que não depende de quem está cadastrando.
@@ -239,6 +259,7 @@ public class RestauranteService {
         return new HashSet<>(encontradas);
     }
 
+    // "11010001" ou "11010-001" viram sempre "11010-001".
     private String formatarCep(String cep) {
         String digitos = cep.replaceAll("[^0-9]", "");
         return digitos.substring(0, 5) + "-" + digitos.substring(5);

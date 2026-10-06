@@ -1,8 +1,5 @@
 ### =============================================================
 ### Testes do cadastro e perfil - FourBites
-### Use com a extensão "REST Client" do VS Code:
-### clique em "Send Request" acima de cada requisição.
-### =============================================================
 
 @api = http://localhost:8080
 
@@ -473,3 +470,125 @@ GET {{api}}/restaurantes/1
 
 ### 52) Restaurante que não existe -> esperado 404 "Restaurante não encontrado."
 GET {{api}}/restaurantes/99999
+
+@restauranteId = 1
+
+### 53) Maria avalia o restaurante -> esperado 201 com "notaGeral": 4.25 e "editada": false
+# @name avaliacao
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "notaComida": 5,
+  "notaAmbiente": 4,
+  "notaAtendimento": 5,
+  "notaCusto": 3,
+  "comentario": "Comida caseira muito boa e atendimento rápido. O preço é um pouco alto.",
+  "fotos": []
+}
+
+### 54) Repetir o teste 53 -> esperado 409 "Você já avaliou este restaurante."
+
+### 55) Nota fora de 1 a 5 -> esperado 400 com o campo "notaComida"
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "notaComida": 6,
+  "notaAmbiente": 4,
+  "notaAtendimento": 5,
+  "notaCusto": 3
+}
+
+### 56) Avaliar sem login -> esperado 401
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Content-Type: application/json
+
+{ "notaComida": 5, "notaAmbiente": 5, "notaAtendimento": 5, "notaCusto": 5 }
+
+### 57) Conta de restaurante tentando avaliar -> esperado 403
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Authorization: Bearer {{loginResponsavel.response.body.token}}
+Content-Type: application/json
+
+{ "notaComida": 5, "notaAmbiente": 5, "notaAtendimento": 5, "notaCusto": 5 }
+
+### 58) Admin tentando avaliar -> esperado 403
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{ "notaComida": 5, "notaAmbiente": 5, "notaAtendimento": 5, "notaCusto": 5 }
+
+### 59) Ver a avaliação pelo id (rota pública) -> esperado 200 com autor e restaurante
+GET {{api}}/avaliacoes/{{avaliacao.response.body.id}}
+
+### 60) Avaliações do restaurante (rota pública) -> esperado 200 com a avaliação da Maria
+GET {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+
+### 61) Avaliações escritas pela Maria (rota pública) -> esperado 200 com a mesma avaliação
+GET {{api}}/usuarios/mariateste/avaliacoes
+
+### 62) Maria edita a avaliação -> esperado 200 com "notaGeral": 4.5 e "editada": true
+PUT {{api}}/avaliacoes/{{avaliacao.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "notaComida": 5,
+  "notaAmbiente": 4,
+  "notaAtendimento": 5,
+  "notaCusto": 4,
+  "comentario": "Voltei e o preço do almoço executivo compensa. Recomendo!",
+  "fotos": []
+}
+
+### 63) Login de outro usuário (o "espertinho" criado no teste 6) -> esperado 200
+# @name loginOutro
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "espertinho@email.com",
+  "senha": "senha123"
+}
+
+### 64) Outro usuário tentando editar a avaliação da Maria -> esperado 403
+PUT {{api}}/avaliacoes/{{avaliacao.response.body.id}}
+Authorization: Bearer {{loginOutro.response.body.token}}
+Content-Type: application/json
+
+{ "notaComida": 1, "notaAmbiente": 1, "notaAtendimento": 1, "notaCusto": 1 }
+
+### 65) Outro usuário avalia o mesmo restaurante -> esperado 201 com "notaGeral": 3.5
+POST {{api}}/restaurantes/{{restauranteId}}/avaliacoes
+Authorization: Bearer {{loginOutro.response.body.token}}
+Content-Type: application/json
+
+{
+  "notaComida": 4,
+  "notaAmbiente": 3,
+  "notaAtendimento": 4,
+  "notaCusto": 3,
+  "comentario": "Bom, mas estava cheio e demorou."
+}
+
+### 66) Perfil do restaurante, agora com notas
+###     -> esperado "notaMedia": 4.00, "totalAvaliacoes": 2 e
+###        "medias": { "comida": 4.5, "ambiente": 3.5, "atendimento": 4.5, "custo": 3.5 }
+GET {{api}}/restaurantes/{{restauranteId}}
+
+### 67) O mesmo perfil visto pela Maria -> esperado "minhaAvaliacaoId" com o id da avaliação dela
+GET {{api}}/restaurantes/{{restauranteId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 68) Busca ordenada por nota -> esperado o restaurante avaliado primeiro; o sem avaliação por último
+GET {{api}}/restaurantes?ordem=nota
+
+### 69) Busca com nota mínima 4 -> esperado só o restaurante avaliado
+GET {{api}}/restaurantes?notaMin=4
+
+### 70) Busca com nota mínima 4.5 -> esperado lista vazia []
+GET {{api}}/restaurantes?notaMin=4.5

@@ -13,6 +13,7 @@ import com.fourbites.backend.dto.RestauranteDetalheResponse;
 import com.fourbites.backend.dto.RestauranteResumoResponse;
 import com.fourbites.backend.service.RestauranteService;
 
+// Rotas públicas: qualquer visitante pode buscar e ver restaurantes, sem login.
 @RestController
 @RequestMapping("/restaurantes")
 public class RestauranteController {
@@ -28,12 +29,14 @@ public class RestauranteController {
             @RequestParam(required = false) String busca,
             @RequestParam(required = false) Integer categoriaId,
             @RequestParam(required = false) String faixaPreco,
+            @RequestParam(required = false) Double notaMin,
             @RequestParam(defaultValue = "false") boolean pets,
             @RequestParam(defaultValue = "false") boolean acessivel,
             @RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lng,
             @RequestParam(required = false) String ordem) {
-        return restauranteService.buscarPublicos(busca, categoriaId, faixaPreco, pets, acessivel, lat, lng, ordem);
+        return restauranteService.buscarPublicos(busca, categoriaId, faixaPreco, notaMin, pets, acessivel,
+                lat, lng, ordem);
     }
 
     @GetMapping("/{id}")
@@ -49,4 +52,3 @@ public class RestauranteController {
         return restauranteService.buscarDetalhe(id, usuarioLogadoId, admin);
     }
 }
-
