@@ -1,6 +1,10 @@
 package com.fourbites.backend.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +16,9 @@ import com.fourbites.backend.dto.Coordenadas;
 import com.fourbites.backend.dto.EnderecoDTO;
 import com.fourbites.backend.dto.HorarioDTO;
 import com.fourbites.backend.dto.RestauranteFormulario;
+import com.fourbites.backend.dto.RestauranteDetalheResponse;
 import com.fourbites.backend.dto.RestauranteGestaoResponse;
+import com.fourbites.backend.dto.RestauranteResumoResponse;
 import com.fourbites.backend.entity.Categoria;
 import com.fourbites.backend.entity.FormaPagamento;
 import com.fourbites.backend.entity.Restaurante;
@@ -21,9 +27,12 @@ import com.fourbites.backend.entity.RestauranteHorario;
 import com.fourbites.backend.entity.StatusAnalise;
 import com.fourbites.backend.exception.CampoInvalidoException;
 import com.fourbites.backend.exception.ConflitoException;
+import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.repository.CategoriaRepository;
 import com.fourbites.backend.repository.FormaPagamentoRepository;
 import com.fourbites.backend.repository.RestauranteRepository;
+import com.fourbites.backend.util.Distancia;
+import com.fourbites.backend.util.Texto;
 import com.fourbites.backend.util.ValidadorCnpj;
 
 @Service
@@ -44,6 +53,7 @@ public class RestauranteService {
         this.nominatimService = nominatimService;
     }
 
+    // Cadastro direto pelo admin: já nasce APROVADO, sem responsável e com CNPJ opcional.
     @Transactional
     public RestauranteGestaoResponse cadastrarPeloAdmin(RestauranteFormulario dados) {
         Restaurante restaurante = new Restaurante();
@@ -62,6 +72,73 @@ public class RestauranteService {
         return RestauranteGestaoResponse.de(salvo, null);
     }
 
+    // Busca pública: só restaurantes aprovados e ativos.
+    @Transactional(readOnly = true)
+    public List<RestauranteResumoResponse> buscarPublicos(String busca, Integer categoriaId, String faixaPreco,
+                                                          boolean pets, boolean acessivel,
+                                                          Double lat, Double lng, String ordem) {
+        String termo = Texto.simplificar(busca);
+        boolean temLocalizacao = lat != null && lng != null;
+
+        List<RestauranteResumoResponse> resultado = new ArrayList<>();
+        for (Restaurante r : restauranteRepository.findByStatusAndAtivoTrue(StatusAnalise.APROVADO)) {
+            if (categoriaId != null && !categoriaId.equals(r.getCategoria().getId())) {
+                continue;
+            }
+            if (faixaPreco != null && !faixaPreco.isBlank() && !faixaPreco.equals(r.getFaixaPreco())) {
+                continue;
+            }
+            if (pets && !r.isAceitaPets()) {
+                continue;
+            }
+            if (acessivel && !r.isAcessivel()) {
+                continue;
+            }
+            if (!termo.isEmpty() && !combinaComABusca(r, termo)) {
+                continue;
+            }
+
+            BigDecimal distanciaKm = null;
+            if (temLocalizacao) {
+                double km = Distancia.emKm(lat, lng, r.getLatitude().doubleValue(), r.getLongitude().doubleValue());
+                distanciaKm = BigDecimal.valueOf(km).setScale(1, RoundingMode.HALF_UP);
+            }
+            resultado.add(RestauranteResumoResponse.de(r, distanciaKm));
+        }
+
+        // Ordenação: por distância (se pedida e houver localização) ou por nome.
+        if ("distancia".equals(ordem) && temLocalizacao) {
+            resultado.sort(Comparator.comparing(RestauranteResumoResponse::distanciaKm));
+        } else {
+            resultado.sort(Comparator.comparing(r -> Texto.simplificar(r.nome())));
+        }
+        return resultado;
+    }
+
+    // O texto digitado é procurado no nome, na categoria e no bairro.
+    private boolean combinaComABusca(Restaurante r, String termo) {
+        return Texto.simplificar(r.getNome()).contains(termo)
+                || Texto.simplificar(r.getCategoria().getNome()).contains(termo)
+                || Texto.simplificar(r.getBairro()).contains(termo);
+    }
+
+    // Perfil do restaurante. Se ele não estiver publicado (pendente, rejeitado ou desativado).
+    @Transactional(readOnly = true)
+    public RestauranteDetalheResponse buscarDetalhe(Integer id, Integer usuarioLogadoId, boolean admin) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Restaurante não encontrado."));
+
+        boolean publicado = restaurante.getStatus() == StatusAnalise.APROVADO && restaurante.isAtivo();
+        boolean dono = restaurante.getResponsavel() != null
+                && restaurante.getResponsavel().getId().equals(usuarioLogadoId);
+
+        if (!publicado && !dono && !admin) {
+            throw new RecursoNaoEncontradoException("Restaurante não encontrado.");
+        }
+        return RestauranteDetalheResponse.de(restaurante);
+    }
+
+    // Copia do formulário para a entidade tudo o que não depende de quem está cadastrando.
     private void preencherDadosComuns(Restaurante restaurante, RestauranteFormulario dados) {
         EnderecoDTO endereco = dados.endereco();
 
@@ -71,7 +148,7 @@ public class RestauranteService {
         restaurante.setFaixaPreco(dados.faixaPreco());
         restaurante.setAceitaPets(dados.aceitaPets());
         restaurante.setAcessivel(dados.acessivel());
-        restaurante.setDataFundacao(dados.dataFundacao().withDayOfMonth(1)); 
+        restaurante.setDataFundacao(dados.dataFundacao().withDayOfMonth(1)); // só mês e ano importam
         restaurante.setCardapioUrl(textoOuNulo(dados.cardapioUrl()));
         restaurante.setCardapioLink(textoOuNulo(dados.cardapioLink()));
 
@@ -83,6 +160,7 @@ public class RestauranteService {
         restaurante.setCidade(endereco.cidade().trim());
         restaurante.setUf(endereco.uf().toUpperCase());
 
+        // Latitude e longitude: calculadas pelo endereço. Sem localização, o cadastro é recusado.
         Coordenadas coordenadas = nominatimService
                 .buscar(restaurante.getLogradouro(), restaurante.getNumero(), restaurante.getBairro(),
                         restaurante.getCidade(), restaurante.getUf())
@@ -94,7 +172,7 @@ public class RestauranteService {
         restaurante.getFormasPagamento().clear();
         restaurante.getFormasPagamento().addAll(buscarFormasPagamento(dados.formasPagamentoIds()));
 
-
+        // Horários: troca a lista inteira pelos que vieram no formulário.
         restaurante.getHorarios().clear();
         for (HorarioDTO horario : dados.horarios()) {
             RestauranteHorario novo = new RestauranteHorario();
@@ -105,6 +183,7 @@ public class RestauranteService {
             restaurante.getHorarios().add(novo);
         }
 
+        // Fotos: a ordem da lista vira a ordem de exibição (a primeira é a capa).
         restaurante.getFotos().clear();
         List<String> fotos = dados.fotos() == null ? List.of() : dados.fotos();
         for (int i = 0; i < fotos.size(); i++) {
@@ -116,6 +195,7 @@ public class RestauranteService {
         }
     }
 
+    // Devolve o CNPJ só com os 14 dígitos, ou null se não foi informado e não é obrigatório.
     private String conferirCnpj(String cnpjInformado, boolean obrigatorio) {
         if (cnpjInformado == null || cnpjInformado.isBlank()) {
             if (obrigatorio) {

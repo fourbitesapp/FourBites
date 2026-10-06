@@ -441,3 +441,35 @@ Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
 {}
+
+### 43) Todos os restaurantes -> esperado 200 com os dois, em ordem alfabética
+GET {{api}}/restaurantes
+
+### 44) Busca por nome, sem acento e em minúsculas -> esperado só "Sabor da Vila"
+GET {{api}}/restaurantes?busca=sabor
+
+### 45) Busca por bairro -> esperado só "Horta Urbana" (Boqueirão)
+GET {{api}}/restaurantes?busca=boqueirao
+
+### 46) Busca por categoria -> esperado só "Horta Urbana" (Vegana)
+GET {{api}}/restaurantes?busca=vegana
+
+### 47) Filtros combinados: aceita pets E é acessível -> esperado só "Horta Urbana"
+GET {{api}}/restaurantes?pets=true&acessivel=true
+
+### 48) Faixa de preço $$ -> esperado só "Sabor da Vila" (%24 é o $ escrito para a URL)
+GET {{api}}/restaurantes?faixaPreco=%24%24
+
+### 49) Com a localização do usuário (praia do Gonzaga), do mais perto ao mais longe
+###     -> esperado os dois com "distanciaKm" preenchida, o mais próximo primeiro
+GET {{api}}/restaurantes?lat=-23.9692&lng=-46.3340&ordem=distancia
+
+### 50) Busca sem resultado -> esperado 200 com lista vazia []
+GET {{api}}/restaurantes?busca=churrascaria
+
+### 51) Perfil do restaurante (troque o 1 por um id que veio no teste 43)
+###     -> esperado 200 com endereço, horários como "11:30", formas de pagamento e SEM o campo "cnpj"
+GET {{api}}/restaurantes/1
+
+### 52) Restaurante que não existe -> esperado 404 "Restaurante não encontrado."
+GET {{api}}/restaurantes/99999

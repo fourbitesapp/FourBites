@@ -50,4 +50,8 @@ public class TokenRecuperacaoSenha {
             dataCriacao = OffsetDateTime.now();
         }
     }
+
+    public void setUsuario(Usuario usuario) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
