@@ -305,5 +305,10 @@ Content-Type: application/json
   "senha": "novasenha123"
 }
 
-### Atenção: depois do teste 30 a senha da conta passa a ser "novasenha123".
-### Para os testes 9 em diante voltarem a funcionar, repita o 27 e o 30 usando "senha123".
+### Restaurantes
+
+### 33) Categorias -> esperado 200 com a lista [ { id, nome } ] em ordem alfabética (rota pública)
+GET {{api}}/categorias
+
+### 34) Formas de pagamento -> esperado 200 com a lista [ { id, nome } ] (rota pública)
+GET {{api}}/formas-pagamento
