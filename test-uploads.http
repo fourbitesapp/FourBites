@@ -1,0 +1,90 @@
+@api = http://localhost:8080
+@token = COLE_O_TOKEN_AQUI
+
+### 1) Foto JPG válida -> esperado 201 com { "url": "https://res.cloudinary.com/..." }
+POST {{api}}/uploads
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< ./foto.jpg
+--fronteira--
+
+### 2) Cardápio em PDF -> esperado 201 com a url terminando em .pdf
+POST {{api}}/uploads
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="cardapio.pdf"
+Content-Type: application/pdf
+
+< ./cardapio.pdf
+--fronteira--
+
+### 3) Arquivo de texto com nome de imagem -> esperado 400, campo "arquivo": "Formato não aceito..."
+POST {{api}}/uploads
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="falso.jpg"
+Content-Type: image/jpeg
+
+isto não é uma imagem
+--fronteira--
+
+### 4) Sem login -> esperado 401 "Faça login para continuar."
+POST {{api}}/uploads
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< ./foto.jpg
+--fronteira--
+
+### 5) Avaliação com foto de outro site -> esperado 400, campo "fotos": "Envie o arquivo pelo FourBites antes de salvar."
+### (troque o 1 pelo id de um restaurante aprovado que você ainda não avaliou; use um token de USUARIO)
+POST {{api}}/restaurantes/1/avaliacoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "notaComida": 5,
+  "notaAmbiente": 4,
+  "notaAtendimento": 5,
+  "notaCusto": 4,
+  "comentario": "Teste com foto de fora",
+  "fotos": ["https://exemplo.com/foto.jpg"]
+}
+
+### 6) Avaliação com a foto do teste 1 -> esperado 201 e a foto aparece em "fotos"
+POST {{api}}/restaurantes/1/avaliacoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "notaComida": 5,
+  "notaAmbiente": 4,
+  "notaAtendimento": 5,
+  "notaCusto": 4,
+  "comentario": "Teste com foto do Cloudinary",
+  "fotos": ["https://res.cloudinary.com/s2phcdua/image/upload/v1792104679/fourbites/ed5p4jzxac20yvlup1gb.jpg"]
+}
+
+### Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@teste.com",
+  "senha": "teste1234"
+}
+
+### Restaurantes
+GET http://localhost:8080/restaurantes

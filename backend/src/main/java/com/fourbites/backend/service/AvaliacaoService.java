@@ -30,13 +30,16 @@ public class AvaliacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final RestauranteRepository restauranteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UploadService uploadService;
 
     public AvaliacaoService(AvaliacaoRepository avaliacaoRepository,
                             RestauranteRepository restauranteRepository,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            UploadService uploadService) {
         this.avaliacaoRepository = avaliacaoRepository;
         this.restauranteRepository = restauranteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.uploadService = uploadService;
     }
 
     // Publica uma avaliação. Cada usuário só pode avaliar cada restaurante uma vez.
@@ -129,6 +132,9 @@ public class AvaliacaoService {
 
     // Copia as notas, o comentário e as fotos, e calcula a nota geral.
     private void preencher(Avaliacao avaliacao, AvaliacaoRequest dados) {
+        // As fotos precisam ter sido enviadas antes pelo POST /uploads.
+        uploadService.conferirEnderecos("fotos", dados.fotos());
+
         avaliacao.setNotaComida(dados.notaComida());
         avaliacao.setNotaAmbiente(dados.notaAmbiente());
         avaliacao.setNotaAtendimento(dados.notaAtendimento());

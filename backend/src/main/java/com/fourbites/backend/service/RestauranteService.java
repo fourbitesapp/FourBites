@@ -45,17 +45,20 @@ public class RestauranteService {
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final NominatimService nominatimService;
     private final AvaliacaoService avaliacaoService;
+    private final UploadService uploadService;
 
     public RestauranteService(RestauranteRepository restauranteRepository,
                               CategoriaRepository categoriaRepository,
                               FormaPagamentoRepository formaPagamentoRepository,
                               NominatimService nominatimService,
-                              AvaliacaoService avaliacaoService) {
+                              AvaliacaoService avaliacaoService,
+                              UploadService uploadService) {
         this.restauranteRepository = restauranteRepository;
         this.categoriaRepository = categoriaRepository;
         this.formaPagamentoRepository = formaPagamentoRepository;
         this.nominatimService = nominatimService;
         this.avaliacaoService = avaliacaoService;
+        this.uploadService = uploadService;
     }
 
     @Transactional
@@ -158,9 +161,12 @@ public class RestauranteService {
         return RestauranteDetalheResponse.de(restaurante, notas, minhaAvaliacaoId);
     }
 
-    // Copia do formulário para a entidade tudo o que não depende de quem está cadastrando.
     private void preencherDadosComuns(Restaurante restaurante, RestauranteFormulario dados) {
         EnderecoDTO endereco = dados.endereco();
+
+ 
+        uploadService.conferirEnderecos("fotos", dados.fotos());
+        uploadService.conferirEndereco("cardapioUrl", dados.cardapioUrl());
 
         restaurante.setNome(dados.nome().trim());
         restaurante.setDescricao(dados.descricao().trim());
@@ -168,7 +174,7 @@ public class RestauranteService {
         restaurante.setFaixaPreco(dados.faixaPreco());
         restaurante.setAceitaPets(dados.aceitaPets());
         restaurante.setAcessivel(dados.acessivel());
-        restaurante.setDataFundacao(dados.dataFundacao().withDayOfMonth(1)); // só mês e ano importam
+        restaurante.setDataFundacao(dados.dataFundacao().withDayOfMonth(1)); 
         restaurante.setCardapioUrl(textoOuNulo(dados.cardapioUrl()));
         restaurante.setCardapioLink(textoOuNulo(dados.cardapioLink()));
 
@@ -180,7 +186,6 @@ public class RestauranteService {
         restaurante.setCidade(endereco.cidade().trim());
         restaurante.setUf(endereco.uf().toUpperCase());
 
-        // Latitude e longitude: calculadas pelo endereço. Sem localização, o cadastro é recusado.
         Coordenadas coordenadas = nominatimService
                 .buscar(restaurante.getLogradouro(), restaurante.getNumero(), restaurante.getBairro(),
                         restaurante.getCidade(), restaurante.getUf())
@@ -192,7 +197,6 @@ public class RestauranteService {
         restaurante.getFormasPagamento().clear();
         restaurante.getFormasPagamento().addAll(buscarFormasPagamento(dados.formasPagamentoIds()));
 
-        // Horários: troca a lista inteira pelos que vieram no formulário.
         restaurante.getHorarios().clear();
         for (HorarioDTO horario : dados.horarios()) {
             RestauranteHorario novo = new RestauranteHorario();
@@ -203,7 +207,6 @@ public class RestauranteService {
             restaurante.getHorarios().add(novo);
         }
 
-        // Fotos: a ordem da lista vira a ordem de exibição (a primeira é a capa).
         restaurante.getFotos().clear();
         List<String> fotos = dados.fotos() == null ? List.of() : dados.fotos();
         for (int i = 0; i < fotos.size(); i++) {
@@ -215,7 +218,6 @@ public class RestauranteService {
         }
     }
 
-    // Devolve o CNPJ só com os 14 dígitos, ou null se não foi informado e não é obrigatório.
     private String conferirCnpj(String cnpjInformado, boolean obrigatorio) {
         if (cnpjInformado == null || cnpjInformado.isBlank()) {
             if (obrigatorio) {

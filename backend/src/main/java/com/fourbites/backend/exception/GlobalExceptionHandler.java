@@ -11,6 +11,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.fourbites.backend.dto.ErroResponse;
 
@@ -79,6 +81,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResponse> tratarConflito(ConflitoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErroResponse(409, ex.getMessage()));
+    }
+
+    // 400 - arquivo maior que o limite (spring.servlet.multipart.max-file-size).
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErroResponse> tratarArquivoGrande(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErroResponse(400, "Existem campos inválidos.",
+                        Map.of("arquivo", "O arquivo deve ter no máximo 5 MB.")));
+    }
+
+    // 400 - a requisição de upload veio sem o campo "arquivo".
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErroResponse> tratarArquivoAusente(MissingServletRequestPartException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErroResponse(400, "Existem campos inválidos.",
+                        Map.of(ex.getRequestPartName(), "Escolha um arquivo para enviar.")));
+    }
+
+    // 502 - um serviço de fora (ex.: Cloudinary) falhou.
+    @ExceptionHandler(ServicoExternoException.class)
+    public ResponseEntity<ErroResponse> tratarServicoExterno(ServicoExternoException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(new ErroResponse(502, ex.getMessage()));
     }
 
     //409 - o próprio banco recusou o dado (UNIQUE, CHECK, FK).
