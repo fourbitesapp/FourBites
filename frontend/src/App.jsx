@@ -1,53 +1,22 @@
-import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-function App() {
-  console.log("MEU APP ESTÁ RODANDO!");
+import Cadastro from './pages/Cadastro.jsx'
+import Explorar from './pages/Explorar.jsx'
+import Login from './pages/Login.jsx'
+import NovaAvaliacao from './pages/NovaAvaliacao.jsx'
+import Restaurante from './pages/Restaurante.jsx'
 
-  const [usuarios, setUsuarios] = useState([]);
-
-  useEffect(() => {
-    console.log("USEEFFECT ESTÁ RODANDO!");
-
-    fetch("http://localhost:8080/usuarios")
-      .then((resposta) => {
-        console.log("CHEGOU A RESPOSTA DO BACKEND!");
-        console.log("Status:", resposta.status);
-        console.log("Resposta:", resposta);
-
-        return resposta.json();
-      })
-      .then((dados) => {
-        console.log("CHEGARAM OS USUÁRIOS!");
-        console.log("Dados:", dados);
-
-        setUsuarios(dados);
-      })
-      .catch((erro) => {
-        console.log("DEU ERRO NO FETCH!");
-        console.error("Erro:", erro);
-      });
-  }, []);
-
+// Mapa de telas do site
+export default function App() {
   return (
-    <div>
-      {" "}
-      <h1>FourBites</h1>
-      ```
-      <h2>Usuários cadastrados</h2>
-      {usuarios.length === 0 ? (
-        <p>Nenhum usuário encontrado.</p>
-      ) : (
-        usuarios.map((usuario) => (
-          <div key={usuario.id}>
-            <h3>{usuario.nome}</h3>
-            <p>@{usuario.username}</p>
-            <p>{usuario.email}</p>
-            <p>{usuario.bio}</p>
-          </div>
-        ))
-      )}
-    </div>
-  );
+    <Routes>
+      <Route path="/" element={<Navigate to="/explorar" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/explorar" element={<Explorar />} />
+      <Route path="/restaurantes/:id" element={<Restaurante />} />
+      <Route path="/restaurantes/:id/avaliar" element={<NovaAvaliacao />} />
+      <Route path="*" element={<Navigate to="/explorar" replace />} />
+    </Routes>
+  )
 }
-
-export default App;

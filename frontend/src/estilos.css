@@ -1,0 +1,243 @@
+/*Visual do FourBites*/
+
+:root {
+  --fb-fundo: #fffaef;
+  --fb-superficie: #ffffff;
+  --fb-suave: #fef5e1;
+  --fb-linha: #eedfcb;
+  --fb-tinta: #2a0d06;
+  --fb-texto: #4a2e22;
+  --fb-apagado: #6e5a4e;
+  --fb-destaque: #b00a1d;
+  --fb-destaque-escuro: #8c0817;
+  --fb-destaque-suave: #fde8d6;
+  --fb-marca: #962a1e;
+  --fb-estrela: #e8912d;
+  --fb-verde: #2e6b45;
+  --fb-verde-suave: #e3f1e6;
+}
+
+body {
+  background: var(--fb-fundo);
+  color: var(--fb-texto);
+  font-family: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+}
+
+h1, h2, h3 { color: var(--fb-tinta); font-weight: 800; letter-spacing: -0.3px; }
+h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); }
+h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
+
+.fb-subtitulo { color: var(--fb-apagado); }
+.fb-contagem { color: var(--fb-apagado); font-weight: 500; }
+.fb-vazio { color: var(--fb-apagado); text-align: center; padding: 2.5rem 1rem; }
+
+/* Barra do topo*/
+.fb-barra {
+  background: var(--fb-fundo);
+  border-bottom: 1px solid var(--fb-linha);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.fb-marca {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  color: var(--fb-marca); font-weight: 800; font-size: 1.15rem; text-decoration: none;
+}
+.fb-marca:hover { color: var(--fb-marca); }
+.fb-marca-grande { font-size: 1.5rem; }
+.fb-logo {
+  width: 2.25rem; height: 2.25rem; border-radius: 999px; flex-shrink: 0;
+  background: var(--fb-marca); color: #ffd9a8;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.fb-logo-grande { width: 3.5rem; height: 3.5rem; font-size: 1.5rem; }
+.fb-nav-link {
+  color: var(--fb-tinta); font-weight: 600; text-decoration: none;
+  padding: 0.45rem 1rem; border-radius: 999px;
+}
+.fb-nav-link:hover { background: var(--fb-suave); color: var(--fb-tinta); }
+.fb-nav-link.active { background: var(--fb-destaque); color: #fff; }
+.fb-nav-usuario { color: var(--fb-tinta); font-weight: 600; padding: 0 0.5rem; }
+
+/*Botões*/
+.fb-botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border-radius: 999px; padding: 0.7rem 1.5rem; font-weight: 700; text-decoration: none;
+  border: 1.5px solid transparent; cursor: pointer; transition: background 0.15s, box-shadow 0.15s;
+}
+.fb-botao-pequeno { padding: 0.45rem 1.1rem; }
+.fb-botao-principal {
+  background: var(--fb-destaque); color: #fff; box-shadow: 0 6px 16px rgba(176, 10, 29, 0.25);
+}
+.fb-botao-principal:hover { background: var(--fb-destaque-escuro); color: #fff; }
+.fb-botao-principal:disabled { background: #d9a3a9; box-shadow: none; cursor: not-allowed; }
+.fb-botao-claro { background: var(--fb-superficie); color: var(--fb-tinta); border-color: var(--fb-linha); }
+.fb-botao-claro:hover { border-color: var(--fb-destaque); color: var(--fb-destaque); }
+.fb-botao-suave { background: var(--fb-suave); color: var(--fb-tinta); }
+.fb-botao-suave:hover { background: var(--fb-destaque-suave); color: var(--fb-tinta); }
+.fb-botao-texto { background: none; border: 0; padding: 0; cursor: pointer; }
+.fb-botao:focus-visible, .fb-chip:focus-visible, .fb-nav-link:focus-visible,
+.fb-cartao-restaurante:focus-visible, .fb-cartao-opcao:focus-visible {
+  outline: 3px solid rgba(176, 10, 29, 0.35); outline-offset: 2px;
+}
+
+.fb-link { color: var(--fb-destaque); font-weight: 700; text-decoration: none; }
+.fb-link:hover { color: var(--fb-destaque-escuro); text-decoration: underline; }
+.fb-link-discreto { color: var(--fb-texto); font-weight: 600; text-decoration: none; }
+.fb-link-discreto:hover { color: var(--fb-destaque); }
+
+/*Cartões*/
+.fb-cartao {
+  background: var(--fb-superficie); border: 1px solid var(--fb-linha); border-radius: 22px;
+}
+.fb-cartao-restaurante {
+  display: flex; flex-direction: column; height: 100%; overflow: hidden;
+  color: inherit; text-decoration: none; transition: box-shadow 0.15s, transform 0.15s;
+}
+.fb-cartao-restaurante:hover { box-shadow: 0 10px 24px rgba(42, 13, 6, 0.1); transform: translateY(-2px); color: inherit; }
+.fb-cartao-foto { position: relative; height: 170px; background: var(--fb-suave); }
+.fb-cartao-foto img { width: 100%; height: 100%; object-fit: cover; }
+.fb-sem-foto {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #fde8d6, #fcd8ac); color: var(--fb-marca); font-size: 2rem;
+}
+.fb-selo-distancia {
+  position: absolute; left: 0.75rem; bottom: 0.75rem; background: rgba(42, 13, 6, 0.78); color: #fff;
+  font-size: 0.8rem; font-weight: 700; border-radius: 999px; padding: 0.2rem 0.7rem;
+}
+.fb-cartao-corpo { padding: 1rem 1.1rem 1.1rem; }
+.fb-cartao-titulo { font-size: 1.1rem; margin: 0; }
+.fb-cartao-meta { color: var(--fb-apagado); font-size: 0.9rem; margin: 0.15rem 0 0; }
+.fb-nota { color: var(--fb-destaque); font-weight: 800; white-space: nowrap; }
+.fb-nota .bi, .fb-nota-grande .bi { color: var(--fb-estrela); }
+.fb-nota-grande { color: var(--fb-destaque); font-weight: 800; font-size: 2rem; line-height: 1.1; }
+
+.fb-etiqueta {
+  display: inline-block; background: var(--fb-destaque-suave); color: var(--fb-destaque);
+  font-size: 0.8rem; font-weight: 700; border-radius: 999px; padding: 0.2rem 0.75rem;
+}
+.fb-etiqueta-verde { background: var(--fb-verde-suave); color: var(--fb-verde); }
+.fb-etiqueta-cinza { background: #efe9e2; color: var(--fb-apagado); }
+
+/*Formulários*/
+.fb-rotulo { display: block; font-weight: 700; color: var(--fb-tinta); font-size: 0.9rem; margin-bottom: 0.3rem; }
+.fb-campo {
+  display: flex; align-items: center; gap: 0.6rem; background: var(--fb-superficie);
+  border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.7rem 1.1rem; color: var(--fb-apagado);
+}
+.fb-campo:focus-within { border-color: var(--fb-destaque); box-shadow: 0 0 0 3px rgba(176, 10, 29, 0.12); }
+.fb-campo input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--fb-tinta); font: inherit;
+}
+.fb-campo-erro { border-color: var(--fb-destaque); }
+.fb-campo-acao { background: none; border: 0; color: var(--fb-apagado); padding: 0; cursor: pointer; }
+.fb-campo-busca { box-shadow: 0 4px 14px rgba(42, 13, 6, 0.06); }
+.fb-erro-campo { color: var(--fb-destaque); font-size: 0.85rem; font-weight: 600; margin: 0.3rem 0 0 1rem; }
+.fb-ajuda { color: var(--fb-apagado); font-size: 0.85rem; margin: 0.3rem 0 0 1rem; }
+.fb-area-texto {
+  width: 100%; border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.9rem 1.1rem;
+  color: var(--fb-tinta); font: inherit; resize: vertical;
+}
+.fb-area-texto:focus { outline: 0; border-color: var(--fb-destaque); box-shadow: 0 0 0 3px rgba(176, 10, 29, 0.12); }
+
+.fb-aviso { border-radius: 14px; padding: 0.75rem 1rem; font-weight: 600; margin: 1rem 0; }
+.fb-aviso-erro { background: #fbe0e2; color: #8a0014; }
+.fb-aviso-info { background: var(--fb-suave); color: var(--fb-texto); border: 1px solid var(--fb-linha); }
+
+/*Filtros da busca */
+.fb-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 1rem; }
+.fb-seletor, .fb-chip {
+  background: var(--fb-superficie); border: 1.5px solid var(--fb-linha); border-radius: 999px;
+  padding: 0.45rem 1rem; color: var(--fb-tinta); font-weight: 600; font-size: 0.9rem; cursor: pointer;
+}
+.fb-seletor:focus { outline: 0; border-color: var(--fb-destaque); }
+.fb-chip:hover { border-color: var(--fb-destaque); }
+.fb-chip.ativo { background: var(--fb-destaque); border-color: var(--fb-destaque); color: #fff; }
+
+/*Telas de acesso*/
+.fb-acesso { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+.fb-acesso-vitrine {
+  display: none; padding: 3rem; background: linear-gradient(160deg, #fcd8ac 0%, #fde8d6 45%, #fffaef 100%);
+}
+.fb-acesso-vitrine h2 { font-size: 2.4rem; line-height: 1.1; margin: 2.5rem 0 2rem; max-width: 12em; }
+.fb-vantagens { list-style: none; padding: 0; display: grid; gap: 1rem; color: var(--fb-tinta); }
+.fb-vantagens li { display: flex; gap: 0.75rem; align-items: flex-start; }
+.fb-vantagens .bi {
+  flex-shrink: 0; width: 1.9rem; height: 1.9rem; border-radius: 999px; background: #fff; color: var(--fb-destaque);
+  display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem;
+}
+.fb-acesso-formulario { display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.fb-acesso-caixa { width: 100%; max-width: 30rem; }
+@media (min-width: 992px) {
+  .fb-acesso { grid-template-columns: 0.8fr 1fr; }
+  .fb-acesso-vitrine { display: block; }
+}
+.fb-divisor {
+  display: flex; align-items: center; gap: 1rem; color: var(--fb-apagado); font-size: 0.9rem; margin: 1.75rem 0 1.25rem;
+}
+.fb-divisor::before, .fb-divisor::after { content: ''; flex: 1; height: 1px; background: var(--fb-linha); }
+.fb-cartao-opcao { display: flex; gap: 1rem; padding: 1.1rem; color: inherit; text-decoration: none; }
+.fb-cartao-opcao:hover { border-color: var(--fb-destaque); color: inherit; }
+.fb-cartao-opcao strong { display: block; color: var(--fb-tinta); }
+.fb-cartao-opcao small { display: block; color: var(--fb-apagado); margin: 0.2rem 0 0.5rem; }
+.fb-icone-suave {
+  flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 14px; background: var(--fb-destaque-suave);
+  color: var(--fb-destaque); display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.fb-pagina-estreita { max-width: 34rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+.fb-pagina-media { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+
+/*Perfil do restaurante*/
+.fb-galeria { display: grid; gap: 0.75rem; height: 320px; }
+.fb-galeria img { width: 100%; height: 100%; object-fit: cover; border-radius: 22px; min-height: 0; }
+.fb-galeria-1 { grid-template-columns: 1fr; }
+.fb-galeria-2 { grid-template-columns: 2fr 1fr; }
+.fb-galeria-3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+.fb-galeria-3 img:first-child { grid-row: span 2; }
+.fb-galeria-vazia {
+  height: 180px; border-radius: 22px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #fde8d6, #fcd8ac); color: var(--fb-marca); font-size: 3rem;
+}
+.fb-barra-nota { height: 8px; border-radius: 999px; background: var(--fb-destaque-suave); margin-top: 0.35rem; overflow: hidden; }
+.fb-barra-nota span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--fb-destaque), var(--fb-estrela)); }
+.fb-avatar {
+  flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 999px; background: var(--fb-destaque-suave);
+  color: var(--fb-marca); font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
+}
+.fb-nota-avaliacao { color: var(--fb-destaque); font-weight: 800; font-size: 1.3rem; }
+.fb-estrelas { color: var(--fb-estrela); font-size: 0.85rem; letter-spacing: 1px; }
+.fb-foto-avaliacao { width: 6.5rem; height: 4.5rem; object-fit: cover; border-radius: 12px; }
+.fb-lista-info { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
+.fb-lista-info li { display: flex; gap: 0.75rem; }
+.fb-lista-info .bi { color: var(--fb-destaque); margin-top: 0.15rem; }
+.fb-horarios { width: 100%; font-size: 0.95rem; }
+.fb-horarios th { font-weight: 500; color: var(--fb-apagado); padding: 0.2rem 1rem 0.2rem 0; white-space: nowrap; vertical-align: top; }
+.fb-horarios td { color: var(--fb-tinta); font-weight: 600; padding: 0.2rem 0; }
+
+/* Nova avaliação */
+.fb-restaurante-escolhido {
+  display: flex; align-items: center; gap: 1rem; background: var(--fb-suave); border-radius: 18px; padding: 0.75rem;
+}
+.fb-restaurante-escolhido img, .fb-restaurante-escolhido .fb-sem-foto {
+  width: 4rem; height: 4rem; border-radius: 14px; object-fit: cover; flex-shrink: 0; font-size: 1.3rem;
+}
+.fb-linha-nota {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0.7rem 0; border-bottom: 1px solid var(--fb-linha);
+}
+.fb-linha-nota:last-child { border-bottom: 0; }
+.fb-linha-nota-nome { flex: 1 1 9rem; font-weight: 600; color: var(--fb-tinta); }
+.fb-linha-nota-nome .bi { color: var(--fb-estrela); margin-right: 0.35rem; }
+.fb-linha-nota-valor { width: 1.5rem; text-align: right; color: var(--fb-tinta); }
+.fb-estrelas-campo { display: inline-flex; gap: 0.15rem; font-size: 1.6rem; letter-spacing: 0; }
+.fb-estrelas-campo button { background: none; border: 0; padding: 0 0.1rem; color: var(--fb-estrela); cursor: pointer; line-height: 1; }
+.fb-estrelas-campo button:hover { transform: scale(1.15); }
+.fb-estrelas-campo button:focus-visible { outline: 3px solid rgba(176, 10, 29, 0.35); border-radius: 6px; }
+.fb-nota-geral {
+  height: 100%; background: var(--fb-suave); border-radius: 18px; padding: 1.25rem 1rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--fb-texto);
+}
+.fb-nota-geral-rotulo { color: var(--fb-destaque); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
+.fb-nota-geral-valor { color: var(--fb-destaque); font-weight: 800; font-size: 2.75rem; line-height: 1.1; }
+.fb-nota-geral small { color: var(--fb-apagado); font-size: 0.78rem; margin-top: 0.4rem; }
