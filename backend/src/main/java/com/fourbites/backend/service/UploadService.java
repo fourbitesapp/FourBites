@@ -100,6 +100,15 @@ public class UploadService {
         }
     }
 
+    // Usado na foto de perfil
+    public String enviarImagem(MultipartFile arquivo) {
+        if (arquivo != null && !arquivo.isEmpty()
+                && TipoArquivo.detectar(lerBytes(arquivo)).orElse(null) == TipoArquivo.PDF) {
+            throw new CampoInvalidoException("arquivo", "Envie uma imagem JPG ou PNG.");
+        }
+        return enviar(arquivo);
+    }
+
     public void conferirEnderecos(String campo, List<String> enderecos) {
         if (enderecos == null) {
             return;
@@ -145,3 +154,4 @@ public class UploadService {
         }
     }
 }
+

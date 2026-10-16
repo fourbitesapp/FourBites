@@ -1,10 +1,12 @@
 package com.fourbites.backend.service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,25 +23,31 @@ import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.exception.SemPermissaoException;
 import com.fourbites.backend.repository.AvaliacaoRepository;
 import com.fourbites.backend.repository.RestauranteRepository;
+import com.fourbites.backend.repository.SeguidorRepository;
 import com.fourbites.backend.repository.UsuarioRepository;
 import com.fourbites.backend.util.Notas;
 
 @Service
 public class AvaliacaoService {
 
+    private static final int TAMANHO_FEED = 50;
+
     private final AvaliacaoRepository avaliacaoRepository;
     private final RestauranteRepository restauranteRepository;
     private final UsuarioRepository usuarioRepository;
     private final UploadService uploadService;
+    private final SeguidorRepository seguidorRepository;
 
     public AvaliacaoService(AvaliacaoRepository avaliacaoRepository,
                             RestauranteRepository restauranteRepository,
                             UsuarioRepository usuarioRepository,
-                            UploadService uploadService) {
+                            UploadService uploadService,
+                            SeguidorRepository seguidorRepository) {
         this.avaliacaoRepository = avaliacaoRepository;
         this.restauranteRepository = restauranteRepository;
         this.usuarioRepository = usuarioRepository;
         this.uploadService = uploadService;
+        this.seguidorRepository = seguidorRepository;
     }
 
     // Publica uma avaliação. Cada usuário só pode avaliar cada restaurante uma vez.
@@ -103,6 +111,31 @@ public class AvaliacaoService {
                 .toList();
     }
 
+    // Feed da Home: até 50 avaliações, as mais recentes primeiro.
+    @Transactional(readOnly = true)
+    public List<AvaliacaoResponse> listarFeed(Integer usuarioId) {
+        List<Avaliacao> feed = new ArrayList<>();
+        List<Integer> excluidos = new ArrayList<>(List.of(-1));
+
+        if (usuarioId != null) {
+            List<Integer> seguidos = seguidorRepository.idsSeguidos(usuarioId);
+            if (!seguidos.isEmpty()) {
+                feed.addAll(avaliacaoRepository.feedDosAutores(seguidos, StatusAnalise.APROVADO,
+                        PageRequest.of(0, TAMANHO_FEED)));
+            }
+            excluidos.addAll(seguidos);
+            excluidos.add(usuarioId);
+        }
+
+        int faltam = TAMANHO_FEED - feed.size();
+        if (faltam > 0) {
+            feed.addAll(avaliacaoRepository.feedExceto(excluidos, StatusAnalise.APROVADO,
+                    PageRequest.of(0, faltam)));
+        }
+
+        return feed.stream().map(AvaliacaoResponse::de).toList();
+    }
+
     //Notas dos restaurantes (usadas na busca e no perfil)
 
     @Transactional(readOnly = true)
@@ -130,9 +163,7 @@ public class AvaliacaoService {
 
     //Regras internas
 
-    // Copia as notas, o comentário e as fotos, e calcula a nota geral.
     private void preencher(Avaliacao avaliacao, AvaliacaoRequest dados) {
-        // As fotos precisam ter sido enviadas antes pelo POST /uploads.
         uploadService.conferirEnderecos("fotos", dados.fotos());
 
         avaliacao.setNotaComida(dados.notaComida());
@@ -155,7 +186,6 @@ public class AvaliacaoService {
         }
     }
 
-    // Só restaurantes aprovados e ativos podem ser avaliados e ter as avaliações listadas.
     private Restaurante buscarRestaurantePublicado(Integer restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Restaurante não encontrado."));

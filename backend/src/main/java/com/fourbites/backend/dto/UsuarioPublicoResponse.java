@@ -9,16 +9,25 @@ public record UsuarioPublicoResponse(
         String username,
         String fotoPerfil,
         String bio,
-        OffsetDateTime dataCadastro
+        OffsetDateTime dataCadastro,
+        long totalAvaliacoes,
+        long seguidores,
+        long seguindo,
+        boolean seguidoPorMim
 ) {
 
-    public static UsuarioPublicoResponse de(Usuario usuario) {
+    public static UsuarioPublicoResponse de(Usuario usuario, long totalAvaliacoes, long seguidores,
+                                            long seguindo, boolean seguidoPorMim) {
         return new UsuarioPublicoResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getUsername(),
                 usuario.getFotoPerfil(),
                 usuario.getBio(),
-                usuario.getDataCadastro());
+                usuario.getDataCadastro(),
+                totalAvaliacoes,
+                seguidores,
+                seguindo,
+                seguidoPorMim);
     }
 }

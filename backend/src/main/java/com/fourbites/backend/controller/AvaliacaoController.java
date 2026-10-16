@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,14 @@ public class AvaliacaoController {
     @GetMapping("/restaurantes/{restauranteId}/avaliacoes")
     public List<AvaliacaoResponse> listarDoRestaurante(@PathVariable Integer restauranteId) {
         return avaliacaoService.listarDoRestaurante(restauranteId);
+    }
+    
+    @GetMapping("/feed")
+    public List<AvaliacaoResponse> feed(Authentication autenticacao) {
+        Integer usuarioLogadoId = autenticacao != null && autenticacao.getPrincipal() instanceof Integer id
+                ? id
+                : null;
+        return avaliacaoService.listarFeed(usuarioLogadoId);
     }
 
     @GetMapping("/usuarios/{username}/avaliacoes")

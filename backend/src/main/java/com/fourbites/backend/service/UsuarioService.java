@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fourbites.backend.dto.AtualizarUsuarioRequest;
 import com.fourbites.backend.dto.CadastroResponsavelRequest;
@@ -16,6 +17,8 @@ import com.fourbites.backend.entity.Usuario;
 import com.fourbites.backend.exception.ConflitoException;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.exception.RegraNegocioException;
+import com.fourbites.backend.repository.AvaliacaoRepository;
+import com.fourbites.backend.repository.SeguidorRepository;
 import com.fourbites.backend.repository.UsuarioRepository;
 
 @Service
@@ -23,10 +26,18 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final SeguidorRepository seguidorRepository;
+    private final UploadService uploadService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+                          AvaliacaoRepository avaliacaoRepository, SeguidorRepository seguidorRepository,
+                          UploadService uploadService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.seguidorRepository = seguidorRepository;
+        this.uploadService = uploadService;
     }
 
     //Cadastrar usuário comum (papel USUARIO)
@@ -74,12 +85,29 @@ public class UsuarioService {
         return UsuarioResponse.de(salvo);
     }
 
-    //Perfil público (sem dados privados)
     @Transactional(readOnly = true)
-    public UsuarioPublicoResponse buscarPerfilPublico(String username) {
+    public UsuarioPublicoResponse buscarPerfilPublico(String username, Integer usuarioLogadoId) {
         Usuario usuario = usuarioRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
-        return UsuarioPublicoResponse.de(usuario);
+        Integer id = usuario.getId();
+
+        boolean seguidoPorMim = usuarioLogadoId != null
+                && seguidorRepository.existsBySeguidorIdAndSeguidoId(usuarioLogadoId, id);
+
+        return UsuarioPublicoResponse.de(usuario,
+                avaliacaoRepository.countByUsuarioId(id),
+                seguidorRepository.countBySeguidoId(id),
+                seguidorRepository.countBySeguidorId(id),
+                seguidoPorMim);
+    }
+
+    //Foto de perfil: envia a imagem ao Cloudinary e guarda o endereço.
+    @Transactional
+    public UsuarioResponse atualizarFoto(Integer id, MultipartFile arquivo) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
+        usuario.setFotoPerfil(uploadService.enviarImagem(arquivo));
+        return UsuarioResponse.de(usuario);
     }
 
     //Dados da própria conta (usuário logado)

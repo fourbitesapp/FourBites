@@ -1,12 +1,17 @@
 package com.fourbites.backend.controller;
 
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fourbites.backend.dto.AtualizarUsuarioRequest;
 import com.fourbites.backend.dto.UsuarioPublicoResponse;
@@ -25,14 +30,25 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/{username}") 
-    public UsuarioPublicoResponse buscarPerfilPublico(@PathVariable String username) {
-        return usuarioService.buscarPerfilPublico(username);
+    // Público
+    @GetMapping("/{username}")
+    public UsuarioPublicoResponse buscarPerfilPublico(@PathVariable String username, Authentication autenticacao) {
+        Integer usuarioLogadoId = autenticacao != null && autenticacao.getPrincipal() instanceof Integer id
+                ? id
+                : null;
+        return usuarioService.buscarPerfilPublico(username, usuarioLogadoId);
     }
     
     @GetMapping("/me")
     public UsuarioResponse buscarMeusDados(@AuthenticationPrincipal Integer usuarioId) {
         return usuarioService.buscarPorId(usuarioId);
+    }
+
+    // Foto de perfil
+    @PostMapping(value = "/me/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UsuarioResponse atualizarFoto(@AuthenticationPrincipal Integer usuarioId,
+                                         @RequestParam("arquivo") MultipartFile arquivo) {
+        return usuarioService.atualizarFoto(usuarioId, arquivo);
     }
 
     @PutMapping("/me")
@@ -41,3 +57,4 @@ public class UsuarioController {
         return usuarioService.atualizar(usuarioId, dados);
     }
 }
+

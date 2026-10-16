@@ -1,0 +1,138 @@
+### =============================================================
+### Testes da semana 4 - perfil, foto, favoritos, seguir e feed
+### Precisa de DUAS contas USUARIO (A e B) e de 3 restaurantes aprovados.
+### Faça login com cada uma e cole os tokens abaixo.
+
+@api = http://localhost:8080
+@tokenA = COLE_O_TOKEN_DA_CONTA_A
+@tokenB = COLE_O_TOKEN_DA_CONTA_B
+@usernameA = USERNAME_DA_CONTA_A
+@usernameB = USERNAME_DA_CONTA_B
+
+### Login (rode uma vez com cada conta e copie o "token")
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "EMAIL",
+  "senha": "SENHA"
+}
+
+### ---------------- PERFIL E FOTO ----------------
+
+### 1) Perfil público sem login -> 200, com totalAvaliacoes, seguidores, seguindo e seguidoPorMim = false
+GET {{api}}/usuarios/{{usernameB}}
+
+### 2) Foto de perfil da conta A -> 200, "fotoPerfil" com url do Cloudinary
+POST {{api}}/usuarios/me/foto
+Authorization: Bearer {{tokenA}}
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< ./foto.jpg
+--fronteira--
+
+### 3) Foto de perfil em PDF -> 400, "arquivo": "Envie uma imagem JPG ou PNG."
+POST {{api}}/usuarios/me/foto
+Authorization: Bearer {{tokenA}}
+Content-Type: multipart/form-data; boundary=fronteira
+
+--fronteira
+Content-Disposition: form-data; name="arquivo"; filename="cardapio.pdf"
+Content-Type: application/pdf
+
+< ./cardapio.pdf
+--fronteira--
+
+### ---------------- SEGUIR ----------------
+
+### 4) A segue B -> 204
+POST {{api}}/usuarios/{{usernameB}}/seguir
+Authorization: Bearer {{tokenA}}
+
+### 5) Perfil de B visto por A -> seguidores = 1 e seguidoPorMim = true
+GET {{api}}/usuarios/{{usernameB}}
+Authorization: Bearer {{tokenA}}
+
+### 6) A segue a si mesma -> 400 "Você não pode seguir a si mesmo."
+POST {{api}}/usuarios/{{usernameA}}/seguir
+Authorization: Bearer {{tokenA}}
+
+### 7) Seguir sem login -> 401
+POST {{api}}/usuarios/{{usernameB}}/seguir
+
+### ---------------- FEED ----------------
+
+### 8) Feed de A -> as avaliações de B aparecem primeiro; nenhuma avaliação da própria A
+GET {{api}}/feed
+Authorization: Bearer {{tokenA}}
+
+### 9) Feed sem login -> as 50 avaliações mais recentes
+GET {{api}}/feed
+
+### 10) A deixa de seguir B -> 204 (rode o teste 5 de novo: seguidores volta a 0)
+DELETE {{api}}/usuarios/{{usernameB}}/seguir
+Authorization: Bearer {{tokenA}}
+
+### ---------------- FAVORITOS ----------------
+### Troque 1, 2 e 3 por ids de restaurantes aprovados (GET /restaurantes)
+
+### 11) Restaurante 1 na posição 1 -> lista com 1 item
+PUT {{api}}/usuarios/me/favoritos/1
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "restauranteId": 1 }
+
+### 12) Restaurante 2 na posição 2 -> lista com 2 itens
+PUT {{api}}/usuarios/me/favoritos/2
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "restauranteId": 2 }
+
+### 13) Restaurante 1 na posição 2 -> os dois trocam: posição 1 = restaurante 2, posição 2 = restaurante 1
+PUT {{api}}/usuarios/me/favoritos/2
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "restauranteId": 1 }
+
+### 14) Restaurante 3 na posição 1 -> substitui o restaurante 2 (que sai da lista)
+PUT {{api}}/usuarios/me/favoritos/1
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "restauranteId": 3 }
+
+### 15) Posição 5 -> 400 "A posição deve ser de 1 a 4."
+PUT {{api}}/usuarios/me/favoritos/5
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "restauranteId": 1 }
+
+### 16) Remover a posição 2 -> lista sem ela
+DELETE {{api}}/usuarios/me/favoritos/2
+Authorization: Bearer {{tokenA}}
+
+### 17) Favoritos de A vistos sem login -> mesma lista do teste 16
+GET {{api}}/usuarios/{{usernameA}}/favoritos
+
+### 18) Meus favoritos -> mesma lista
+GET {{api}}/usuarios/me/favoritos
+Authorization: Bearer {{tokenA}}
+
+
+### Login do admin
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "EMAIL",
+  "senha": "SENHA"
+}
+

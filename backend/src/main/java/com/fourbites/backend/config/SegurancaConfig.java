@@ -36,7 +36,9 @@ public class SegurancaConfig {
             .cors(cors -> cors.configurationSource(configuracaoCors()))
             .authorizeHttpRequests(regras -> regras
                 .requestMatchers("/auth/**").permitAll()                  
-                .requestMatchers("/usuarios/me/preferencias").hasRole("USUARIO") 
+                .requestMatchers("/usuarios/me/preferencias").hasRole("USUARIO")
+                .requestMatchers("/usuarios/me/favoritos/**").hasRole("USUARIO")
+                .requestMatchers("/usuarios/*/seguir").hasRole("USUARIO")
                 .requestMatchers("/usuarios/me/**").authenticated()     
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/meus-restaurantes/**").hasRole("RESTAURANTE")
