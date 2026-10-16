@@ -66,6 +66,17 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer> {
                                     @Param("minimo") long minimo,
                                     Pageable limite);
 
+    // Recomendações: categorias dos restaurantes que o usuário avaliou bem (nota geral 4 ou mais).
+    @Query("""
+            select distinct a.restaurante.categoria.id from Avaliacao a
+            where a.usuario.id = :usuarioId and a.notaGeral >= 4 and a.restaurante.categoria is not null
+            """)
+    List<Integer> categoriasBemAvaliadas(@Param("usuarioId") Integer usuarioId);
+
+    // Restaurantes que o usuário já avaliou (ficam de fora da lista).
+    @Query("select a.restaurante.id from Avaliacao a where a.usuario.id = :usuarioId")
+    List<Integer> restaurantesAvaliados(@Param("usuarioId") Integer usuarioId);
+
     // Médias calculadas pelo banco
     @Query("""
             select a.restaurante.id, avg(a.notaGeral), count(a),

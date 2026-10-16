@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Aviso from '../components/Aviso.jsx'
 import Campo from '../components/Campo.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
+import * as api from '../services/apiReal.js'
 
 export default function Login() {
   const { entrar } = useAuth()
@@ -16,13 +17,32 @@ export default function Login() {
   const [erro, setErro] = useState(null)
   const [enviando, setEnviando] = useState(false)
 
+  async function temPreferencias() {
+    try {
+      await api.buscarPreferencias()
+      return true
+    } catch (falha) {
+      if (falha.status === 404) {
+        return false
+      }
+      return true
+    }
+  }
+
   async function aoEnviar(evento) {
     evento.preventDefault()
     setErro(null)
     setEnviando(true)
     try {
-      await entrar(email, senha)
-      navegar(local.state?.voltarPara || '/explorar', { replace: true })
+      const usuario = await entrar(email, senha)
+      const destino = local.state?.voltarPara || '/explorar'
+
+      // Primeiro acesso: conta USUARIO que ainda não tem preferências vai para a tela de preferências.
+      if (usuario.papel === 'USUARIO' && !(await temPreferencias())) {
+        navegar('/preferencias', { replace: true, state: { voltarPara: destino } })
+      } else {
+        navegar(destino, { replace: true })
+      }
     } catch (falha) {
       setErro(falha)
     } finally {

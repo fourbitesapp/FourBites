@@ -248,3 +248,33 @@ h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
 .fb-nota-geral-rotulo { color: var(--fb-destaque); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
 .fb-nota-geral-valor { color: var(--fb-destaque); font-weight: 800; font-size: 2.75rem; line-height: 1.1; }
 .fb-nota-geral small { color: var(--fb-apagado); font-size: 0.78rem; margin-top: 0.4rem; }
+
+/* Preferências (primeiro acesso) */
+.fb-selo-secao {
+  display: inline-block; background: var(--fb-superficie); color: var(--fb-destaque); border-radius: 999px;
+  padding: 0.3rem 0.9rem; font-weight: 800; font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase;
+}
+.fb-pergunta { font-size: 1.05rem; margin: 0; }
+.fb-opcao {
+  background: var(--fb-superficie); border: 1.5px solid var(--fb-linha); border-radius: 999px;
+  padding: 0.6rem 1.2rem; color: var(--fb-tinta); font-weight: 600; cursor: pointer;
+}
+.fb-opcao:hover { border-color: var(--fb-destaque); }
+.fb-opcao.ativo { background: var(--fb-destaque-suave); border-color: var(--fb-destaque); color: var(--fb-destaque); }
+.fb-segmentado {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem; padding: 0.3rem;
+  border: 1.5px solid var(--fb-linha); border-radius: 999px;
+}
+.fb-segmentado button {
+  background: none; border: 0; border-radius: 999px; padding: 0.6rem 0.25rem;
+  color: var(--fb-tinta); font-weight: 600; cursor: pointer;
+}
+.fb-segmentado button.ativo { background: var(--fb-destaque); color: #fff; }
+.fb-interruptor {
+  display: flex; align-items: center; gap: 0.9rem; height: 100%; padding: 0.9rem 1rem; cursor: pointer;
+  border: 1.5px solid var(--fb-linha); border-radius: 18px; color: var(--fb-tinta);
+}
+.fb-interruptor.ativo { border-color: var(--fb-destaque); }
+.fb-interruptor .form-check-input { width: 2.6em; height: 1.4em; cursor: pointer; }
+.fb-interruptor .form-check-input:checked { background-color: var(--fb-destaque); border-color: var(--fb-destaque); }
+.fb-opcao:focus-visible, .fb-segmentado button:focus-visible { outline: 3px solid rgba(176, 10, 29, 0.35); outline-offset: 2px; }

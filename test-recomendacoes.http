@@ -1,0 +1,65 @@
+### =============================================================
+### Testes das recomendações, da compatibilidade e do /health
+### Precisa de uma conta USUARIO com preferências salvas (PUT /usuarios/me/preferencias)
+### e de alguns restaurantes aprovados de categorias diferentes.
+
+@api = http://localhost:8080
+@tokenUsuario = COLE_O_TOKEN_DE_UM_USUARIO
+@tokenAdmin = COLE_O_TOKEN_DO_ADMIN
+
+### Login
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "EMAIL",
+  "senha": "SENHA"
+}
+
+### ---------------- HEALTH ----------------
+
+### 1) Health sem login -> 200 { "status": "ok" }
+GET {{api}}/health
+
+### ---------------- PREFERÊNCIAS ----------------
+
+### 2) Ver categorias (para escolher ids no teste 3)
+GET {{api}}/categorias
+
+### 3) Salvar preferências do usuário (troque os ids de categoria) -> 200
+PUT {{api}}/usuarios/me/preferencias
+Authorization: Bearer {{tokenUsuario}}
+Content-Type: application/json
+
+{ "categoriaIds": [3], "faixaPreco": "$$", "precisaAcessibilidade": true, "levaPets": false }
+
+### ---------------- RECOMENDAÇÕES ----------------
+
+### 4) Recomendações -> 200, até 10 itens { restaurante, compatibilidade }, da maior compatibilidade
+###    para a menor. Restaurantes que este usuário já avaliou NÃO aparecem.
+GET {{api}}/recomendacoes
+Authorization: Bearer {{tokenUsuario}}
+
+### 5) Sem login -> 401
+GET {{api}}/recomendacoes
+
+### 6) Admin -> 403 (recomendação é só para conta USUARIO)
+GET {{api}}/recomendacoes
+Authorization: Bearer {{tokenAdmin}}
+
+### ---------------- COMPATIBILIDADE NO PERFIL DO RESTAURANTE ----------------
+### Troque 1 pelo id de um restaurante aprovado
+
+### 7) Usuário logado -> "compatibilidade" com número de 0 a 100 e "favoritoPosicao" (ou null)
+GET {{api}}/restaurantes/1
+Authorization: Bearer {{tokenUsuario}}
+
+### 8) Visitante -> "compatibilidade": null e "favoritoPosicao": null
+GET {{api}}/restaurantes/1
+
+### 9) Admin -> "compatibilidade": null
+GET {{api}}/restaurantes/1
+Authorization: Bearer {{tokenAdmin}}
+
+### 10) Mude a preferência de categoria para outra (teste 3 com outro id) e rode o 4 de novo:
+###     a ordem da lista deve mudar, com os restaurantes da nova categoria subindo.

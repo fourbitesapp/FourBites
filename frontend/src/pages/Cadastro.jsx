@@ -28,8 +28,8 @@ export default function Cadastro() {
     setEnviando(true)
     try {
       await api.cadastrar({ ...dados, dataNascimento: dados.dataNascimento || null })
-      await entrar(dados.email, dados.senha) 
-      navegar('/explorar', { replace: true })
+      await entrar(dados.email, dados.senha)
+      navegar('/preferencias', { replace: true }) // conta nova ainda não tem preferências
     } catch (falha) {
       setErro(falha)
     } finally {

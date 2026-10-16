@@ -45,6 +45,12 @@ public record RestauranteDetalheResponse(
 ) {
 
     public static RestauranteDetalheResponse de(Restaurante r, ResumoNotas notas, Integer minhaAvaliacaoId) {
+        return de(r, notas, minhaAvaliacaoId, null, null);
+    }
+
+    // compatibilidade e favoritoPosicao só vêm preenchidos para um usuário comum logado.
+    public static RestauranteDetalheResponse de(Restaurante r, ResumoNotas notas, Integer minhaAvaliacaoId,
+                                                Integer compatibilidade, Integer favoritoPosicao) {
         Categoria categoria = r.getCategoria();
         List<String> fotos = r.getFotos().stream().map(foto -> foto.getUrl()).toList();
 
@@ -84,8 +90,8 @@ public record RestauranteDetalheResponse(
                 r.getCardapioLink(),
                 notas.medias(),
                 r.getResponsavel() == null ? null : r.getResponsavel().getId(),
-                null, 
-                null,
+                compatibilidade,
+                favoritoPosicao,
                 minhaAvaliacaoId);
     }
 }

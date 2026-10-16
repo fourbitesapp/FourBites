@@ -88,6 +88,10 @@ export const listarCategorias = () => chamar('GET', '/categorias')
 export const buscarRestaurantes = (filtros) => chamar('GET', '/restaurantes' + montarConsulta(filtros))
 export const buscarRestaurante = (id) => chamar('GET', `/restaurantes/${id}`)
 
+//Preferências (só contas USUARIO). 
+export const buscarPreferencias = () => chamar('GET', '/usuarios/me/preferencias')
+export const salvarPreferencias = (dados) => chamar('PUT', '/usuarios/me/preferencias', dados)
+
 //Avaliações
 
 export const listarAvaliacoesDoRestaurante = (id) => chamar('GET', `/restaurantes/${id}/avaliacoes`)

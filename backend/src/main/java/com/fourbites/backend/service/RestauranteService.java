@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import com.fourbites.backend.dto.RestauranteGestaoResponse;
 import com.fourbites.backend.dto.RestauranteResumoResponse;
 import com.fourbites.backend.dto.ResumoNotas;
 import com.fourbites.backend.entity.Categoria;
+import com.fourbites.backend.entity.Favorito;
 import com.fourbites.backend.entity.FormaPagamento;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.RestauranteFoto;
@@ -31,6 +33,7 @@ import com.fourbites.backend.exception.CampoInvalidoException;
 import com.fourbites.backend.exception.ConflitoException;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.repository.CategoriaRepository;
+import com.fourbites.backend.repository.FavoritoRepository;
 import com.fourbites.backend.repository.FormaPagamentoRepository;
 import com.fourbites.backend.repository.RestauranteRepository;
 import com.fourbites.backend.util.Distancia;
@@ -46,19 +49,25 @@ public class RestauranteService {
     private final NominatimService nominatimService;
     private final AvaliacaoService avaliacaoService;
     private final UploadService uploadService;
+    private final RecomendacaoService recomendacaoService;
+    private final FavoritoRepository favoritoRepository;
 
     public RestauranteService(RestauranteRepository restauranteRepository,
                               CategoriaRepository categoriaRepository,
                               FormaPagamentoRepository formaPagamentoRepository,
                               NominatimService nominatimService,
                               AvaliacaoService avaliacaoService,
-                              UploadService uploadService) {
+                              UploadService uploadService,
+                              RecomendacaoService recomendacaoService,
+                              FavoritoRepository favoritoRepository) {
         this.restauranteRepository = restauranteRepository;
         this.categoriaRepository = categoriaRepository;
         this.formaPagamentoRepository = formaPagamentoRepository;
         this.nominatimService = nominatimService;
         this.avaliacaoService = avaliacaoService;
         this.uploadService = uploadService;
+        this.recomendacaoService = recomendacaoService;
+        this.favoritoRepository = favoritoRepository;
     }
 
     @Transactional
@@ -167,7 +176,17 @@ public class RestauranteService {
                 ? null
                 : avaliacaoService.idDaAvaliacaoDoUsuario(usuarioLogadoId, id);
 
-        return RestauranteDetalheResponse.de(restaurante, notas, minhaAvaliacaoId);
+        // Só para usuário comum logado: o quanto combina com ele e em que posição está nos favoritos dele.
+        Integer compatibilidade = recomendacaoService.compatibilidade(usuarioLogadoId, restaurante, notas.notaMedia());
+        Integer favoritoPosicao = null;
+        if (usuarioLogadoId != null) {
+            Optional<Favorito> favorito = favoritoRepository.findByUsuarioIdAndRestauranteId(usuarioLogadoId, id);
+            if (favorito.isPresent()) {
+                favoritoPosicao = favorito.get().getPosicao();
+            }
+        }
+
+        return RestauranteDetalheResponse.de(restaurante, notas, minhaAvaliacaoId, compatibilidade, favoritoPosicao);
     }
 
     private void preencherDadosComuns(Restaurante restaurante, RestauranteFormulario dados) {
