@@ -4,16 +4,16 @@
 ### (de duas contas USUARIO diferentes, já que cada conta avalia um restaurante só uma vez).
 
 @api = http://localhost:8080
-@tokenAdmin = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwicGFwZWwiOiJBRE1JTiIsImlhdCI6MTc5MjE2MzAwMCwiZXhwIjoxNzkyMjQ5NDAwfQ.F_oYfMrejOQnG_q7mtmvdulMfK9pCXz5iW_OuxoZDpc
-@tokenUsuario = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4IiwicGFwZWwiOiJVU1VBUklPIiwiaWF0IjoxNzkyMTYyODgzLCJleHAiOjE3OTIyNDkyODN9.D9v0Ns2I7VkQwiHCMpcIpQsYHCbpux87PqlQb7jFS4w
+@tokenAdmin = COLE_O_TOKEN_DO_ADMIN
+@tokenUsuario = COLE_O_TOKEN_DE_UM_USUARIO
 
 ### Login (admin ou usuário)
 POST {{api}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "fourbitesapp@gmail.com",
-  "senha": "fourbites10"
+  "email": "EMAIL",
+  "senha": "SENHA"
 }
 
 ### ---------------- RANKING ----------------
