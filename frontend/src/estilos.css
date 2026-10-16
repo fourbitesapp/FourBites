@@ -209,6 +209,13 @@ h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
 .fb-nota-avaliacao { color: var(--fb-destaque); font-weight: 800; font-size: 1.3rem; }
 .fb-estrelas { color: var(--fb-estrela); font-size: 0.85rem; letter-spacing: 1px; }
 .fb-foto-avaliacao { width: 6.5rem; height: 4.5rem; object-fit: cover; border-radius: 12px; }
+/* Mapinha do perfil do restaurante. O isolation impede que o mapa passe por cima da barra de navegação. */
+.fb-mapa {
+  height: 200px; margin-bottom: 1.25rem; border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--fb-linha); background: var(--fb-suave); isolation: isolate;
+}
+.fb-mapa .leaflet-control-attribution { font-size: 0.7rem; }
+
 .fb-lista-info { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
 .fb-lista-info li { display: flex; gap: 0.75rem; }
 .fb-lista-info .bi { color: var(--fb-destaque); margin-top: 0.15rem; }

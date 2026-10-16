@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import Estrelas from '../components/Estrelas.jsx'
+import MapaRestaurante from '../components/MapaRestaurante.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { agruparHorarios, estaAberto, formatarData, formatarNota, iniciais } from '../utils/formatos.js'
@@ -187,6 +188,7 @@ export default function Restaurante() {
 
           <aside className="col-lg-4">
             <section className="fb-cartao p-4 mb-3">
+              <MapaRestaurante latitude={r.latitude} longitude={r.longitude} nome={r.nome} />
               <ul className="fb-lista-info">
                 <li>
                   <i className="bi bi-geo-alt" aria-hidden="true"></i>
@@ -195,7 +197,7 @@ export default function Restaurante() {
                     {r.endereco.complemento && ` (${r.endereco.complemento})`} · {r.endereco.bairro} ·{' '}
                     {r.endereco.cidade}/{r.endereco.uf}
                     <br />
-                    <a href={mapa} target="_blank" rel="noreferrer" className="fb-link">Ver no mapa</a>
+                    <a href={mapa} target="_blank" rel="noreferrer" className="fb-link">Abrir mapa maior</a>
                   </span>
                 </li>
                 <li><i className="bi bi-telephone" aria-hidden="true"></i><span>{r.telefone}</span></li>
