@@ -9,18 +9,21 @@ export default function BarraNavegacao() {
 
   function aoSair() {
     sair()
-    navegar('/explorar')
+    navegar('/')
   }
 
   return (
     <header className="fb-barra">
       <div className="container d-flex align-items-center justify-content-between gap-3">
-        <Link to="/explorar" className="fb-marca">
+        <Link to="/" className="fb-marca">
           <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
           fourbites
         </Link>
 
         <nav className="d-flex align-items-center gap-2">
+          <NavLink to="/" end className="fb-nav-link">
+            <i className="bi bi-house" aria-hidden="true"></i> Início
+          </NavLink>
           <NavLink to="/explorar" className="fb-nav-link">
             <i className="bi bi-compass" aria-hidden="true"></i> Explorar
           </NavLink>

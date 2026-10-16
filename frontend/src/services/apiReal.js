@@ -92,6 +92,12 @@ export const buscarRestaurante = (id) => chamar('GET', `/restaurantes/${id}`)
 export const buscarPreferencias = () => chamar('GET', '/usuarios/me/preferencias')
 export const salvarPreferencias = (dados) => chamar('PUT', '/usuarios/me/preferencias', dados)
 
+//Início: recomendações (só USUARIO), ranking e feed
+
+export const listarRecomendacoes = () => chamar('GET', '/recomendacoes')
+export const buscarRanking = (periodo) => chamar('GET', `/ranking?periodo=${periodo}`)
+export const listarFeed = () => chamar('GET', '/feed')
+
 //Avaliações
 
 export const listarAvaliacoesDoRestaurante = (id) => chamar('GET', `/restaurantes/${id}/avaliacoes`)

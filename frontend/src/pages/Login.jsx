@@ -35,7 +35,7 @@ export default function Login() {
     setEnviando(true)
     try {
       const usuario = await entrar(email, senha)
-      const destino = local.state?.voltarPara || '/explorar'
+      const destino = local.state?.voltarPara || '/'
 
       // Primeiro acesso: conta USUARIO que ainda não tem preferências vai para a tela de preferências.
       if (usuario.papel === 'USUARIO' && !(await temPreferencias())) {
@@ -53,7 +53,7 @@ export default function Login() {
   return (
     <div className="fb-acesso">
       <aside className="fb-acesso-vitrine">
-        <Link to="/explorar" className="fb-marca fb-marca-grande">
+        <Link to="/" className="fb-marca fb-marca-grande">
           <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
           fourbites
         </Link>

@@ -5,6 +5,7 @@ import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import Estrelas from '../components/Estrelas.jsx'
 import MapaRestaurante from '../components/MapaRestaurante.jsx'
+import SeloCompatibilidade from '../components/SeloCompatibilidade.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { agruparHorarios, estaAberto, formatarData, formatarNota, iniciais } from '../utils/formatos.js'
@@ -90,8 +91,13 @@ export default function Restaurante() {
           </div>
 
           <div className="text-md-end">
-            <div className="fb-nota-grande">
-              <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
+            <div className="d-flex flex-wrap align-items-center justify-content-md-end gap-3">
+              {r.compatibilidade !== null && r.compatibilidade !== undefined && (
+                <SeloCompatibilidade valor={r.compatibilidade} />
+              )}
+              <div className="fb-nota-grande">
+                <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
+              </div>
             </div>
             <div className="fb-cartao-meta mb-2">
               {r.totalAvaliacoes === 0

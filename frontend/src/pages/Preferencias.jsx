@@ -23,7 +23,7 @@ export default function Preferencias() {
   const { usuario, logado } = useAuth()
   const navegar = useNavigate()
   const local = useLocation()
-  const destino = local.state?.voltarPara || '/explorar'
+  const destino = local.state?.voltarPara || '/'
 
   const [categorias, setCategorias] = useState([])
   const [dados, setDados] = useState(PREFERENCIAS_VAZIAS)
@@ -62,7 +62,7 @@ export default function Preferencias() {
     return <Navigate to="/login" replace state={{ voltarPara: '/preferencias' }} />
   }
   if (!podeUsar) {
-    return <Navigate to="/explorar" replace />
+    return <Navigate to="/" replace />
   }
 
   function alternarCategoria(id) {
@@ -87,11 +87,11 @@ export default function Preferencias() {
   return (
     <div className="fb-pagina-media fb-preferencias">
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <Link to="/explorar" className="fb-marca">
+        <Link to="/" className="fb-marca">
           <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
           fourbites
         </Link>
-        <span className="fb-subtitulo">Olá, <strong className="text-body">{usuario.nome.split(' ')[0]}</strong></span>
+        <span className="fb-subtitulo">Olá, <strong className="fb-autor">{usuario.nome.split(' ')[0]}</strong></span>
       </div>
 
       {primeiroAcesso && <span className="fb-selo-secao">Primeiro acesso</span>}
