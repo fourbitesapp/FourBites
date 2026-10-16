@@ -79,6 +79,15 @@ public class RestauranteService {
         return RestauranteGestaoResponse.de(salvo, null);
     }
 
+    // Admin tira um restaurante do ar (ativo = false) ou devolve (ativo = true), sem apagar nada.
+    @Transactional
+    public RestauranteGestaoResponse alterarAtivo(Integer id, boolean ativo) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Restaurante não encontrado."));
+        restaurante.setAtivo(ativo);
+        return RestauranteGestaoResponse.de(restaurante, null);
+    }
+
     @Transactional(readOnly = true)
     public List<RestauranteResumoResponse> buscarPublicos(String busca, Integer categoriaId, String faixaPreco,
                                                           Double notaMin, boolean pets, boolean acessivel,

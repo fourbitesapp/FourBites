@@ -85,6 +85,14 @@ public class AvaliacaoService {
         return AvaliacaoResponse.de(avaliacao);
     }
 
+    // Admin apaga uma avaliação
+    @Transactional
+    public void excluirPeloAdmin(Integer avaliacaoId) {
+        Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Avaliação não encontrada."));
+        avaliacaoRepository.delete(avaliacao);
+    }
+
     @Transactional(readOnly = true)
     public AvaliacaoResponse buscarPorId(Integer id) {
         Avaliacao avaliacao = avaliacaoRepository.findById(id)

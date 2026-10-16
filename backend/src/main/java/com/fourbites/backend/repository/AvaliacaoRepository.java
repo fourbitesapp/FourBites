@@ -1,5 +1,6 @@
 package com.fourbites.backend.repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,21 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer> {
     List<Avaliacao> feedExceto(@Param("excluidos") List<Integer> excluidos,
                                @Param("publicado") StatusAnalise publicado,
                                Pageable limite);
+
+    // Ranking: média e quantidade de avaliações de cada restaurante publicado no período.
+    @Query("""
+            select a.restaurante.id, avg(a.notaGeral), count(a)
+            from Avaliacao a
+            where a.dataAvaliacao >= :desde
+              and a.restaurante.status = :publicado and a.restaurante.ativo = true
+            group by a.restaurante.id
+            having count(a) >= :minimo
+            order by avg(a.notaGeral) desc, count(a) desc
+            """)
+    List<Object[]> rankingDoPeriodo(@Param("desde") OffsetDateTime desde,
+                                    @Param("publicado") StatusAnalise publicado,
+                                    @Param("minimo") long minimo,
+                                    Pageable limite);
 
     // Médias calculadas pelo banco
     @Query("""

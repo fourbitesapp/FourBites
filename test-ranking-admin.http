@@ -1,0 +1,74 @@
+### =============================================================
+### Testes do ranking e da moderação do admin
+### Para o ranking ter alguém: um restaurante precisa de 2 avaliações nos últimos 7 dias
+### (de duas contas USUARIO diferentes, já que cada conta avalia um restaurante só uma vez).
+
+@api = http://localhost:8080
+@tokenAdmin = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwicGFwZWwiOiJBRE1JTiIsImlhdCI6MTc5MjE2MzAwMCwiZXhwIjoxNzkyMjQ5NDAwfQ.F_oYfMrejOQnG_q7mtmvdulMfK9pCXz5iW_OuxoZDpc
+@tokenUsuario = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4IiwicGFwZWwiOiJVU1VBUklPIiwiaWF0IjoxNzkyMTYyODgzLCJleHAiOjE3OTIyNDkyODN9.D9v0Ns2I7VkQwiHCMpcIpQsYHCbpux87PqlQb7jFS4w
+
+### Login (admin ou usuário)
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "fourbitesapp@gmail.com",
+  "senha": "fourbites10"
+}
+
+### ---------------- RANKING ----------------
+
+### 1) Ranking semanal -> 200; só restaurantes com 2 ou mais avaliações nos últimos 7 dias,
+###    da maior notaPeriodo para a menor (lista vazia se ninguém tiver 2)
+GET {{api}}/ranking?periodo=semanal
+
+### 2) Ranking mensal -> 200; mesma regra, últimos 30 dias
+GET {{api}}/ranking?periodo=mensal
+
+### 3) Sem período -> mesmo resultado do semanal
+GET {{api}}/ranking
+
+### 4) Período inválido -> 400, "periodo": "O período deve ser semanal ou mensal."
+GET {{api}}/ranking?periodo=anual
+
+### ---------------- ATIVAR / DESATIVAR ----------------
+### Troque 1 pelo id de um restaurante de teste
+
+### 5) Desativar -> 200 com "ativo": false
+PATCH {{api}}/admin/restaurantes/4/ativo
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "ativo": false }
+
+### 6) Restaurante desativado some da busca e o perfil dá 404 para visitante
+GET {{api}}/restaurantes/1
+
+### 7) Usuário comum tentando desativar -> 403
+PATCH {{api}}/admin/restaurantes/1/ativo
+Authorization: Bearer {{tokenUsuario}}
+Content-Type: application/json
+
+{ "ativo": false }
+
+### 8) Reativar -> 200 com "ativo": true (rode o teste 6 de novo: volta a aparecer)
+PATCH {{api}}/admin/restaurantes/1/ativo
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "ativo": true }
+
+### ---------------- EXCLUIR AVALIAÇÃO ----------------
+### Troque 1 pelo id de uma avaliação de teste (aparece em GET /restaurantes/{id}/avaliacoes)
+
+### 9) Usuário comum tentando excluir -> 403
+DELETE {{api}}/admin/avaliacoes/1
+Authorization: Bearer {{tokenUsuario}}
+
+### 10) Admin exclui -> 204 (a avaliação some do restaurante, do feed e do perfil do autor)
+DELETE {{api}}/admin/avaliacoes/1
+Authorization: Bearer {{tokenAdmin}}
+
+### 11) Excluir de novo a mesma -> 404 "Avaliação não encontrada."
+DELETE {{api}}/admin/avaliacoes/1
+Authorization: Bearer {{tokenAdmin}}
