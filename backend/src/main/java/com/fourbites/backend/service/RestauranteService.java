@@ -189,7 +189,8 @@ public class RestauranteService {
         return RestauranteDetalheResponse.de(restaurante, notas, minhaAvaliacaoId, compatibilidade, favoritoPosicao);
     }
 
-    private void preencherDadosComuns(Restaurante restaurante, RestauranteFormulario dados) {
+    // Copia os dados do formulário para o restaurante
+    public void preencherDadosComuns(Restaurante restaurante, RestauranteFormulario dados) {
         EnderecoDTO endereco = dados.endereco();
 
  
@@ -246,7 +247,7 @@ public class RestauranteService {
         }
     }
 
-    private String conferirCnpj(String cnpjInformado, boolean obrigatorio) {
+    public String conferirCnpj(String cnpjInformado, boolean obrigatorio) {
         if (cnpjInformado == null || cnpjInformado.isBlank()) {
             if (obrigatorio) {
                 throw new CampoInvalidoException("cnpj", "O CNPJ é obrigatório.");
@@ -263,7 +264,8 @@ public class RestauranteService {
         return cnpj;
     }
 
-    private Categoria resolverCategoriaDoAdmin(RestauranteFormulario dados) {
+    // Categoria escolhida pelo admin
+    public Categoria resolverCategoriaDoAdmin(RestauranteFormulario dados) {
         if (dados.categoriaId() != null) {
             return categoriaRepository.findById(dados.categoriaId())
                     .orElseThrow(() -> new CampoInvalidoException("categoriaId", "A categoria escolhida não existe."));

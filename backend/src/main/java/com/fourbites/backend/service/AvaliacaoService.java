@@ -26,6 +26,7 @@ import com.fourbites.backend.repository.RestauranteRepository;
 import com.fourbites.backend.repository.SeguidorRepository;
 import com.fourbites.backend.repository.UsuarioRepository;
 import com.fourbites.backend.util.Notas;
+import com.fourbites.backend.util.Texto;
 
 @Service
 public class AvaliacaoService {
@@ -91,6 +92,20 @@ public class AvaliacaoService {
         Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Avaliação não encontrada."));
         avaliacaoRepository.delete(avaliacao);
+    }
+
+    // Moderação: todas as avaliações, das mais recentes para as mais antigas.
+    // busca procura no nome do restaurante e no nome ou usuário de quem avaliou.
+    @Transactional(readOnly = true)
+    public List<AvaliacaoResponse> listarParaAdmin(String busca) {
+        String termo = Texto.simplificar(busca);
+        return avaliacaoRepository.findAllByOrderByDataAvaliacaoDesc().stream()
+                .filter(a -> termo.isEmpty()
+                        || Texto.simplificar(a.getRestaurante().getNome()).contains(termo)
+                        || Texto.simplificar(a.getUsuario().getNome()).contains(termo)
+                        || Texto.simplificar(a.getUsuario().getUsername()).contains(termo))
+                .map(AvaliacaoResponse::de)
+                .toList();
     }
 
     @Transactional(readOnly = true)

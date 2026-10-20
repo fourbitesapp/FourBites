@@ -21,6 +21,13 @@ export function AuthProvider({ children }) {
     return resposta.usuario
   }
 
+  // Depois de editar o perfil, atualiza o nome/username/foto guardados na sessão.
+  function atualizarUsuario(usuario) {
+    const nova = { ...sessao, usuario }
+    api.salvarSessao(nova)
+    setSessao(nova)
+  }
+
   function sair() {
     api.limparSessao()
     setSessao(null)
@@ -31,6 +38,7 @@ export function AuthProvider({ children }) {
     logado: Boolean(sessao?.token),
     entrar,
     sair,
+    atualizarUsuario,
   }
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>
 }

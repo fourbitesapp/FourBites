@@ -2,23 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
+import BarraNavegacao from '../components/BarraNavegacao.jsx'
+import CamposPreferencias, { PREFERENCIAS_VAZIAS } from '../components/CamposPreferencias.jsx'
+import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 
-// "Tanto faz" é guardado como null 
-const FAIXAS = [
-  { valor: null, rotulo: 'Tanto faz' },
-  { valor: '$', rotulo: '$' },
-  { valor: '$$', rotulo: '$$' },
-  { valor: '$$$', rotulo: '$$$' },
-]
-
-// quando o usuário pula a tela.
-const PREFERENCIAS_VAZIAS = {
-  categoriaIds: [], faixaPreco: null, precisaAcessibilidade: false, levaPets: false,
-}
-
-// Tela de preferências
+// Preferências da recomendação. Abre sozinha no primeiro acesso e pelo botão "Ajustar preferências" do perfil.
 export default function Preferencias() {
   const { usuario, logado } = useAuth()
   const navegar = useNavigate()
@@ -46,7 +36,7 @@ export default function Preferencias() {
           setDados(await api.buscarPreferencias())
           setPrimeiroAcesso(false)
         } catch (falha) {
-          if (falha.status !== 404) throw falha 
+          if (falha.status !== 404) throw falha
         }
       } catch (falha) {
         setErro(falha)
@@ -65,13 +55,6 @@ export default function Preferencias() {
     return <Navigate to="/" replace />
   }
 
-  function alternarCategoria(id) {
-    const marcadas = dados.categoriaIds.includes(id)
-      ? dados.categoriaIds.filter((c) => c !== id)
-      : [...dados.categoriaIds, id]
-    setDados({ ...dados, categoriaIds: marcadas })
-  }
-
   async function salvar(preferencias) {
     setErro(null)
     setEnviando(true)
@@ -85,102 +68,54 @@ export default function Preferencias() {
   }
 
   return (
-    <div className="fb-pagina-media fb-preferencias">
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <Link to="/" className="fb-marca">
-          <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
-          fourbites
-        </Link>
-        <span className="fb-subtitulo">Olá, <strong className="fb-autor">{usuario.nome.split(' ')[0]}</strong></span>
-      </div>
+    <>
+      <BarraNavegacao />
+      <main className="fb-pagina-media">
+        {!primeiroAcesso && (
+          <Link to={destino} className="fb-link-discreto">
+            <i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar {destino === '/perfil' ? 'ao perfil' : ''}
+          </Link>
+        )}
 
-      {primeiroAcesso && <span className="fb-selo-secao">Primeiro acesso</span>}
-      <h1 className="mt-2">Conte o que você gosta</h1>
-      <p className="fb-subtitulo">
-        Usamos isso para calcular a compatibilidade e recomendar restaurantes. Você pode mudar depois.
-      </p>
+        <div className="text-center mt-4 mb-5">
+          <span className="fb-mao">só leva um minutinho!</span>
+          <h1 className="mt-2">Do que você gosta de <span className="fb-sublinhado">comer</span>?</h1>
+          <p className="fb-subtitulo mx-auto" style={{ maxWidth: '34em' }}>
+            Usamos isso para calcular a compatibilidade e recomendar restaurantes. Você pode mudar quando quiser.
+          </p>
+        </div>
 
-      <Aviso>{erro?.message}</Aviso>
+        <Aviso>{erro?.message}</Aviso>
 
-      {carregando ? (
-        <p className="fb-vazio">Carregando…</p>
-      ) : (
-        <>
-          <section className="fb-cartao p-4 mt-4">
-            <h2 className="fb-pergunta">Quais cozinhas você prefere?</h2>
-            <p className="fb-ajuda ms-0 mb-3">Marque quantas quiser.</p>
-            <div className="d-flex flex-wrap gap-2">
-              {categorias.map((c) => {
-                const marcada = dados.categoriaIds.includes(c.id)
-                return (
-                  <button key={c.id} type="button" aria-pressed={marcada}
-                    className={`fb-opcao ${marcada ? 'ativo' : ''}`} onClick={() => alternarCategoria(c.id)}>
-                    {marcada && <i className="bi bi-check-lg" aria-hidden="true"></i>} {c.nome}
-                  </button>
-                )
-              })}
-            </div>
+        {carregando ? (
+          <p className="fb-vazio">Carregando…</p>
+        ) : (
+          <>
+            <CamposPreferencias categorias={categorias} dados={dados} aoMudar={setDados} />
 
-            <h2 className="fb-pergunta mt-4 mb-3">Quanto costuma gastar?</h2>
-            <div className="fb-segmentado" role="radiogroup" aria-label="Faixa de preço">
-              {FAIXAS.map((f) => (
-                <button key={f.rotulo} type="button" role="radio" aria-checked={dados.faixaPreco === f.valor}
-                  className={dados.faixaPreco === f.valor ? 'ativo' : ''}
-                  onClick={() => setDados({ ...dados, faixaPreco: f.valor })}>
-                  {f.rotulo}
+            <div className="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5">
+              {primeiroAcesso && (
+                <button type="button" className="fb-botao fb-botao-claro" disabled={enviando}
+                  onClick={() => salvar(PREFERENCIAS_VAZIAS)}>
+                  Pular por enquanto
                 </button>
-              ))}
-            </div>
-
-            <div className="row g-3 mt-2">
-              <div className="col-sm-6">
-                <Interruptor icone="bi-universal-access" rotulo="Preciso de acessibilidade"
-                  ligado={dados.precisaAcessibilidade}
-                  aoMudar={(v) => setDados({ ...dados, precisaAcessibilidade: v })} />
-              </div>
-              <div className="col-sm-6">
-                <Interruptor icone="bi-heart" rotulo="Costumo levar pets"
-                  ligado={dados.levaPets}
-                  aoMudar={(v) => setDados({ ...dados, levaPets: v })} />
-              </div>
-            </div>
-          </section>
-
-          <div className="d-flex flex-column flex-sm-row gap-3 mt-4">
-            {primeiroAcesso && (
-              <button type="button" className="fb-botao fb-botao-claro" disabled={enviando}
-                onClick={() => salvar(PREFERENCIAS_VAZIAS)}>
-                Pular por enquanto
+              )}
+              <button type="button" className="fb-botao fb-botao-escuro" disabled={enviando}
+                onClick={() => salvar(dados)}>
+                {enviando ? 'Salvando…' : primeiroAcesso ? 'Salvar e começar' : 'Salvar preferências'}
+                {!enviando && <i className="bi bi-arrow-right ms-2" aria-hidden="true"></i>}
               </button>
+            </div>
+
+            {primeiroAcesso && (
+              <p className="fb-ajuda text-end mt-3">
+                Se pular, mostramos os restaurantes mais bem avaliados até você ter preferências ou avaliações.
+              </p>
             )}
-            <button type="button" className="fb-botao fb-botao-principal flex-grow-1" disabled={enviando}
-              onClick={() => salvar(dados)}>
-              {enviando ? 'Salvando…' : primeiroAcesso ? 'Salvar e começar' : 'Salvar'}
-              {!enviando && <i className="bi bi-arrow-right ms-2" aria-hidden="true"></i>}
-            </button>
-          </div>
-
-          {primeiroAcesso && (
-            <p className="fb-ajuda ms-0 mt-3">
-              Se pular, mostramos os restaurantes mais bem avaliados até você ter preferências ou avaliações.
-            </p>
-          )}
-        </>
-      )}
-    </div>
-  )
-}
-
-function Interruptor({ icone, rotulo, ligado, aoMudar }) {
-  const id = `pref-${icone}`
-  return (
-    <label htmlFor={id} className={`fb-interruptor ${ligado ? 'ativo' : ''}`}>
-      <span className="fb-icone-suave"><i className={`bi ${icone}`} aria-hidden="true"></i></span>
-      <span className="flex-grow-1 fw-bold">{rotulo}</span>
-      <span className="form-check form-switch m-0">
-        <input id={id} className="form-check-input" type="checkbox" role="switch"
-          checked={ligado} onChange={(e) => aoMudar(e.target.checked)} />
-      </span>
-    </label>
+          </>
+        )}
+      </main>
+      <Rodape />
+    </>
   )
 }

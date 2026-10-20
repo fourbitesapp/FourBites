@@ -1,47 +1,51 @@
 import { Link } from 'react-router-dom'
 
-import { formatarData, formatarNota, iniciais } from '../utils/formatos.js'
+import { formatarData, formatarNota } from '../utils/formatos.js'
+import Avatar from './Avatar.jsx'
 
 const CATEGORIAS = [
   ['Comida', 'notaComida'],
-  ['Atendimento', 'notaAtendimento'],
   ['Ambiente', 'notaAmbiente'],
+  ['Atendimento', 'notaAtendimento'],
   ['Custo-benefício', 'notaCusto'],
 ]
 
-// Uma avaliação no visual do feed
-export default function CartaoAvaliacao({ avaliacao }) {
+// Uma avaliação: autor, restaurante (no feed), nota geral, as 4 notas, comentário e fotos.
+// No perfil do restaurante, mostrarRestaurante = false.
+export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true }) {
   const a = avaliacao
 
   return (
-    <article className="fb-cartao p-4 mb-3">
-      <div className="d-flex gap-3 align-items-start">
-        <span className="fb-avatar">{iniciais(a.usuario.nome)}</span>
+    <article className="fb-avaliacao">
+      <div className="d-flex gap-3 align-items-center">
+        <Link to={`/perfil/${a.usuario.username}`}><Avatar nome={a.usuario.nome} foto={a.usuario.fotoPerfil} /></Link>
         <div className="flex-grow-1">
-          <strong className="fb-autor">{a.usuario.nome}</strong>
+          <Link to={`/perfil/${a.usuario.username}`} className="fb-autor text-decoration-none">{a.usuario.nome}</Link>
           <div className="fb-cartao-meta mt-0">
-            avaliou{' '}
-            <Link to={`/restaurantes/${a.restaurante.id}`} className="fb-link fw-semibold">{a.restaurante.nome}</Link>
-            {' · '}{formatarData(a.dataAvaliacao)}{a.editada && ' · editada'}
+            {mostrarRestaurante ? (
+              <>avaliou <Link to={`/restaurantes/${a.restaurante.id}`} className="fb-link">{a.restaurante.nome}</Link> · </>
+            ) : (
+              <>@{a.usuario.username} · </>
+            )}
+            {formatarData(a.dataAvaliacao)}{a.editada && ' · editada'}
           </div>
         </div>
-        <div className="text-nowrap">
-          <span className="fb-nota-avaliacao">{formatarNota(a.notaGeral, 2)}</span>
-          <span className="fb-cartao-meta"> / 5</span>
-        </div>
+        <span className="fb-nota-avaliacao">{formatarNota(a.notaGeral, 2)}</span>
       </div>
 
-      <div className="fb-notas-avaliacao row g-2 mt-3">
+      <div className="fb-notas-avaliacao">
         {CATEGORIAS.map(([nome, campo]) => (
-          <div key={campo} className="col-sm-6">
-            <div className="d-flex justify-content-between"><span>{nome}</span><strong>{a[campo]}</strong></div>
-            <div className="fb-barra-nota"><span style={{ width: `${(a[campo] / 5) * 100}%` }}></span></div>
+          <div key={campo}>
+            <span>{nome}</span>
+            <strong>{a[campo]} <span className="d-inline" style={{ color: 'var(--fb-amarelo)' }}>★</span></strong>
           </div>
         ))}
       </div>
 
       {a.comentario && (
-        <p className="mt-3 mb-0"><strong className="fb-autor">@{a.usuario.username}</strong> {a.comentario}</p>
+        <p className="mt-3 mb-0" style={{ color: 'var(--fb-tinta)' }}>
+          {mostrarRestaurante && <strong>@{a.usuario.username} </strong>}{a.comentario}
+        </p>
       )}
 
       {a.fotos.length > 0 && (

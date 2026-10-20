@@ -1,7 +1,9 @@
 package com.fourbites.backend.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,17 +14,22 @@ import com.fourbites.backend.dto.CadastroResponsavelRequest;
 import com.fourbites.backend.dto.CadastroUsuarioRequest;
 import com.fourbites.backend.dto.UsuarioPublicoResponse;
 import com.fourbites.backend.dto.UsuarioResponse;
+import com.fourbites.backend.dto.UsuarioResumoResponse;
 import com.fourbites.backend.entity.Papel;
 import com.fourbites.backend.entity.Usuario;
+import com.fourbites.backend.exception.CampoInvalidoException;
 import com.fourbites.backend.exception.ConflitoException;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.exception.RegraNegocioException;
 import com.fourbites.backend.repository.AvaliacaoRepository;
 import com.fourbites.backend.repository.SeguidorRepository;
 import com.fourbites.backend.repository.UsuarioRepository;
+import com.fourbites.backend.util.Capas;
 
 @Service
 public class UsuarioService {
+
+    private static final int MAXIMO_NA_BUSCA = 12;
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -101,6 +108,23 @@ public class UsuarioService {
                 seguidoPorMim);
     }
 
+    // Busca de pessoas (só contas USUARIO)
+    @Transactional(readOnly = true)
+    public List<UsuarioResumoResponse> buscar(String busca) {
+        String termo = busca == null ? "" : busca.trim().toLowerCase();
+        if (termo.startsWith("@")) {
+            termo = termo.substring(1);
+        }
+        if (termo.length() < 2) {
+            return List.of();
+        }
+        return usuarioRepository
+                .buscarPorNomeOuUsername(Papel.USUARIO, "%" + termo + "%", PageRequest.of(0, MAXIMO_NA_BUSCA))
+                .stream()
+                .map(UsuarioResumoResponse::de)
+                .toList();
+    }
+
     //Foto de perfil: envia a imagem ao Cloudinary e guarda o endereço.
     @Transactional
     public UsuarioResponse atualizarFoto(Integer id, MultipartFile arquivo) {
@@ -134,6 +158,20 @@ public class UsuarioService {
         usuario.setUsername(username);
         usuario.setTelefone(dados.telefone().trim());
         usuario.setBio(textoOuNulo(dados.bio()));
+
+        // Capa: só aceita os códigos da lista (util)
+        if (dados.capaCor() != null) {
+            if (!Capas.CORES.contains(dados.capaCor())) {
+                throw new CampoInvalidoException("capaCor", "Escolha uma das cores de capa.");
+            }
+            usuario.setCapaCor(dados.capaCor());
+        }
+        if (dados.capaFrase() != null) {
+            if (!Capas.FRASES.contains(dados.capaFrase())) {
+                throw new CampoInvalidoException("capaFrase", "Escolha uma das frases de capa.");
+            }
+            usuario.setCapaFrase(dados.capaFrase());
+        }
 
         Usuario salvo = usuarioRepository.save(usuario);
         return UsuarioResponse.de(salvo);

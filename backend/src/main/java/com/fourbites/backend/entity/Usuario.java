@@ -3,6 +3,8 @@ package com.fourbites.backend.entity;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+import com.fourbites.backend.util.Capas;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,6 +56,13 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Papel papel = Papel.USUARIO;
+
+    // Capa do perfil: códigos da cor e da frase escolhidas (ver util/Capas.java)
+    @Column(name = "capa_cor", nullable = false, length = 20)
+    private String capaCor = Capas.COR_PADRAO;
+
+    @Column(name = "capa_frase", nullable = false, length = 20)
+    private String capaFrase = Capas.FRASE_PADRAO;
 
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private OffsetDateTime dataCadastro;

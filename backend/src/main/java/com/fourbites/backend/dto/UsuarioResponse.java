@@ -15,6 +15,8 @@ public record UsuarioResponse(
         LocalDate dataNascimento,
         String fotoPerfil,
         String bio,
+        String capaCor,
+        String capaFrase,
         Papel papel,
         OffsetDateTime dataCadastro
 ) {
@@ -29,8 +31,9 @@ public record UsuarioResponse(
                 usuario.getDataNascimento(),
                 usuario.getFotoPerfil(),
                 usuario.getBio(),
+                usuario.getCapaCor(),
+                usuario.getCapaFrase(),
                 usuario.getPapel(),
                 usuario.getDataCadastro());
     }
 }
-

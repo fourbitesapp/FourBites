@@ -3,7 +3,7 @@ export default function Campo({ rotulo, icone, erro, ajuda, ...propriedades }) {
   const id = propriedades.id || propriedades.name
 
   return (
-    <div className="mb-3">
+    <div className="mb-4">
       <label htmlFor={id} className="fb-rotulo">{rotulo}</label>
       <div className={`fb-campo ${erro ? 'fb-campo-erro' : ''}`}>
         {icone && <i className={`bi ${icone}`} aria-hidden="true"></i>}

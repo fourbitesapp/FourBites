@@ -1,24 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
 import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
+import IconeCozinha from '../components/IconeCozinha.jsx'
+import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
+import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 
-const RECOMENDADOS_VISIVEIS = 4 
-const RANKING_VISIVEIS = 4 
-const FEED_POR_VEZ = 10 
+const RECOMENDADOS_VISIVEIS = 4
+const RANKING_VISIVEIS = 4
+const COZINHAS_VISIVEIS = 6
+const FEED_POR_VEZ = 10
 
-// Tela inicial: recomendações (só USUARIO), avaliações recentes, ranking e restaurantes perto.
-
+// Tela inicial: destaque com busca, cozinhas, recomendações (só USUARIO), ranking, avaliações recentes e "perto de você".
 export default function Inicio() {
   const { usuario, logado } = useAuth()
+  const navegar = useNavigate()
   const recebeRecomendacoes = usuario?.papel === 'USUARIO'
 
+  const [busca, setBusca] = useState('')
+  const [categorias, setCategorias] = useState([])
   const [recomendacoes, setRecomendacoes] = useState(null)
   const [verTodasRecomendacoes, setVerTodasRecomendacoes] = useState(false)
   const [feed, setFeed] = useState(null)
@@ -33,6 +39,11 @@ export default function Inicio() {
   function registrarErro(bloco, falha) {
     setErros((atuais) => ({ ...atuais, [bloco]: falha.message }))
   }
+
+  // Cozinhas: só para os atalhos "Explore por cozinha". Se falhar, o bloco some.
+  useEffect(() => {
+    api.listarCategorias().then(setCategorias).catch(() => setCategorias([]))
+  }, [])
 
   // Recomendações e feed: recarregam quando quem está logado muda.
   useEffect(() => {
@@ -96,38 +107,114 @@ export default function Inicio() {
     )
   }
 
+  function aoBuscar(evento) {
+    evento.preventDefault()
+    const termo = busca.trim()
+    navegar(termo ? `/explorar?busca=${encodeURIComponent(termo)}` : '/explorar')
+  }
+
   const recomendadosNaTela = verTodasRecomendacoes ? recomendacoes : recomendacoes?.slice(0, RECOMENDADOS_VISIVEIS)
+  const primeiroDoRanking = ranking?.[0]
 
   return (
     <>
       <BarraNavegacao />
-      <main className="container py-4">
-        {logado ? (
-          <header className="mb-4">
-            <h1 className="mb-1">Olá, {usuario.nome.split(' ')[0]}</h1>
-            <p className="fb-subtitulo mb-0">Veja o que combina com você e o que a comunidade anda avaliando.</p>
-          </header>
-        ) : (
-          <header className="fb-cartao fb-boas-vindas p-4 mb-4">
-            <h1 className="mb-2">Descubra restaurantes pela opinião de quem foi de verdade.</h1>
-            <p className="fb-subtitulo">Entre para avaliar, salvar favoritos e receber recomendações que combinam com o seu gosto.</p>
-            <div className="d-flex flex-wrap gap-2">
-              <Link to="/login" className="fb-botao fb-botao-principal">Entrar</Link>
-              <Link to="/cadastro" className="fb-botao fb-botao-claro">Criar conta</Link>
+      <main>
+        {/* Destaque */}
+        <section className="fb-conteudo">
+          <div className="fb-destaque-topo">
+            <div className="fb-destaque-texto">
+              <span className="fb-mao" style={{ fontSize: '1.9rem' }}>
+                {logado ? `oi, ${usuario.nome.split(' ')[0]}!` : 'oi, que fome!'}
+              </span>
+              <h1>Bora descobrir onde <span className="fb-sublinhado">comer</span> hoje?</h1>
+              <p className="fb-subtitulo mb-0" style={{ maxWidth: '30em' }}>
+                {logado
+                  ? 'Recomendações que combinam com o seu gosto e avaliações de quem foi de verdade.'
+                  : 'Avaliações de quem foi de verdade. Entre para receber recomendações que combinam com você.'}
+              </p>
+
+              <form className="fb-busca-grande" role="search" onSubmit={aoBuscar}>
+                <i className="bi bi-search" aria-hidden="true" style={{ color: 'var(--fb-tinta)' }}></i>
+                <input type="search" placeholder="Pizza, sushi, Gonzaga…" aria-label="Buscar restaurante"
+                  value={busca} onChange={(e) => setBusca(e.target.value)} />
+                <button type="submit" className="fb-botao fb-botao-principal" style={{ boxShadow: 'none' }}>Buscar</button>
+              </form>
+
+              {logado ? (
+                <div className="d-flex flex-wrap gap-2">
+                  <span className="fb-selo" style={{ background: 'var(--fb-rosa-claro)' }}>Avaliações de verdade</span>
+                  <span className="fb-selo" style={{ background: 'var(--fb-amarelo-claro)' }}>Sem conteúdo patrocinado</span>
+                  <span className="fb-selo" style={{ background: 'var(--fb-verde-claro)' }}>Feito pro seu gosto</span>
+                </div>
+              ) : (
+                <div className="d-flex flex-wrap gap-3">
+                  <Link to="/cadastro" className="fb-botao fb-botao-amarelo">Criar conta</Link>
+                  <Link to="/login" className="fb-botao fb-botao-claro">Entrar</Link>
+                </div>
+              )}
             </div>
-          </header>
+
+            {/* Composição: a foto do 1º do ranking (ou um prato desenhado) */}
+            <div className="fb-destaque-arte d-none d-md-block" aria-hidden="true">
+              <span className="fb-bolha" style={{ inset: '20px 0 0 30px', background: 'var(--fb-amarelo)', borderRadius: '46% 54% 42% 58% / 52% 40% 60% 48%' }}></span>
+              <span className="fb-bolha d-flex align-items-center justify-content-center overflow-hidden"
+                style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)', color: 'var(--fb-vermelho)' }}>
+                {primeiroDoRanking?.restaurante.fotoCapa
+                  ? <img src={primeiroDoRanking.restaurante.fotoCapa} alt="" className="w-100 h-100" style={{ objectFit: 'cover' }} />
+                  : <IconeCozinha nome={primeiroDoRanking?.restaurante.categoria?.nome} tamanho={110} />}
+              </span>
+              <span className="fb-bolha" style={{ right: '10px', top: '10px', width: '110px', height: '110px', background: '#ff8fa9' }}></span>
+              <span className="fb-bolha" style={{ left: '10px', bottom: '30px', width: '96px', height: '96px', background: '#7fd1a3' }}></span>
+              {primeiroDoRanking && (
+                <span className="fb-adesivo" style={{ right: '20px', bottom: '50px' }}>
+                  <strong className="d-block" style={{ fontFamily: 'var(--fb-titulo)', color: 'var(--fb-tinta)', fontSize: '1.1rem' }}>
+                    {primeiroDoRanking.restaurante.nome}
+                  </strong>
+                  <span className="fw-bold" style={{ color: 'var(--fb-vermelho)' }}>
+                    ★ {formatarNota(primeiroDoRanking.notaPeriodo)} · 1º {periodo === 'semanal' ? 'da semana' : 'do mês'}
+                  </span>
+                </span>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Explore por cozinha */}
+        {categorias.length > 0 && (
+          <section className="fb-conteudo">
+            <div className="fb-secao-topo mt-4">
+              <h2 className="mb-0">Explore por cozinha</h2>
+              <Link to="/explorar" className="fb-ver-tudo">Ver tudo</Link>
+            </div>
+            <div className="fb-cozinhas">
+              {categorias.slice(0, COZINHAS_VISIVEIS).map((c) => (
+                <Link key={c.id} to={`/explorar?categoriaId=${c.id}`} className="fb-cozinha" style={{ background: corDaCozinha(c.id) }}>
+                  <IconeCozinha nome={c.nome} tamanho={44} />
+                  <span className="fb-cozinha-nome">
+                    {c.nome}
+                    <span className="fb-seta"><i className="bi bi-arrow-right" aria-hidden="true"></i></span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
 
+        {/* Recomendados */}
         {recebeRecomendacoes && (
-          <section className="mb-5">
-            <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+          <section className="fb-conteudo fb-secao pt-0">
+            <div className="fb-secao-topo">
               <div>
                 <h2 className="mb-0">Recomendados para você</h2>
-                <p className="fb-cartao-meta">Pelas suas preferências e pelo que você já avaliou e favoritou.</p>
+                <p>Pelas suas preferências e pelo que você já avaliou e favoritou.</p>
               </div>
-              <Link to="/preferencias" className="fb-link">
-                <i className="bi bi-sliders" aria-hidden="true"></i> Ajustar preferências
-              </Link>
+              {recomendacoes?.length > RECOMENDADOS_VISIVEIS && (
+                <button type="button" className="fb-ver-tudo fb-botao-texto"
+                  onClick={() => setVerTodasRecomendacoes(!verTodasRecomendacoes)}>
+                  {verTodasRecomendacoes ? 'Mostrar menos' : `Ver todos (${recomendacoes.length})`}
+                </button>
+              )}
             </div>
 
             <Aviso>{erros.recomendacoes}</Aviso>
@@ -135,133 +222,125 @@ export default function Inicio() {
             {recomendacoes?.length === 0 && (
               <p className="fb-vazio">Você já avaliou todos os restaurantes do FourBites. Volte quando chegarem novos!</p>
             )}
-
             {recomendacoes?.length > 0 && (
+              <div className="row g-4">
+                {recomendadosNaTela.map((item) => (
+                  <div key={item.restaurante.id} className="col-sm-6 col-lg-3">
+                    <CartaoRestaurante restaurante={item.restaurante} compatibilidade={item.compatibilidade} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Ranking: faixa amarela */}
+        <section className="fb-faixa-ranking">
+          <div className="fb-conteudo">
+            <span className="fb-mao">os queridinhos</span>
+            <div className="fb-secao-topo mt-1">
+              <h2 className="mb-0">Ranking {periodo === 'semanal' ? 'da semana' : 'do mês'}</h2>
+              <div className="d-flex gap-2" role="group" aria-label="Período do ranking">
+                {['semanal', 'mensal'].map((p) => (
+                  <button key={p} type="button" aria-pressed={periodo === p}
+                    className={`fb-botao fb-botao-pequeno ${periodo === p ? 'fb-botao-principal' : 'fb-botao-claro'}`}
+                    onClick={() => { setPeriodo(p); setVerTodoRanking(false) }}>
+                    {p === 'semanal' ? 'Semana' : 'Mês'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Aviso>{erros.ranking}</Aviso>
+            {!erros.ranking && ranking === null && <p className="fb-vazio">Carregando…</p>}
+            {ranking?.length === 0 && (
+              <p className="fb-vazio">
+                Nenhum restaurante teve 2 avaliações {periodo === 'semanal' ? 'nos últimos 7 dias' : 'nos últimos 30 dias'} ainda.
+              </p>
+            )}
+            {ranking?.length > 0 && (
               <>
-                <div className="row g-3">
-                  {recomendadosNaTela.map((item) => (
+                <div className="row g-4">
+                  {(verTodoRanking ? ranking : ranking.slice(0, RANKING_VISIVEIS)).map((item) => (
                     <div key={item.restaurante.id} className="col-sm-6 col-lg-3">
-                      <CartaoRestaurante restaurante={item.restaurante} compatibilidade={item.compatibilidade} />
+                      <CartaoRestaurante
+                        restaurante={item.restaurante}
+                        ranking={{ posicao: item.posicao, nota: item.notaPeriodo, avaliacoes: item.avaliacoesPeriodo, periodo }}
+                      />
                     </div>
                   ))}
                 </div>
-                {recomendacoes.length > RECOMENDADOS_VISIVEIS && (
-                  <div className="text-center mt-3">
-                    <button type="button" className="fb-botao fb-botao-claro"
-                      onClick={() => setVerTodasRecomendacoes(!verTodasRecomendacoes)}>
-                      {verTodasRecomendacoes ? 'Mostrar menos' : `Ver todas (${recomendacoes.length})`}
+                {ranking.length > RANKING_VISIVEIS && (
+                  <div className="text-center mt-4">
+                    <button type="button" className="fb-botao fb-botao-claro" onClick={() => setVerTodoRanking(!verTodoRanking)}>
+                      {verTodoRanking ? 'Mostrar menos' : `Ver todo o ranking (${ranking.length})`}
                     </button>
                   </div>
                 )}
               </>
             )}
-          </section>
-        )}
-
-        <section className="mb-5">
-          <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-            <div>
-              <h2 className="mb-0">Ranking {periodo === 'semanal' ? 'da semana' : 'do mês'}</h2>
-              <p className="fb-cartao-meta">
-                Maiores notas {periodo === 'semanal' ? 'dos últimos 7 dias' : 'dos últimos 30 dias'}, entre restaurantes com pelo menos 2 avaliações.
-              </p>
-            </div>
-            <div className="d-flex gap-2" role="group" aria-label="Período do ranking">
-              {['semanal', 'mensal'].map((p) => (
-                <button key={p} type="button" aria-pressed={periodo === p}
-                  className={`fb-chip ${periodo === p ? 'ativo' : ''}`}
-                  onClick={() => { setPeriodo(p); setVerTodoRanking(false) }}>
-                  {p === 'semanal' ? 'Semana' : 'Mês'}
-                </button>
-              ))}
-            </div>
           </div>
+        </section>
 
-          <Aviso>{erros.ranking}</Aviso>
-          {!erros.ranking && ranking === null && <p className="fb-vazio">Carregando…</p>}
-          {ranking?.length === 0 && (
-            <p className="fb-vazio">
-              Nenhum restaurante teve 2 avaliações {periodo === 'semanal' ? 'nos últimos 7 dias' : 'nos últimos 30 dias'} ainda.
-            </p>
-          )}
+        {/* Avaliações recentes + perto de você */}
+        <section className="fb-conteudo pt-5 mt-4">
+          <div className="row g-5">
+            <div className="col-lg-8">
+              <h2 className="mb-0">Avaliações recentes</h2>
+              <p className="mb-4">
+                {recebeRecomendacoes ? 'Primeiro de quem você segue, depois da comunidade.' : 'O que a comunidade anda avaliando.'}
+              </p>
 
-          {ranking?.length > 0 && (
-            <>
-              <div className="row g-3">
-                {(verTodoRanking ? ranking : ranking.slice(0, RANKING_VISIVEIS)).map((item) => (
-                  <div key={item.restaurante.id} className="col-sm-6 col-lg-3">
-                    <CartaoRestaurante
-                      restaurante={item.restaurante}
-                      ranking={{ posicao: item.posicao, nota: item.notaPeriodo, avaliacoes: item.avaliacoesPeriodo, periodo }}
-                    />
-                  </div>
-                ))}
-              </div>
-              {ranking.length > RANKING_VISIVEIS && (
-                <div className="text-center mt-3">
-                  <button type="button" className="fb-botao fb-botao-claro" onClick={() => setVerTodoRanking(!verTodoRanking)}>
-                    {verTodoRanking ? 'Mostrar menos' : `Ver todo o ranking (${ranking.length})`}
+              <Aviso>{erros.feed}</Aviso>
+              {!erros.feed && feed === null && <p className="fb-vazio">Carregando…</p>}
+              {feed?.length === 0 && <p className="fb-vazio">Ainda não há avaliações por aqui.</p>}
+              {feed?.slice(0, feedVisivel).map((a) => <CartaoAvaliacao key={a.id} avaliacao={a} />)}
+              {feed && feed.length > feedVisivel && (
+                <div className="text-center mt-4">
+                  <button type="button" className="fb-botao fb-botao-claro"
+                    onClick={() => setFeedVisivel(feedVisivel + FEED_POR_VEZ)}>
+                    Ver mais avaliações
                   </button>
                 </div>
               )}
-            </>
-          )}
+            </div>
+
+            <aside className="col-lg-4">
+              <section className="fb-perto">
+                <h2 className="mb-0" style={{ fontSize: '1.75rem' }}>Perto de você</h2>
+                <Aviso>{erros.perto}</Aviso>
+
+                {perto === null ? (
+                  <>
+                    <p className="mb-0">Veja os restaurantes mais próximos de onde você está.</p>
+                    <button type="button" className="fb-botao fb-botao-amarelo" onClick={buscarPerto} disabled={buscandoPerto}>
+                      {buscandoPerto ? 'Buscando…' : 'Usar minha localização'}
+                    </button>
+                  </>
+                ) : perto.length === 0 ? (
+                  <p className="mb-0">Nenhum restaurante encontrado.</p>
+                ) : (
+                  <ul className="fb-lista-compacta">
+                    {perto.map((r) => (
+                      <li key={r.id}>
+                        <Link to={`/restaurantes/${r.id}`} className="flex-grow-1 fb-link-discreto">
+                          <strong>{r.nome}</strong>
+                          <small className="d-block fb-cartao-meta mt-0">
+                            {r.categoria?.nome} · {formatarNota(r.distanciaKm)} km
+                          </small>
+                        </Link>
+                        <span className="fb-nota">★ {formatarNota(r.notaMedia)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Link to="/explorar" className="fb-link-discreto fw-bold text-center">Ver todos no Explorar</Link>
+              </section>
+            </aside>
+          </div>
         </section>
-
-        <div className="row g-4">
-          <section className="col-lg-8">
-            <h2 className="mb-0">Avaliações recentes</h2>
-            <p className="fb-cartao-meta mb-3">
-              {recebeRecomendacoes ? 'Primeiro de quem você segue, depois da comunidade.' : 'O que a comunidade anda avaliando.'}
-            </p>
-
-            <Aviso>{erros.feed}</Aviso>
-            {!erros.feed && feed === null && <p className="fb-vazio">Carregando…</p>}
-            {feed?.length === 0 && <p className="fb-vazio">Ainda não há avaliações por aqui.</p>}
-            {feed?.slice(0, feedVisivel).map((a) => <CartaoAvaliacao key={a.id} avaliacao={a} />)}
-            {feed && feed.length > feedVisivel && (
-              <div className="text-center">
-                <button type="button" className="fb-botao fb-botao-claro"
-                  onClick={() => setFeedVisivel(feedVisivel + FEED_POR_VEZ)}>
-                  Ver mais avaliações
-                </button>
-              </div>
-            )}
-          </section>
-
-          <aside className="col-lg-4">
-            <section className="fb-cartao p-4 mb-3">
-              <h2 className="mb-3"><i className="bi bi-geo-alt fb-icone-titulo" aria-hidden="true"></i> Perto de você</h2>
-              <Aviso>{erros.perto}</Aviso>
-
-              {perto === null ? (
-                <button type="button" className="fb-botao fb-botao-suave w-100" onClick={buscarPerto} disabled={buscandoPerto}>
-                  {buscandoPerto ? 'Buscando…' : 'Usar minha localização'}
-                </button>
-              ) : perto.length === 0 ? (
-                <p className="fb-cartao-meta mb-0">Nenhum restaurante encontrado.</p>
-              ) : (
-                <ul className="fb-lista-compacta">
-                  {perto.map((r) => (
-                    <li key={r.id}>
-                      <Link to={`/restaurantes/${r.id}`} className="flex-grow-1 fb-link-discreto">
-                        {r.nome}
-                        <small className="d-block fb-cartao-meta mt-0">
-                          {r.categoria?.nome} · {formatarNota(r.distanciaKm)} km
-                        </small>
-                      </Link>
-                      <span className="fb-nota">
-                        <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <Link to="/explorar" className="fb-link d-block text-center mt-3">Ver todos no Explorar</Link>
-            </section>
-          </aside>
-        </div>
       </main>
+      <Rodape />
     </>
   )
 }

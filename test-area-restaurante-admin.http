@@ -1,0 +1,213 @@
+### =============================================================
+### Testes da área do restaurante (responsável) e das filas do admin
+### Rode na ordem. Use o banco LOCAL.
+### Antes: crie uma conta de responsável (teste 17 do test-usuarios.http) e tenha um USUARIO comum.
+
+@api = http://localhost:8080
+@tokenResponsavel = COLE_O_TOKEN_DO_RESPONSAVEL
+@tokenAdmin = COLE_O_TOKEN_DO_ADMIN
+@tokenUsuario = COLE_O_TOKEN_DE_UM_USUARIO
+# id do restaurante criado no teste 1 (aparece na resposta)
+@restauranteId = 1
+# id da alteração criada no teste 13 (aparece em "alteracaoPendente.id")
+@alteracaoId = 1
+
+### Login (responsável, admin ou usuário)
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "EMAIL",
+  "senha": "SENHA"
+}
+
+### ---------------- RESPONSÁVEL: CADASTRO ----------------
+
+### 1) Novo cadastro com "Outra categoria" -> 201, "status": "PENDENTE", "categoria": null,
+###    "categoriaSugerida": "Árabe". Se der 409 de CNPJ, troque por outro CNPJ válido.
+POST {{api}}/meus-restaurantes
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Casa Árabe Teste",
+  "cnpj": "11.222.333/0001-81",
+  "categoriaId": null,
+  "categoriaSugerida": "Árabe",
+  "descricao": "Esfihas e pratos árabes.",
+  "telefone": "(13) 3222-0000",
+  "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$",
+  "formasPagamentoIds": [2, 3],
+  "horarios": [ { "diaSemana": 2, "abertura": "11:30", "fechamento": "22:00" } ],
+  "aceitaPets": false,
+  "acessivel": true,
+  "fotos": [],
+  "cardapioUrl": null,
+  "cardapioLink": null
+}
+
+### 2) Sem CNPJ -> 400, "cnpj": "O CNPJ é obrigatório."
+POST {{api}}/meus-restaurantes
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Sem CNPJ", "cnpj": "", "categoriaId": 1, "descricao": "x", "telefone": "(13) 3222-0000",
+  "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$", "formasPagamentoIds": [], "horarios": [], "aceitaPets": false, "acessivel": false
+}
+
+### 3) Meus restaurantes -> 200 com o restaurante do teste 1
+GET {{api}}/meus-restaurantes
+Authorization: Bearer {{tokenResponsavel}}
+
+### 4) Ainda pendente: o perfil público não mostra -> 404
+GET {{api}}/restaurantes/{{restauranteId}}
+
+### 5) Editar enquanto está em análise -> 400 "Este cadastro está em análise..."
+PUT {{api}}/meus-restaurantes/{{restauranteId}}
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Casa Árabe Teste", "categoriaId": null, "categoriaSugerida": "Árabe",
+  "descricao": "Tentando editar.", "telefone": "(13) 3222-0000", "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$", "formasPagamentoIds": [2, 3], "horarios": [], "aceitaPets": false, "acessivel": true
+}
+
+### ---------------- ADMIN: FILA DE CADASTROS ----------------
+
+### 6) Fila de pendentes (do mais antigo ao mais novo) -> 200
+GET {{api}}/admin/restaurantes?status=PENDENTE
+Authorization: Bearer {{tokenAdmin}}
+
+### 7) Todos, com busca -> 200
+GET {{api}}/admin/restaurantes?busca=arabe
+Authorization: Bearer {{tokenAdmin}}
+
+### 8) Usuário comum no painel -> 403
+GET {{api}}/admin/restaurantes
+Authorization: Bearer {{tokenUsuario}}
+
+### 9) Rejeitar sem motivo -> 400, "motivo": "Escreva o motivo da rejeição."
+POST {{api}}/admin/restaurantes/{{restauranteId}}/rejeitar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "motivo": "" }
+
+### 10) Rejeitar com motivo -> 200, "status": "REJEITADO", "motivoRejeicao" preenchido
+POST {{api}}/admin/restaurantes/{{restauranteId}}/rejeitar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "motivo": "Faltou o horário de sábado." }
+
+### 11) Responsável corrige e reenvia -> 200, volta para "PENDENTE" e "motivoRejeicao": null
+PUT {{api}}/meus-restaurantes/{{restauranteId}}
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Casa Árabe Teste", "categoriaId": null, "categoriaSugerida": "Árabe",
+  "descricao": "Esfihas e pratos árabes.", "telefone": "(13) 3222-0000", "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$", "formasPagamentoIds": [2, 3],
+  "horarios": [ { "diaSemana": 2, "abertura": "11:30", "fechamento": "22:00" }, { "diaSemana": 6, "abertura": "11:30", "fechamento": "23:00" } ],
+  "aceitaPets": false, "acessivel": true, "fotos": []
+}
+
+### 12a) Aprovar sem resolver a categoria sugerida -> 400 no campo "categoriaId"
+POST {{api}}/admin/restaurantes/{{restauranteId}}/aprovar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{}
+
+### 12b) Aprovar associando a uma categoria existente -> 200, "status": "APROVADO"
+###      (para criar a categoria nova, troque por { "novaCategoria": "Árabe" })
+POST {{api}}/admin/restaurantes/{{restauranteId}}/aprovar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "categoriaId": 1 }
+
+### 12c) Agora aparece para todo mundo -> 200
+GET {{api}}/restaurantes/{{restauranteId}}
+
+### ---------------- ALTERAÇÕES DE RESTAURANTE APROVADO ----------------
+
+### 13) Responsável edita o aprovado -> 200 com "alteracaoPendente": { "id": ..., "status": "PENDENTE" }
+###     A descrição pública continua a antiga até o admin aprovar.
+PUT {{api}}/meus-restaurantes/{{restauranteId}}
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Casa Árabe Teste", "categoriaId": 1,
+  "descricao": "Agora com rodízio de esfihas às quartas.", "telefone": "(13) 3222-0000", "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$", "formasPagamentoIds": [2, 3],
+  "horarios": [ { "diaSemana": 2, "abertura": "11:30", "fechamento": "22:00" }, { "diaSemana": 6, "abertura": "11:30", "fechamento": "23:00" } ],
+  "aceitaPets": true, "acessivel": true, "fotos": []
+}
+
+### 14) Editar de novo com uma alteração já em análise -> 409
+PUT {{api}}/meus-restaurantes/{{restauranteId}}
+Authorization: Bearer {{tokenResponsavel}}
+Content-Type: application/json
+
+{
+  "nome": "Casa Árabe Teste", "categoriaId": 1, "descricao": "Outra mudança.", "telefone": "(13) 3222-0000",
+  "dataFundacao": "2018-05-01",
+  "endereco": { "cep": "11060-000", "logradouro": "Avenida Ana Costa", "numero": "340", "complemento": "", "bairro": "Gonzaga", "cidade": "Santos", "uf": "SP" },
+  "faixaPreco": "$$", "formasPagamentoIds": [2], "horarios": [], "aceitaPets": true, "acessivel": true
+}
+
+### 15) Fila de alterações -> 200 com "restaurante" (publicado) e "proposto" (o que o responsável mandou)
+GET {{api}}/admin/alteracoes
+Authorization: Bearer {{tokenAdmin}}
+
+### 16) Aprovar a alteração -> 204. Rode o 12c de novo: descrição nova e "aceitaPets": true
+POST {{api}}/admin/alteracoes/{{alteracaoId}}/aprovar
+Authorization: Bearer {{tokenAdmin}}
+
+### 17) Aprovar a mesma de novo -> 400 "Esta alteração não está aguardando análise."
+POST {{api}}/admin/alteracoes/{{alteracaoId}}/aprovar
+Authorization: Bearer {{tokenAdmin}}
+
+### (Para testar a rejeição: rode o 13 de novo, pegue o novo id e use este)
+POST {{api}}/admin/alteracoes/{{alteracaoId}}/rejeitar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "motivo": "A foto de capa não é do restaurante." }
+
+### ---------------- CATEGORIAS E AVALIAÇÕES ----------------
+
+### 18) Categorias com a quantidade de restaurantes -> 200
+GET {{api}}/admin/categorias
+Authorization: Bearer {{tokenAdmin}}
+
+### 19) Renomear para um nome que já existe -> 409 "Já existe uma categoria com este nome."
+###     (troque 1 e "Italiana" conforme o seu banco)
+PUT {{api}}/admin/categorias/1
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "nome": "Italiana" }
+
+### 20) Renomear de verdade -> 200 (depois volte ao nome original rodando de novo com o nome antigo)
+PUT {{api}}/admin/categorias/1
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "nome": "Brasileira Caseira" }
+
+### 21) Avaliações para moderar, com busca -> 200
+GET {{api}}/admin/avaliacoes?busca=sabor
+Authorization: Bearer {{tokenAdmin}}

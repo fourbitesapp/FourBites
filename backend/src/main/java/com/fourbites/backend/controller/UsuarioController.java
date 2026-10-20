@@ -1,5 +1,7 @@
 package com.fourbites.backend.controller;
 
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fourbites.backend.dto.AtualizarUsuarioRequest;
 import com.fourbites.backend.dto.UsuarioPublicoResponse;
 import com.fourbites.backend.dto.UsuarioResponse;
+import com.fourbites.backend.dto.UsuarioResumoResponse;
 import com.fourbites.backend.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -28,6 +31,12 @@ public class UsuarioController {
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
+    }
+
+    // Público: busca de pessoas por nome ou @username (GET /usuarios?busca=joao)
+    @GetMapping
+    public List<UsuarioResumoResponse> buscar(@RequestParam(defaultValue = "") String busca) {
+        return usuarioService.buscar(busca);
     }
 
     // Público

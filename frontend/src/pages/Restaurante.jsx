@@ -3,13 +3,18 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
-import Estrelas from '../components/Estrelas.jsx'
+import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
+import IconeCozinha from '../components/IconeCozinha.jsx'
+import JanelaFavoritosCheia from '../components/JanelaFavoritosCheia.jsx'
 import MapaRestaurante from '../components/MapaRestaurante.jsx'
+import Rodape from '../components/Rodape.jsx'
 import SeloCompatibilidade from '../components/SeloCompatibilidade.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
-import { agruparHorarios, estaAberto, formatarData, formatarNota, iniciais } from '../utils/formatos.js'
+import { corDaCozinha } from '../utils/cozinhas.js'
+import { agruparHorarios, estaAberto, formatarNota } from '../utils/formatos.js'
 
+// Perfil do restaurante: fotos, notas, avaliações e, ao lado, mapa, horário e cardápio.
 export default function Restaurante() {
   const { id } = useParams()
   const local = useLocation()
@@ -18,6 +23,9 @@ export default function Restaurante() {
   const [restaurante, setRestaurante] = useState(null)
   const [avaliacoes, setAvaliacoes] = useState([])
   const [erro, setErro] = useState(null)
+  const [favoritosCheios, setFavoritosCheios] = useState(null) // lista atual, quando a janela de substituir está aberta
+  const [erroFavorito, setErroFavorito] = useState(null)
+  const [salvandoFavorito, setSalvandoFavorito] = useState(false)
 
   useEffect(() => {
     let cancelada = false
@@ -39,10 +47,11 @@ export default function Restaurante() {
     return (
       <>
         <BarraNavegacao />
-        <main className="container py-5">
+        <main className="fb-conteudo">
           <Aviso>{erro.message}</Aviso>
           <Link to="/explorar" className="fb-link">Voltar para a busca</Link>
         </main>
+        <Rodape />
       </>
     )
   }
@@ -51,12 +60,52 @@ export default function Restaurante() {
     return (
       <>
         <BarraNavegacao />
-        <main className="container py-5"><p className="fb-vazio">Carregando…</p></main>
+        <main className="fb-conteudo"><p className="fb-vazio">Carregando…</p></main>
       </>
     )
   }
 
   const r = restaurante
+
+  // Favoritar: vai para a primeira posição livre; se as 4 estiverem ocupadas, abre a janela para escolher quem sai.
+  // Se já é favorito, o botão tira dos favoritos.
+  async function alternarFavorito() {
+    setErroFavorito(null)
+    setSalvandoFavorito(true)
+    try {
+      if (r.favoritoPosicao) {
+        await api.removerFavorito(r.favoritoPosicao)
+        setRestaurante({ ...r, favoritoPosicao: null })
+        return
+      }
+      const meus = await api.listarMeusFavoritos()
+      const livre = [1, 2, 3, 4].find((p) => !meus.some((f) => f.posicao === p))
+      if (livre) {
+        await api.colocarFavorito(livre, r.id)
+        setRestaurante({ ...r, favoritoPosicao: livre })
+      } else {
+        setFavoritosCheios(meus)
+      }
+    } catch (falha) {
+      setErroFavorito(falha.message)
+    } finally {
+      setSalvandoFavorito(false)
+    }
+  }
+
+  async function substituirFavorito(posicao) {
+    setSalvandoFavorito(true)
+    try {
+      await api.colocarFavorito(posicao, r.id)
+      setRestaurante({ ...r, favoritoPosicao: posicao })
+      setFavoritosCheios(null)
+    } catch (falha) {
+      setErroFavorito(falha.message)
+      setFavoritosCheios(null)
+    } finally {
+      setSalvandoFavorito(false)
+    }
+  }
   const aberto = estaAberto(r.horarios)
   const podeAvaliar = usuario?.papel === 'USUARIO'
   const mapa = `https://www.openstreetmap.org/?mlat=${r.latitude}&mlon=${r.longitude}#map=17/${r.latitude}/${r.longitude}`
@@ -64,19 +113,22 @@ export default function Restaurante() {
   return (
     <>
       <BarraNavegacao />
-      <main className="container py-4">
+      <main className="fb-conteudo">
         {r.fotos.length > 0 ? (
           <div className={`fb-galeria fb-galeria-${Math.min(r.fotos.length, 3)}`}>
             {r.fotos.slice(0, 3).map((url) => <img key={url} src={url} alt="" />)}
           </div>
         ) : (
-          <div className="fb-galeria-vazia"><i className="bi bi-fork-knife" aria-hidden="true"></i></div>
+          <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria?.id) }}>
+            <IconeCozinha nome={r.categoria?.nome} tamanho={110} />
+          </div>
         )}
 
-        <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-4">
-          <div>
-            <h1 className="mb-1">{r.nome}</h1>
-            <p className="fb-subtitulo mb-2">
+        {/* Cabeçalho */}
+        <div className="d-flex flex-wrap justify-content-between align-items-start gap-4 mt-5">
+          <div style={{ flex: '1 1 480px' }}>
+            <h1 className="mb-2">{r.nome}</h1>
+            <p className="fb-subtitulo fb-apagado mb-3">
               {r.categoria?.nome} · {r.faixaPreco} · {r.bairro}, {r.cidade} · Desde {r.dataFundacao.slice(0, 4)}
             </p>
             <div className="d-flex flex-wrap gap-2">
@@ -86,33 +138,40 @@ export default function Restaurante() {
                 </span>
               )}
               {r.aceitaPets && <span className="fb-etiqueta">Pet friendly</span>}
-              {r.acessivel && <span className="fb-etiqueta">Acessível</span>}
+              {r.acessivel && <span className="fb-etiqueta fb-etiqueta-azul">Acessível</span>}
             </div>
           </div>
 
-          <div className="text-md-end">
-            <div className="d-flex flex-wrap align-items-center justify-content-md-end gap-3">
+          <div className="d-flex flex-column align-items-md-end gap-3">
+            <div className="d-flex flex-wrap align-items-center gap-3">
               {r.compatibilidade !== null && r.compatibilidade !== undefined && (
                 <SeloCompatibilidade valor={r.compatibilidade} />
               )}
-              <div className="fb-nota-grande">
-                <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
+              <div className="text-md-end">
+                <div className="fb-nota-grande">★ {formatarNota(r.notaMedia)}</div>
+                <div className="fb-cartao-meta">
+                  {r.totalAvaliacoes === 0
+                    ? 'Ainda sem avaliações'
+                    : `${r.totalAvaliacoes} ${r.totalAvaliacoes === 1 ? 'avaliação' : 'avaliações'}`}
+                </div>
               </div>
-            </div>
-            <div className="fb-cartao-meta mb-2">
-              {r.totalAvaliacoes === 0
-                ? 'Ainda sem avaliações'
-                : `${r.totalAvaliacoes} ${r.totalAvaliacoes === 1 ? 'avaliação' : 'avaliações'}`}
             </div>
 
             {podeAvaliar && (
-              <Link to={`/restaurantes/${r.id}/avaliar`} className="fb-botao fb-botao-principal">
-                <i className="bi bi-star" aria-hidden="true"></i>{' '}
-                {r.minhaAvaliacaoId ? 'Editar minha avaliação' : 'Avaliar'}
-              </Link>
+              <div className="d-flex flex-wrap gap-2 justify-content-md-end">
+                <button type="button" className="fb-botao fb-botao-contorno" onClick={alternarFavorito}
+                  disabled={salvandoFavorito} aria-pressed={Boolean(r.favoritoPosicao)}>
+                  <i className={r.favoritoPosicao ? 'bi bi-heart-fill' : 'bi bi-heart'} aria-hidden="true"></i>
+                  {r.favoritoPosicao ? 'Nos favoritos' : 'Favoritar'}
+                </button>
+                <Link to={`/restaurantes/${r.id}/avaliar`} className="fb-botao fb-botao-principal">
+                  {r.minhaAvaliacaoId ? 'Editar minha avaliação' : 'Avaliar'}
+                </Link>
+              </div>
             )}
+            {erroFavorito && <div className="fb-erro-campo">{erroFavorito}</div>}
             {!logado && (
-              <Link to="/login" state={{ voltarPara: local.pathname }} className="fb-botao fb-botao-claro">
+              <Link to="/login" state={{ voltarPara: local.pathname }} className="fb-botao fb-botao-principal">
                 Entre para avaliar
               </Link>
             )}
@@ -120,20 +179,23 @@ export default function Restaurante() {
         </div>
 
         {logado && !podeAvaliar && (
-          <Aviso tipo="info">Avaliar é exclusivo para contas de usuário. Você está só visualizando.</Aviso>
+          <div className="mt-4">
+            <Aviso tipo="info">Avaliar é exclusivo para contas de usuário. Você está só visualizando.</Aviso>
+          </div>
         )}
 
-        <div className="row g-4 mt-1">
-          <div className="col-lg-8">
-            <section className="fb-cartao p-4 mb-3">
-              <h2>Sobre</h2>
-              <p className="mb-0">{r.descricao}</p>
+        <div className="row g-4 g-lg-5 mt-2">
+          {/* Coluna principal */}
+          <div className="col-lg-8 d-flex flex-column gap-4">
+            <section className="fb-caixa">
+              <h2 style={{ fontSize: '1.65rem' }}>Sobre</h2>
+              <p className="mb-0" style={{ color: 'var(--fb-tinta)', fontSize: '1.05rem' }}>{r.descricao}</p>
             </section>
 
             {r.medias && (
-              <section className="fb-cartao p-4 mb-3">
-                <h2>Notas por categoria</h2>
-                <div className="row g-3">
+              <section className="fb-caixa">
+                <h2 className="mb-4" style={{ fontSize: '1.65rem' }}>Notas por categoria</h2>
+                <div className="row g-4">
                   {[
                     ['Comida', r.medias.comida],
                     ['Atendimento', r.medias.atendimento],
@@ -141,9 +203,9 @@ export default function Restaurante() {
                     ['Custo-benefício', r.medias.custo],
                   ].map(([nome, nota]) => (
                     <div key={nome} className="col-sm-6">
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between fb-autor">
                         <span>{nome}</span>
-                        <strong>{formatarNota(nota)}</strong>
+                        <span>{formatarNota(nota)}</span>
                       </div>
                       <div className="fb-barra-nota"><span style={{ width: `${(nota / 5) * 100}%` }}></span></div>
                     </div>
@@ -152,50 +214,23 @@ export default function Restaurante() {
               </section>
             )}
 
-            <h2 className="mt-4">
-              Avaliações <span className="fb-contagem">({avaliacoes.length})</span>
-            </h2>
+            <section className="mt-2">
+              <h2 className="mb-4">
+                Avaliações <span className="fb-contagem">({avaliacoes.length})</span>
+              </h2>
 
-            {avaliacoes.length === 0 && (
-              <p className="fb-vazio">Ninguém avaliou este restaurante ainda. Seja a primeira pessoa!</p>
-            )}
-
-            {avaliacoes.map((a) => (
-              <article key={a.id} className="fb-cartao p-3 mb-3 d-flex gap-3">
-                <span className="fb-avatar">{iniciais(a.usuario.nome)}</span>
-                <div className="flex-grow-1">
-                  <div className="d-flex justify-content-between align-items-start gap-2">
-                    <div>
-                      <strong>{a.usuario.nome}</strong>
-                      <div className="fb-cartao-meta">
-                        @{a.usuario.username} · {formatarData(a.dataAvaliacao)}{a.editada && ' · editada'}
-                      </div>
-                    </div>
-                    <div className="text-end">
-                      <span className="fb-nota-avaliacao">{formatarNota(a.notaGeral, 2)}</span>
-                      <span className="fb-cartao-meta"> / 5</span>
-                      <div><Estrelas valor={a.notaGeral} /></div>
-                    </div>
-                  </div>
-                  <div className="fb-cartao-meta mt-1">
-                    Comida {a.notaComida} · Ambiente {a.notaAmbiente} · Atendimento {a.notaAtendimento} ·
-                    Custo-benefício {a.notaCusto}
-                  </div>
-                  {a.comentario && <p className="mt-2 mb-0">{a.comentario}</p>}
-                  {a.fotos.length > 0 && (
-                    <div className="d-flex flex-wrap gap-2 mt-2">
-                      {a.fotos.map((url) => <img key={url} src={url} alt="" className="fb-foto-avaliacao" />)}
-                    </div>
-                  )}
-                </div>
-              </article>
-            ))}
+              {avaliacoes.length === 0 && (
+                <p className="fb-vazio">Ninguém avaliou este restaurante ainda. Seja a primeira pessoa!</p>
+              )}
+              {avaliacoes.map((a) => <CartaoAvaliacao key={a.id} avaliacao={a} mostrarRestaurante={false} />)}
+            </section>
           </div>
 
-          <aside className="col-lg-4">
-            <section className="fb-cartao p-4 mb-3">
+          {/* Coluna lateral */}
+          <aside className="col-lg-4 d-flex flex-column gap-4">
+            <section className="fb-cartao overflow-hidden">
               <MapaRestaurante latitude={r.latitude} longitude={r.longitude} nome={r.nome} />
-              <ul className="fb-lista-info">
+              <ul className="fb-lista-info p-4">
                 <li>
                   <i className="bi bi-geo-alt" aria-hidden="true"></i>
                   <span>
@@ -217,8 +252,8 @@ export default function Restaurante() {
             </section>
 
             {r.horarios.length > 0 && (
-              <section className="fb-cartao p-4 mb-3">
-                <h2>Horário de funcionamento</h2>
+              <section className="fb-caixa">
+                <h2 className="mb-3" style={{ fontSize: '1.4rem' }}>Horário de funcionamento</h2>
                 <table className="fb-horarios">
                   <tbody>
                     {agruparHorarios(r.horarios).map((linha) => (
@@ -233,16 +268,16 @@ export default function Restaurante() {
             )}
 
             {(r.cardapioUrl || r.cardapioLink) && (
-              <section className="fb-cartao p-4 mb-3">
-                <h2>Cardápio</h2>
+              <section className="fb-caixa" style={{ background: 'var(--fb-creme)' }}>
+                <h2 className="mb-3" style={{ fontSize: '1.4rem' }}>Cardápio</h2>
                 {r.cardapioUrl && (
-                  <a href={r.cardapioUrl} target="_blank" rel="noreferrer" className="fb-botao fb-botao-suave w-100">
-                    <i className="bi bi-file-earmark-text" aria-hidden="true"></i> Ver cardápio
+                  <a href={r.cardapioUrl} target="_blank" rel="noreferrer" className="fb-botao fb-botao-amarelo w-100">
+                    Ver cardápio
                   </a>
                 )}
                 {r.cardapioLink && (
-                  <a href={r.cardapioLink} target="_blank" rel="noreferrer" className="fb-link d-block text-center mt-2">
-                    <i className="bi bi-link-45deg" aria-hidden="true"></i> Abrir link externo
+                  <a href={r.cardapioLink} target="_blank" rel="noreferrer" className="fb-link fw-bold d-block text-center mt-3">
+                    Abrir link externo
                   </a>
                 )}
               </section>
@@ -250,6 +285,12 @@ export default function Restaurante() {
           </aside>
         </div>
       </main>
+      <Rodape />
+
+      {favoritosCheios && (
+        <JanelaFavoritosCheia novo={r} favoritos={favoritosCheios} enviando={salvandoFavorito}
+          aoConfirmar={substituirFavorito} aoFechar={() => setFavoritosCheios(null)} />
+      )}
     </>
   )
 }

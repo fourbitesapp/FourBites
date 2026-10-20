@@ -1,0 +1,55 @@
+### =============================================================
+### Testes: capa do perfil, busca de pessoas e categorias novas (migration V4)
+### Use o banco LOCAL. Ao subir o back-end, o Flyway roda a V4 sozinho.
+
+@api = http://localhost:8080
+@token = COLE_O_TOKEN_DE_UM_USUARIO
+
+### Login
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{ "email": "EMAIL", "senha": "SENHA" }
+
+### 1) Meus dados -> 200 com "capaCor": "vermelha" e "capaFrase": "come-bem" (padrão)
+GET {{api}}/usuarios/me
+Authorization: Bearer {{token}}
+
+### 2) Trocar a capa -> 200 com "capaCor": "verde" e "capaFrase": "lugar-novo"
+###    (troque nome/username/telefone pelos seus)
+PUT {{api}}/usuarios/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nome": "SEU NOME", "username": "SEU_USERNAME", "bio": "", "telefone": "(13) 99999-0000",
+  "capaCor": "verde", "capaFrase": "lugar-novo" }
+
+### 3) Cor que não existe -> 400 no campo "capaCor"
+PUT {{api}}/usuarios/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nome": "SEU NOME", "username": "SEU_USERNAME", "bio": "", "telefone": "(13) 99999-0000",
+  "capaCor": "roxa", "capaFrase": "lugar-novo" }
+
+### 4) Sem os campos da capa -> 200 e a capa continua a do teste 2
+PUT {{api}}/usuarios/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nome": "SEU NOME", "username": "SEU_USERNAME", "bio": "", "telefone": "(13) 99999-0000" }
+
+### 5) Perfil público mostra a capa -> 200 com "capaCor" e "capaFrase"
+GET {{api}}/usuarios/SEU_USERNAME
+
+### 6) Busca de pessoas (sem login) -> 200, lista com id, nome, username, fotoPerfil
+GET {{api}}/usuarios?busca=gio
+
+### 7) Busca com @ também funciona -> 200
+GET {{api}}/usuarios?busca=@gio
+
+### 8) Menos de 2 letras -> 200 com lista vazia []
+GET {{api}}/usuarios?busca=g
+
+### 9) Categorias -> 200 com as 15 (as 5 antigas + Árabe, Mexicana, Chinesa, ...)
+GET {{api}}/categorias

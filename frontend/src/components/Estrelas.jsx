@@ -20,9 +20,10 @@ export default function Estrelas({ valor, aoMudar, rotulo }) {
           role="radio"
           aria-checked={valor === n}
           aria-label={`${n} de 5`}
+          className={n <= valor ? 'cheia' : ''}
           onClick={() => aoMudar(n)}
         >
-          <i className={n <= valor ? 'bi bi-star-fill' : 'bi bi-star'} aria-hidden="true"></i>
+          ★
         </button>
       ))}
     </span>

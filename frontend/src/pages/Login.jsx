@@ -3,9 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import Campo from '../components/Campo.jsx'
+import TelaAcesso from '../components/TelaAcesso.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
+import { erroDeValidacao, temErros, validarEmail } from '../utils/validacoes.js'
 
+// Tela de entrar: painel vermelho à esquerda e o formulário à direita.
 export default function Login() {
   const { entrar } = useAuth()
   const navegar = useNavigate()
@@ -31,6 +34,11 @@ export default function Login() {
 
   async function aoEnviar(evento) {
     evento.preventDefault()
+    const errosNaTela = { ...validarEmail(email), ...(senha ? {} : { senha: 'A senha é obrigatória.' }) }
+    if (temErros(errosNaTela)) {
+      setErro(erroDeValidacao(errosNaTela))
+      return
+    }
     setErro(null)
     setEnviando(true)
     try {
@@ -51,73 +59,56 @@ export default function Login() {
   }
 
   return (
-    <div className="fb-acesso">
-      <aside className="fb-acesso-vitrine">
-        <Link to="/" className="fb-marca fb-marca-grande">
-          <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
-          fourbites
-        </Link>
-        <h2>Descubra restaurantes pela opinião de quem foi de verdade.</h2>
-        <ul className="fb-vantagens">
-          <li><i className="bi bi-star-fill" aria-hidden="true"></i> Notas separadas para comida, ambiente, atendimento e custo-benefício</li>
-          <li><i className="bi bi-check-lg" aria-hidden="true"></i> Avaliações orgânicas, sem conteúdo patrocinado</li>
-          <li><i className="bi bi-heart" aria-hidden="true"></i> Recomendações que combinam com o seu gosto</li>
-        </ul>
-      </aside>
+    <TelaAcesso frase="bem-vindo de volta!" titulo="Seu próximo lugar favorito tá aqui.">
+      <div className="fb-abas">
+        <span className="fb-aba ativa" aria-current="page">Entrar</span>
+        <Link to="/cadastro" className="fb-aba">Criar conta</Link>
+      </div>
 
-      <main className="fb-acesso-formulario">
-        <div className="fb-acesso-caixa">
-          <h1>Bem-vindo ao FourBites</h1>
-          <p className="fb-subtitulo">Entre com seu e-mail e senha. O mesmo acesso vale para clientes e restaurantes.</p>
+      <div>
+        <h1 className="mb-2">Bora entrar</h1>
+        <p className="fb-subtitulo mb-0">O mesmo acesso vale para clientes e restaurantes.</p>
+      </div>
 
-          <form onSubmit={aoEnviar} noValidate>
-            <Aviso>{erro?.message}</Aviso>
+      <form onSubmit={aoEnviar} noValidate className="mt-2">
+        {!erro && <Aviso tipo="info">{local.state?.aviso}</Aviso>}
+        <Aviso>{erro?.message}</Aviso>
 
-            <Campo
-              rotulo="E-mail" name="email" type="email" icone="bi-envelope" placeholder="seu@email.com"
-              autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
-              erro={erro?.campos.email} required
+        <Campo
+          rotulo="E-mail" name="email" type="email" icone="bi-envelope" placeholder="seu@email.com"
+          autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          erro={erro?.campos.email} required
+        />
+
+        <div className="mb-2">
+          <label htmlFor="senha" className="fb-rotulo">Senha</label>
+          <div className={`fb-campo ${erro?.campos.senha ? 'fb-campo-erro' : ''}`}>
+            <i className="bi bi-lock" aria-hidden="true"></i>
+            <input
+              id="senha" type={mostrarSenha ? 'text' : 'password'} placeholder="Sua senha"
+              autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} required
             />
-
-            <div className="mb-2">
-              <label htmlFor="senha" className="fb-rotulo">Senha</label>
-              <div className={`fb-campo ${erro?.campos.senha ? 'fb-campo-erro' : ''}`}>
-                <i className="bi bi-lock" aria-hidden="true"></i>
-                <input
-                  id="senha" type={mostrarSenha ? 'text' : 'password'} placeholder="Senha"
-                  autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} required
-                />
-                <button
-                  type="button" className="fb-campo-acao" onClick={() => setMostrarSenha(!mostrarSenha)}
-                  aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
-                >
-                  <i className={mostrarSenha ? 'bi bi-eye-slash' : 'bi bi-eye'} aria-hidden="true"></i>
-                </button>
-              </div>
-              {erro?.campos.senha && <div className="fb-erro-campo">{erro.campos.senha}</div>}
-            </div>
-
-            <button type="submit" className="fb-botao fb-botao-principal w-100 mt-3" disabled={enviando}>
-              {enviando ? 'Entrando…' : 'Entrar'}
+            <button
+              type="button" className="fb-campo-acao" onClick={() => setMostrarSenha(!mostrarSenha)}
+              aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+            >
+              <i className={mostrarSenha ? 'bi bi-eye-slash' : 'bi bi-eye'} aria-hidden="true"></i>
             </button>
-          </form>
-
-          <div className="fb-divisor"><span>Ainda não tem conta?</span></div>
-
-          <Link to="/cadastro" className="fb-cartao fb-cartao-opcao">
-            <span className="fb-icone-suave"><i className="bi bi-person" aria-hidden="true"></i></span>
-            <span>
-              <strong>Sou cliente</strong>
-              <small>Avalie restaurantes, salve favoritos e receba recomendações.</small>
-              <span className="fb-link">Criar conta <i className="bi bi-arrow-right" aria-hidden="true"></i></span>
-            </span>
-          </Link>
-
-          <p className="text-center mt-4 mb-0">
-            <Link to="/explorar" className="fb-link-discreto">Continuar sem entrar e só explorar</Link>
-          </p>
+          </div>
+          {erro?.campos.senha && <div className="fb-erro-campo">{erro.campos.senha}</div>}
         </div>
-      </main>
-    </div>
+        <div className="text-end">
+          <Link to="/esqueci-senha" className="fb-sublinhado-leve small">Esqueci minha senha</Link>
+        </div>
+
+        <button type="submit" className="fb-botao fb-botao-principal w-100 mt-4" disabled={enviando}>
+          {enviando ? 'Entrando…' : 'Entrar'}
+        </button>
+      </form>
+
+      <div className="fb-divisor my-2">ou</div>
+
+      <Link to="/explorar" className="fb-botao fb-botao-suave w-100">Continuar sem entrar e só explorar</Link>
+    </TelaAcesso>
   )
 }

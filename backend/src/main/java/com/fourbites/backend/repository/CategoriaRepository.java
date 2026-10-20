@@ -9,4 +9,6 @@ import com.fourbites.backend.entity.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 
     Optional<Categoria> findByNomeIgnoreCase(String nome);
+
+    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Integer id);
 }

@@ -3,13 +3,16 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import Campo from '../components/Campo.jsx'
+import TelaAcesso from '../components/TelaAcesso.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
+import { erroDeValidacao, temErros, validarCadastro } from '../utils/validacoes.js'
 
 const FORMULARIO_VAZIO = {
   nome: '', username: '', email: '', dataNascimento: '', telefone: '', senha: '', confirmacaoSenha: '',
 }
 
+// Criar conta de cliente: mesmo molde da tela de entrar.
 export default function Cadastro() {
   const { entrar } = useAuth()
   const navegar = useNavigate()
@@ -24,6 +27,11 @@ export default function Cadastro() {
 
   async function aoEnviar(evento) {
     evento.preventDefault()
+    const errosNaTela = validarCadastro(dados)
+    if (temErros(errosNaTela)) {
+      setErro(erroDeValidacao(errosNaTela))
+      return
+    }
     setErro(null)
     setEnviando(true)
     try {
@@ -40,16 +48,18 @@ export default function Cadastro() {
   const campos = erro?.campos || {}
 
   return (
-    <div className="fb-pagina-estreita">
-      <Link to="/login" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar</Link>
-
-      <div className="text-center my-4">
-        <span className="fb-logo fb-logo-grande"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
-        <h1 className="mt-3">Criar conta</h1>
-        <p className="fb-subtitulo">Comece a avaliar e descobrir restaurantes.</p>
+    <TelaAcesso frase="que bom te ver por aqui!" titulo="Avalie, salve favoritos e descubra onde comer.">
+      <div className="fb-abas">
+        <Link to="/login" className="fb-aba">Entrar</Link>
+        <span className="fb-aba ativa" aria-current="page">Criar conta</span>
       </div>
 
-      <form onSubmit={aoEnviar} className="fb-cartao p-4" noValidate>
+      <div>
+        <h1 className="mb-2">Bora criar sua conta</h1>
+        <p className="fb-subtitulo mb-0">Leva um minutinho e já dá para começar a avaliar.</p>
+      </div>
+
+      <form onSubmit={aoEnviar} noValidate className="mt-2">
         <Aviso>{erro?.message}</Aviso>
 
         <Campo rotulo="Nome completo" name="nome" icone="bi-person" autoComplete="name"
@@ -59,10 +69,10 @@ export default function Cadastro() {
           value={dados.username} onChange={aoDigitar} erro={campos.username}
           ajuda="Só letras, números, ponto e sublinhado." required />
 
-        <Campo rotulo="E-mail" name="email" type="email" icone="bi-envelope" autoComplete="email"
-          value={dados.email} onChange={aoDigitar} erro={campos.email} required />
+        <Campo rotulo="E-mail" name="email" type="email" icone="bi-envelope" placeholder="seu@email.com"
+          autoComplete="email" value={dados.email} onChange={aoDigitar} erro={campos.email} required />
 
-        <div className="row">
+        <div className="row g-3">
           <div className="col-sm-6">
             <Campo rotulo="Data de nascimento" name="dataNascimento" type="date" icone="bi-calendar3"
               value={dados.dataNascimento} onChange={aoDigitar} erro={campos.dataNascimento} required />
@@ -85,9 +95,9 @@ export default function Cadastro() {
         </button>
       </form>
 
-      <p className="text-center mt-3">
-        Já tem conta? <Link to="/login" className="fb-link">Entrar</Link>
+      <p className="text-center mb-0">
+        Já tem conta? <Link to="/login" className="fb-sublinhado-leve">Entrar</Link>
       </p>
-    </div>
+    </TelaAcesso>
   )
 }

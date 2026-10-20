@@ -20,6 +20,10 @@ public record AtualizarUsuarioRequest(
 
         @NotBlank(message = "O telefone é obrigatório.")
         @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres.")
-        String telefone
+        String telefone,
+
+        // Opcionais: quando não vêm, a capa continua a mesma.
+        String capaCor,
+        String capaFrase
 ) {
 }

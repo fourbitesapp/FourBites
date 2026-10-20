@@ -29,14 +29,16 @@ export class ErroApi extends Error {
   }
 }
 
+// "corpo" pode ser um objeto (vai como JSON) ou um FormData (envio de arquivo).
 async function chamar(metodo, caminho, corpo) {
   const cabecalhos = {}
+  const ehArquivo = corpo instanceof FormData
   const sessao = lerSessao()
   if (sessao?.token) {
     cabecalhos.Authorization = `Bearer ${sessao.token}`
   }
-  if (corpo !== undefined) {
-    cabecalhos['Content-Type'] = 'application/json'
+  if (corpo !== undefined && !ehArquivo) {
+    cabecalhos['Content-Type'] = 'application/json' // no FormData o navegador monta o cabeçalho sozinho
   }
 
   let resposta
@@ -44,7 +46,7 @@ async function chamar(metodo, caminho, corpo) {
     resposta = await fetch(API_URL + caminho, {
       method: metodo,
       headers: cabecalhos,
-      body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
+      body: corpo === undefined ? undefined : ehArquivo ? corpo : JSON.stringify(corpo),
     })
   } catch {
     throw new ErroApi(0, 'Não foi possível conectar ao servidor. Tente de novo em instantes.')
@@ -81,6 +83,35 @@ function montarConsulta(filtros) {
 
 export const login = (email, senha) => chamar('POST', '/auth/login', { email, senha })
 export const cadastrar = (dados) => chamar('POST', '/auth/cadastro', dados)
+export const esqueciSenha = (email) => chamar('POST', '/auth/esqueci-senha', { email })
+export const redefinirSenha = (dados) => chamar('POST', '/auth/redefinir-senha', dados)
+
+//Usuários, perfil e seguir
+
+export const buscarPerfil = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}`)
+export const listarAvaliacoesDoUsuario = (username) =>
+  chamar('GET', `/usuarios/${encodeURIComponent(username)}/avaliacoes`)
+export const buscarMeusDados = () => chamar('GET', '/usuarios/me')
+export const atualizarMeusDados = (dados) => chamar('PUT', '/usuarios/me', dados)
+export const seguir = (username) => chamar('POST', `/usuarios/${encodeURIComponent(username)}/seguir`)
+export const deixarDeSeguir = (username) => chamar('DELETE', `/usuarios/${encodeURIComponent(username)}/seguir`)
+
+function comArquivo(arquivo) {
+  const formulario = new FormData()
+  formulario.append('arquivo', arquivo)
+  return formulario
+}
+export const atualizarFotoPerfil = (arquivo) => chamar('POST', '/usuarios/me/foto', comArquivo(arquivo))
+export const enviarArquivo = (arquivo) => chamar('POST', '/uploads', comArquivo(arquivo)) // devolve { url }
+
+//Favoritos (até 4, cada um numa posição de 1 a 4)
+
+export const listarFavoritosDoUsuario = (username) =>
+  chamar('GET', `/usuarios/${encodeURIComponent(username)}/favoritos`)
+export const listarMeusFavoritos = () => chamar('GET', '/usuarios/me/favoritos')
+export const colocarFavorito = (posicao, restauranteId) =>
+  chamar('PUT', `/usuarios/me/favoritos/${posicao}`, { restauranteId })
+export const removerFavorito = (posicao) => chamar('DELETE', `/usuarios/me/favoritos/${posicao}`)
 
 //Restaurantes
 

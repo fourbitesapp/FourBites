@@ -28,9 +28,10 @@ export default function MapaRestaurante({ latitude, longitude, nome }) {
         <CircleMarker
           center={posicao}
           radius={10}
-          pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#b00a1d', fillOpacity: 1 }}
+          pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#d9232c', fillOpacity: 1 }}
         />
       </MapContainer>
     </div>
   )
 }
+

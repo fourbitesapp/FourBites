@@ -27,6 +27,10 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer> {
 
     long countByUsuarioId(Integer usuarioId);
 
+    // Moderação do admin: todas, das mais recentes para as mais antigas.
+    @EntityGraph(attributePaths = {"usuario", "restaurante", "restaurante.categoria"})
+    List<Avaliacao> findAllByOrderByDataAvaliacaoDesc();
+
     // Avaliações de quem o usuário segue, só de restaurantes publicados.
     @EntityGraph(attributePaths = {"usuario", "restaurante", "restaurante.categoria"})
     @Query("""

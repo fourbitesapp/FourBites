@@ -1,11 +1,21 @@
+import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
+import Logo from './Logo.jsx'
 
-// Barra do topo, "entrar" ou "sair"
+// Barra do topo: logo, busca e os links (todos no mesmo estilo, só texto).
+// Usuário: Início · Explorar · Novo post · Perfil. Restaurante e admin: Início · Explorar · Sair.
 export default function BarraNavegacao() {
   const { usuario, logado, sair } = useAuth()
   const navegar = useNavigate()
+  const [busca, setBusca] = useState('')
+
+  function buscar(evento) {
+    evento.preventDefault()
+    const termo = busca.trim()
+    navegar(termo ? `/explorar?busca=${encodeURIComponent(termo)}` : '/explorar')
+  }
 
   function aoSair() {
     sair()
@@ -14,36 +24,31 @@ export default function BarraNavegacao() {
 
   return (
     <header className="fb-barra">
-      <div className="container d-flex align-items-center justify-content-between gap-3">
-        <Link to="/" className="fb-marca">
-          <span className="fb-logo"><i className="bi bi-fork-knife" aria-hidden="true"></i></span>
-          fourbites
-        </Link>
+      <div className="fb-barra-dentro">
+        <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
 
-        <nav className="d-flex align-items-center gap-2">
-          <NavLink to="/" end className="fb-nav-link">
-            <i className="bi bi-house" aria-hidden="true"></i> Início
-          </NavLink>
-          <NavLink to="/explorar" className="fb-nav-link">
-            <i className="bi bi-compass" aria-hidden="true"></i> Explorar
-          </NavLink>
+        <form className="fb-busca-barra" role="search" onSubmit={buscar}>
+          <i className="bi bi-search" aria-hidden="true"></i>
+          <input type="search" placeholder="Buscar restaurante, bairro ou pessoa" aria-label="Buscar"
+            value={busca} onChange={(e) => setBusca(e.target.value)} />
+        </form>
 
-          {logado ? (
+        <nav className="fb-nav" aria-label="Principal">
+          <NavLink to="/" end className="fb-nav-link">Início</NavLink>
+          <NavLink to="/explorar" className="fb-nav-link">Explorar</NavLink>
+          {logado && usuario.papel === 'USUARIO' && (
             <>
-              <span className="fb-nav-usuario d-none d-sm-inline">
-                <i className="bi bi-person" aria-hidden="true"></i> {usuario.nome.split(' ')[0]}
-              </span>
-              <button type="button" className="fb-botao fb-botao-claro fb-botao-pequeno" onClick={aoSair}>
-                Sair
-              </button>
+              <NavLink to="/novo-post" className="fb-nav-link">Novo post</NavLink>
+              <NavLink to="/perfil" className="fb-nav-link">Perfil</NavLink>
             </>
-          ) : (
-            <Link to="/login" className="fb-botao fb-botao-principal fb-botao-pequeno">
-              Entrar
-            </Link>
           )}
+          {logado && usuario.papel !== 'USUARIO' && (
+            <button type="button" className="fb-nav-link fb-botao-texto" onClick={aoSair}>Sair</button>
+          )}
+          {!logado && <NavLink to="/login" className="fb-nav-link">Entrar</NavLink>}
         </nav>
       </div>
     </header>
   )
 }
+
