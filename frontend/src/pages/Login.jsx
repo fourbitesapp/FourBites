@@ -43,7 +43,9 @@ export default function Login() {
     setEnviando(true)
     try {
       const usuario = await entrar(email, senha)
-      const destino = local.state?.voltarPara || '/'
+      // Sem página para voltar: restaurante vai para "Meus restaurantes" e admin para o painel.
+      const areaDaConta = { RESTAURANTE: '/meus-restaurantes', ADMIN: '/admin' }[usuario.papel] || '/'
+      const destino = local.state?.voltarPara || areaDaConta
 
       // Primeiro acesso: conta USUARIO que ainda não tem preferências vai para a tela de preferências.
       if (usuario.papel === 'USUARIO' && !(await temPreferencias())) {

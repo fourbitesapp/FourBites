@@ -83,6 +83,7 @@ function montarConsulta(filtros) {
 
 export const login = (email, senha) => chamar('POST', '/auth/login', { email, senha })
 export const cadastrar = (dados) => chamar('POST', '/auth/cadastro', dados)
+export const cadastrarResponsavel = (dados) => chamar('POST', '/auth/cadastro-responsavel', dados)
 export const esqueciSenha = (email) => chamar('POST', '/auth/esqueci-senha', { email })
 export const redefinirSenha = (dados) => chamar('POST', '/auth/redefinir-senha', dados)
 
@@ -120,6 +121,7 @@ export const removerFavorito = (posicao) => chamar('DELETE', `/usuarios/me/favor
 //Restaurantes
 
 export const listarCategorias = () => chamar('GET', '/categorias')
+export const listarFormasPagamento = () => chamar('GET', '/formas-pagamento')
 export const buscarRestaurantes = (filtros) => chamar('GET', '/restaurantes' + montarConsulta(filtros))
 export const buscarRestaurante = (id) => chamar('GET', `/restaurantes/${id}`)
 
@@ -141,6 +143,33 @@ export const criarAvaliacao = (restauranteId, dados) =>
   chamar('POST', `/restaurantes/${restauranteId}/avaliacoes`, dados)
 export const editarAvaliacao = (id, dados) => chamar('PUT', `/avaliacoes/${id}`, dados)
 
-// Notificações 
+//Área do restaurante (conta RESTAURANTE)
+
+export const listarMeusRestaurantes = () => chamar('GET', '/meus-restaurantes')
+export const buscarMeuRestaurante = (id) => chamar('GET', `/meus-restaurantes/${id}`)
+export const cadastrarMeuRestaurante = (dados) => chamar('POST', '/meus-restaurantes', dados)
+export const editarMeuRestaurante = (id, dados) => chamar('PUT', `/meus-restaurantes/${id}`, dados)
+
+//Painel do admin
+
+export const adminListarRestaurantes = (filtros) => chamar('GET', '/admin/restaurantes' + montarConsulta(filtros))
+export const adminBuscarRestaurante = (id) => chamar('GET', `/admin/restaurantes/${id}`)
+export const adminCadastrarRestaurante = (dados) => chamar('POST', '/admin/restaurantes', dados)
+export const adminAlterarAtivo = (id, ativo) => chamar('PATCH', `/admin/restaurantes/${id}/ativo`, { ativo })
+// escolha: {} (categoria já existe), { categoriaId } ou { novaCategoria }
+export const adminAprovarCadastro = (id, escolha) => chamar('POST', `/admin/restaurantes/${id}/aprovar`, escolha)
+export const adminRejeitarCadastro = (id, motivo) => chamar('POST', `/admin/restaurantes/${id}/rejeitar`, { motivo })
+
+export const adminListarAlteracoes = () => chamar('GET', '/admin/alteracoes')
+export const adminAprovarAlteracao = (id) => chamar('POST', `/admin/alteracoes/${id}/aprovar`)
+export const adminRejeitarAlteracao = (id, motivo) => chamar('POST', `/admin/alteracoes/${id}/rejeitar`, { motivo })
+
+export const adminListarAvaliacoes = (busca) => chamar('GET', '/admin/avaliacoes' + montarConsulta({ busca }))
+export const adminExcluirAvaliacao = (id) => chamar('DELETE', `/admin/avaliacoes/${id}`)
+
+export const adminListarCategorias = () => chamar('GET', '/admin/categorias')
+export const adminRenomearCategoria = (id, nome) => chamar('PUT', `/admin/categorias/${id}`, { nome })
+
+// Notificações
 export const listarNotificacoes = () => chamar('GET', '/notificacoes') // { novas, itens }
 export const marcarNotificacoesVistas = () => chamar('POST', '/notificacoes/vistas')
