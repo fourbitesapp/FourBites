@@ -55,7 +55,7 @@ export default function Cadastro() {
       </div>
 
       <div>
-        <h1 className="mb-2">Bora criar sua conta</h1>
+        <h1 className="mb-2">Criar sua conta</h1>
         <p className="fb-subtitulo mb-0">Leva um minutinho e já dá para começar a avaliar.</p>
       </div>
 

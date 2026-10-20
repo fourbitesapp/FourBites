@@ -66,7 +66,7 @@ export default function Login() {
       </div>
 
       <div>
-        <h1 className="mb-2">Bora entrar</h1>
+        <h1 className="mb-2">Entrar</h1>
         <p className="fb-subtitulo mb-0">O mesmo acesso vale para clientes e restaurantes.</p>
       </div>
 

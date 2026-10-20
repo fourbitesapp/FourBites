@@ -8,7 +8,7 @@ export default function Rodape() {
         <div className="d-flex flex-column gap-2" style={{ maxWidth: '24rem' }}>
           <strong style={{ fontSize: '1.9rem' }}>FourBites</strong>
           <span>Avaliações orgânicas de restaurantes, sem conteúdo patrocinado.</span>
-          <span className="fb-mao" style={{ fontSize: '1.5rem' }}>feito com fome ♥</span>
+          <span className="fb-mao" style={{ fontSize: '1.5rem' }}>feito com fome</span>
         </div>
         <nav className="d-flex flex-wrap gap-5" aria-label="Rodapé">
           <div className="d-flex flex-column gap-2">
