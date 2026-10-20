@@ -2,7 +2,6 @@ package com.fourbites.backend.util;
 
 import java.util.Set;
 
-// Capas do perfil: as cores e as frases que o usuário pode escolher
 public final class Capas {
 
     public static final String COR_PADRAO = "vermelha";

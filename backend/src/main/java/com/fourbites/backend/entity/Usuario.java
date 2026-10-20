@@ -64,6 +64,10 @@ public class Usuario {
     @Column(name = "capa_frase", nullable = false, length = 20)
     private String capaFrase = Capas.FRASE_PADRAO;
 
+    // Última vez que abriu as notificações (null = nunca abriu)
+    @Column(name = "notificacoes_vistas_em")
+    private OffsetDateTime notificacoesVistasEm;
+
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private OffsetDateTime dataCadastro;
 

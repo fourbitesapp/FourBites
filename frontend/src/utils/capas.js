@@ -1,4 +1,4 @@
-// Capas do perfil
+// Capas do perfil. O back-end guarda só o código 
 
 export const CORES_DE_CAPA = [
   { codigo: 'vermelha', nome: 'Vermelha', fundo: '#d9232c', texto: '#ffffff', bolhas: ['#ffbe3b', '#ff8fa9', '#7fd1a3'] },
@@ -18,7 +18,7 @@ export const FRASES_DE_CAPA = [
   { codigo: 'mais-um', texto: 'só mais um pedacinho' },
 ]
 
-// Se o código não existir (ou vier vazio), usa a primeira opção
+// Se o código não existir (ou vier vazio), usa a primeira opção.
 export function corDaCapa(codigo) {
   return CORES_DE_CAPA.find((c) => c.codigo === codigo) || CORES_DE_CAPA[0]
 }

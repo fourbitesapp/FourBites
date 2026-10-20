@@ -3,9 +3,9 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
 import Logo from './Logo.jsx'
+import Notificacoes from './Notificacoes.jsx'
 
-// Barra do topo: logo, busca e os links (todos no mesmo estilo, só texto).
-// Usuário: Início · Explorar · Novo post · Perfil. Restaurante e admin: Início · Explorar · Sair.
+// Usuário: Início · Explorar · Novo post · Perfil e o sino de notificações. Restaurante e admin: Início · Explorar · Sair.
 export default function BarraNavegacao() {
   const { usuario, logado, sair } = useAuth()
   const navegar = useNavigate()
@@ -40,6 +40,7 @@ export default function BarraNavegacao() {
             <>
               <NavLink to="/novo-post" className="fb-nav-link">Novo post</NavLink>
               <NavLink to="/perfil" className="fb-nav-link">Perfil</NavLink>
+              <Notificacoes />
             </>
           )}
           {logado && usuario.papel !== 'USUARIO' && (
@@ -51,4 +52,5 @@ export default function BarraNavegacao() {
     </header>
   )
 }
+
 

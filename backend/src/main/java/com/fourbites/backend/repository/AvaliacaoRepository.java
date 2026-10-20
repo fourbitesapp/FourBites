@@ -99,4 +99,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer> {
             group by a.restaurante.id
             """)
     List<Object[]> calcularMediasDoRestaurante(@Param("restauranteId") Integer restauranteId);
+
+    // Notificações: avaliações publicadas por quem o usuário segue, desde uma data.
+    List<Avaliacao> findByUsuarioIdInAndDataAvaliacaoAfterOrderByDataAvaliacaoDesc(List<Integer> autores, OffsetDateTime desde);
 }

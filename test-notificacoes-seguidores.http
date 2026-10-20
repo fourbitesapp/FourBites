@@ -1,0 +1,61 @@
+### =============================================================
+### Testes: remover foto, listas de seguidores/seguindo e notificações (migration V5)
+### Use o banco LOCAL. Precisa de 2 contas USUARIO: A e B.
+
+@api = http://localhost:8080
+@tokenA = COLE_O_TOKEN_DA_CONTA_A
+@tokenB = COLE_O_TOKEN_DA_CONTA_B
+@usernameA = USERNAME_DA_A
+@usernameB = USERNAME_DA_B
+
+### Login (A ou B)
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{ "email": "EMAIL", "senha": "SENHA" }
+
+### ---------------- FOTO ----------------
+
+### 1) Remover a foto da A -> 200 com "fotoPerfil": null (volta para as iniciais)
+DELETE {{api}}/usuarios/me/foto
+Authorization: Bearer {{tokenA}}
+
+### 2) Sem login -> 401
+DELETE {{api}}/usuarios/me/foto
+
+### ---------------- SEGUIDORES ----------------
+
+### 3) B segue A -> 204
+POST {{api}}/usuarios/{{usernameA}}/seguir
+Authorization: Bearer {{tokenB}}
+
+### 4) Seguidores da A (sem login) -> 200 com a B na lista
+GET {{api}}/usuarios/{{usernameA}}/seguidores
+
+### 5) Quem a B segue -> 200 com a A na lista
+GET {{api}}/usuarios/{{usernameB}}/seguindo
+
+### 6) Username que não existe -> 404
+GET {{api}}/usuarios/naoexiste123/seguidores
+
+### ---------------- NOTIFICAÇÕES ----------------
+
+### 7) Notificações da A -> 200, "novas" >= 1 e um item "tipo": "SEGUIDOR" com a B
+GET {{api}}/notificacoes
+Authorization: Bearer {{tokenA}}
+
+### 8) A abre o sininho -> 204
+POST {{api}}/notificacoes/vistas
+Authorization: Bearer {{tokenA}}
+
+### 9) De novo -> 200 com "novas": 0 (os itens continuam, com "nova": false)
+GET {{api}}/notificacoes
+Authorization: Bearer {{tokenA}}
+
+### 10) A segue B; depois a B avalia um restaurante pelo site.
+###     Notificações da A -> item "tipo": "AVALIACAO" com o restaurante e "nova": true
+POST {{api}}/usuarios/{{usernameB}}/seguir
+Authorization: Bearer {{tokenA}}
+
+### 11) Sem login -> 401
+GET {{api}}/notificacoes

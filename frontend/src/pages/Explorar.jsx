@@ -29,7 +29,7 @@ const NOTAS = [
   { valor: '4.5', rotulo: 'Nota 4,5 ou mais' },
 ]
 
-// Lista de restaurantes com filtros, ao lado de um mapa com um pino para cada um.
+// Restaurantes com filtros: um mapa em faixa horizontal (um pino por restaurante) e, abaixo, os cartões.
 // Quando há um texto de busca, aparecem antes também as pessoas com aquele nome ou @username.
 // A busca da barra do topo e os atalhos de cozinha do Início chegam pela URL (?busca= e ?categoriaId=).
 export default function Explorar() {
@@ -115,6 +115,12 @@ export default function Explorar() {
       },
       () => setAvisoLocalizacao('Não foi possível obter a sua localização. Verifique a permissão do navegador.'),
     )
+  }
+
+  // Clicou num pino: destaca o cartão e rola a tela até ele (os cartões ficam abaixo do mapa).
+  function escolherNoMapa(id) {
+    setDestaqueId(id)
+    document.getElementById(`cartao-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   function deixarDeUsarLocalizacao() {
@@ -223,24 +229,27 @@ export default function Explorar() {
               )}
             </div>
 
+            {/* Mapa em faixa horizontal, antes dos cartões */}
             <div className="fb-explorar">
-              {restaurantes.length === 0 ? (
-                <p className="fb-vazio flex-grow-1">Nenhum restaurante encontrado com esses filtros.</p>
-              ) : (
-                <div className="fb-explorar-lista">
-                  {restaurantes.map((r) => (
-                    <CartaoRestaurante key={r.id} restaurante={r} destaque={r.id === destaqueId}
-                      aoPassarMouse={() => setDestaqueId(r.id)} />
-                  ))}
-                </div>
-              )}
-
-              <aside className="fb-explorar-mapa">
-                <MapaExplorar restaurantes={noMapa} destaqueId={destaqueId} aoEscolher={setDestaqueId} />
+              <div className="fb-explorar-mapa">
+                <MapaExplorar restaurantes={noMapa} destaqueId={destaqueId} aoEscolher={escolherNoMapa} />
                 <p className="fb-cartao-meta mt-2 ms-1">
                   Passe o mouse num cartão ou clique num pino para destacar o restaurante.
                 </p>
-              </aside>
+              </div>
+
+              {restaurantes.length === 0 ? (
+                <p className="fb-vazio">Nenhum restaurante encontrado com esses filtros.</p>
+              ) : (
+                <div className="fb-explorar-lista">
+                  {restaurantes.map((r) => (
+                    <div key={r.id} id={`cartao-${r.id}`}>
+                      <CartaoRestaurante restaurante={r} destaque={r.id === destaqueId}
+                        aoPassarMouse={() => setDestaqueId(r.id)} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}

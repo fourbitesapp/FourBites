@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,12 @@ public class UsuarioController {
     public UsuarioResponse atualizarFoto(@AuthenticationPrincipal Integer usuarioId,
                                          @RequestParam("arquivo") MultipartFile arquivo) {
         return usuarioService.atualizarFoto(usuarioId, arquivo);
+    }
+
+    // Tira a foto e volta para as iniciais
+    @DeleteMapping("/me/foto")
+    public UsuarioResponse removerFoto(@AuthenticationPrincipal Integer usuarioId) {
+        return usuarioService.removerFoto(usuarioId);
     }
 
     @PutMapping("/me")

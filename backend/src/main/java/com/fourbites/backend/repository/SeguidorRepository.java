@@ -1,5 +1,6 @@
 package com.fourbites.backend.repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,10 @@ public interface SeguidorRepository extends JpaRepository<Seguidor, SeguidorId> 
 
     @Query("select s.seguidoId from Seguidor s where s.seguidorId = :usuarioId")
     List<Integer> idsSeguidos(@Param("usuarioId") Integer usuarioId);
+
+    @Query("select s.seguidorId from Seguidor s where s.seguidoId = :usuarioId")
+    List<Integer> idsSeguidores(@Param("usuarioId") Integer usuarioId);
+
+    // Notificações: quem começou a seguir o usuário desde uma data.
+    List<Seguidor> findBySeguidoIdAndDataInicioAfterOrderByDataInicioDesc(Integer seguidoId, OffsetDateTime desde);
 }

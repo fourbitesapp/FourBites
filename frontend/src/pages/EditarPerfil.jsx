@@ -72,6 +72,21 @@ export default function EditarPerfil() {
     }
   }
 
+  // Tira a foto (DELETE /usuarios/me/foto): o perfil volta a mostrar as iniciais.
+  async function removerFoto() {
+    setErroFoto(null)
+    setEnviandoFoto(true)
+    try {
+      const atualizado = await api.removerFotoPerfil()
+      setDados({ ...dados, fotoPerfil: null })
+      atualizarUsuario(atualizado)
+    } catch (falha) {
+      setErroFoto(falha.message)
+    } finally {
+      setEnviandoFoto(false)
+    }
+  }
+
   async function aoSalvar(evento) {
     evento.preventDefault()
     const errosNaTela = validarDadosPessoais(dados)
@@ -116,10 +131,18 @@ export default function EditarPerfil() {
                 {erroFoto && <div className="fb-erro-campo ms-0">{erroFoto}</div>}
               </div>
               <input ref={seletorDeFoto} type="file" accept="image/jpeg,image/png" hidden onChange={trocarFoto} />
-              <button type="button" className="fb-botao fb-botao-claro" disabled={enviandoFoto}
-                onClick={() => seletorDeFoto.current.click()}>
-                {enviandoFoto ? 'Enviando…' : 'Trocar foto'}
-              </button>
+              <div className="d-flex flex-wrap gap-2">
+                {dados.fotoPerfil && (
+                  <button type="button" className="fb-botao fb-botao-texto fb-link-discreto px-2" disabled={enviandoFoto}
+                    onClick={removerFoto}>
+                    Usar as iniciais
+                  </button>
+                )}
+                <button type="button" className="fb-botao fb-botao-claro" disabled={enviandoFoto}
+                  onClick={() => seletorDeFoto.current.click()}>
+                  {enviandoFoto ? 'Enviando…' : 'Trocar foto'}
+                </button>
+              </div>
             </section>
 
             <section className="fb-caixa">

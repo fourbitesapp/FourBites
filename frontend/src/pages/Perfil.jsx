@@ -6,6 +6,7 @@ import Avatar from '../components/Avatar.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CapaPerfil from '../components/CapaPerfil.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
+import JanelaPessoas from '../components/JanelaPessoas.jsx'
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
@@ -38,6 +39,7 @@ export default function Perfil() {
   const [erro, setErro] = useState(null)
   const [erroSeguir, setErroSeguir] = useState(null)
   const [seguindoAgora, setSeguindoAgora] = useState(false)
+  const [lista, setLista] = useState(null) // 'seguidores' ou 'seguindo' quando a janela está aberta
 
   const ehMeuPerfil = logado && usuario.username.toLowerCase() === username.toLowerCase()
   const podeSeguir = logado && usuario.papel === 'USUARIO' && !ehMeuPerfil
@@ -46,6 +48,7 @@ export default function Perfil() {
     let cancelada = false
     setPerfil(null)
     setErro(null)
+    setLista(null)
 
     Promise.all([api.buscarPerfil(username), api.listarFavoritosDoUsuario(username), api.listarAvaliacoesDoUsuario(username)])
       .then(([dados, favs, lista]) => {
@@ -164,9 +167,22 @@ export default function Perfil() {
 
         <section className="fb-perfil-numeros">
           <div style={{ background: 'var(--fb-amarelo-claro)' }}><strong>{perfil.totalAvaliacoes}</strong><span>Posts</span></div>
-          <div style={{ background: 'var(--fb-rosa-claro)' }}><strong>{perfil.seguidores}</strong><span>Seguidores</span></div>
-          <div style={{ background: 'var(--fb-verde-claro)' }}><strong>{perfil.seguindo}</strong><span>Seguindo</span></div>
+          <button type="button" style={{ background: 'var(--fb-rosa-claro)' }} onClick={() => setLista('seguidores')}>
+            <strong>{perfil.seguidores}</strong><span>Seguidores</span>
+          </button>
+          <button type="button" style={{ background: 'var(--fb-verde-claro)' }} onClick={() => setLista('seguindo')}>
+            <strong>{perfil.seguindo}</strong><span>Seguindo</span>
+          </button>
         </section>
+
+        {lista && (
+          <JanelaPessoas
+            titulo={lista === 'seguidores' ? `Seguidores de ${perfil.nome.split(' ')[0]}` : `${perfil.nome.split(' ')[0]} segue`}
+            carregar={() => (lista === 'seguidores' ? api.listarSeguidores(perfil.username) : api.listarSeguindo(perfil.username))}
+            vazio={lista === 'seguidores' ? 'Ninguém segue este perfil ainda.' : 'Este perfil ainda não segue ninguém.'}
+            aoFechar={() => setLista(null)}
+          />
+        )}
 
         {/* Preferências: o "Ajustar preferências" fica aqui e abre a tela de Preferências */}
         {ehUsuarioDono && (
@@ -242,21 +258,19 @@ export default function Perfil() {
         {/* Posts */}
         <section style={{ marginTop: '4rem' }}>
           <h2 className="mb-4">Posts recentes</h2>
-          <div className="row g-3 g-lg-4">
+          {/* Grade com tamanho fixo de coluna: o cartão não estica quando há poucos posts */}
+          <div className="fb-posts">
             {ehUsuarioDono && (
-              <div className="col-6 col-md-4 col-lg-3 col-xl">
                 <Link to="/novo-post" className="fb-post fb-post-novo">
                   <span className="fb-icone-suave"><i className="bi bi-plus-lg" aria-hidden="true"></i></span>
                   <strong style={{ fontFamily: 'var(--fb-titulo)', fontSize: '1.1rem' }}>Nova publicação</strong>
                   <small>Avalie um restaurante que você visitou</small>
                 </Link>
-              </div>
             )}
             {avaliacoes.map((a) => {
               const foto = a.fotos[0] || a.restaurante.fotoCapa
               return (
-                <div key={a.id} className="col-6 col-md-4 col-lg-3 col-xl">
-                  <Link to={`/restaurantes/${a.restaurante.id}`} className="fb-post"
+                  <Link key={a.id} to={`/restaurantes/${a.restaurante.id}`} className="fb-post"
                     style={{ background: corDaCozinha(a.restaurante.categoria?.id) }}>
                     {foto
                       ? <img src={foto} alt="" />
@@ -264,7 +278,6 @@ export default function Perfil() {
                     <span className="fb-post-nota">{formatarNota(a.notaGeral, 2)}</span>
                     <span className="fb-post-nome">{a.restaurante.nome}</span>
                   </Link>
-                </div>
               )
             })}
           </div>

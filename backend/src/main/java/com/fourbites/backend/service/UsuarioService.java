@@ -108,7 +108,7 @@ public class UsuarioService {
                 seguidoPorMim);
     }
 
-    // Busca de pessoas (só contas USUARIO)
+    // Busca de pessoas (só contas USUARIO). Menos de 2 letras devolve lista vazia.
     @Transactional(readOnly = true)
     public List<UsuarioResumoResponse> buscar(String busca) {
         String termo = busca == null ? "" : busca.trim().toLowerCase();
@@ -131,6 +131,15 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
         usuario.setFotoPerfil(uploadService.enviarImagem(arquivo));
+        return UsuarioResponse.de(usuario);
+    }
+
+    // Remover a foto: o perfil volta a mostrar as iniciais.
+    @Transactional
+    public UsuarioResponse removerFoto(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
+        usuario.setFotoPerfil(null);
         return UsuarioResponse.de(usuario);
     }
 
@@ -159,7 +168,7 @@ public class UsuarioService {
         usuario.setTelefone(dados.telefone().trim());
         usuario.setBio(textoOuNulo(dados.bio()));
 
-        // Capa: só aceita os códigos da lista (util)
+        // Capa: só aceita os códigos da lista (util/Capas.java).
         if (dados.capaCor() != null) {
             if (!Capas.CORES.contains(dados.capaCor())) {
                 throw new CampoInvalidoException("capaCor", "Escolha uma das cores de capa.");

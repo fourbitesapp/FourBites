@@ -88,11 +88,14 @@ export const redefinirSenha = (dados) => chamar('POST', '/auth/redefinir-senha',
 
 //Usuários, perfil e seguir
 
+export const buscarUsuarios = (busca) => chamar('GET', `/usuarios?busca=${encodeURIComponent(busca)}`)
 export const buscarPerfil = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}`)
 export const listarAvaliacoesDoUsuario = (username) =>
   chamar('GET', `/usuarios/${encodeURIComponent(username)}/avaliacoes`)
 export const buscarMeusDados = () => chamar('GET', '/usuarios/me')
 export const atualizarMeusDados = (dados) => chamar('PUT', '/usuarios/me', dados)
+export const listarSeguidores = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}/seguidores`)
+export const listarSeguindo = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}/seguindo`)
 export const seguir = (username) => chamar('POST', `/usuarios/${encodeURIComponent(username)}/seguir`)
 export const deixarDeSeguir = (username) => chamar('DELETE', `/usuarios/${encodeURIComponent(username)}/seguir`)
 
@@ -102,6 +105,7 @@ function comArquivo(arquivo) {
   return formulario
 }
 export const atualizarFotoPerfil = (arquivo) => chamar('POST', '/usuarios/me/foto', comArquivo(arquivo))
+export const removerFotoPerfil = () => chamar('DELETE', '/usuarios/me/foto')
 export const enviarArquivo = (arquivo) => chamar('POST', '/uploads', comArquivo(arquivo)) // devolve { url }
 
 //Favoritos (até 4, cada um numa posição de 1 a 4)
@@ -136,3 +140,7 @@ export const buscarAvaliacao = (id) => chamar('GET', `/avaliacoes/${id}`)
 export const criarAvaliacao = (restauranteId, dados) =>
   chamar('POST', `/restaurantes/${restauranteId}/avaliacoes`, dados)
 export const editarAvaliacao = (id, dados) => chamar('PUT', `/avaliacoes/${id}`, dados)
+
+// Notificações 
+export const listarNotificacoes = () => chamar('GET', '/notificacoes') // { novas, itens }
+export const marcarNotificacoesVistas = () => chamar('POST', '/notificacoes/vistas')
