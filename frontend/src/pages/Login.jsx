@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { erroDeValidacao, temErros, validarEmail } from '../utils/validacoes.js'
 
-// Tela de entrar: painel vermelho à esquerda e o formulário à direita.
+// Tela de entrar
 export default function Login() {
   const { entrar } = useAuth()
   const navegar = useNavigate()
