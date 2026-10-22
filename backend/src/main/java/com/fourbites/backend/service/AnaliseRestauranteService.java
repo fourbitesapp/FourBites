@@ -7,9 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fourbites.backend.dto.AlteracaoResponse;
+package com.fourbites.backend.service;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fourbites.backend.dto.AlteracaoResponse;
 import com.fourbites.backend.dto.AprovarCadastroRequest;
 import com.fourbites.backend.dto.RestauranteFormulario;
 import com.fourbites.backend.dto.RestauranteGestaoResponse;
+import com.fourbites.backend.dto.ResumoNotas;
 import com.fourbites.backend.entity.Categoria;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.RestauranteAlteracao;
@@ -24,7 +34,7 @@ import com.fourbites.backend.util.Texto;
 
 import tools.jackson.databind.json.JsonMapper;
 
-// Painel admin: lista de restaurantes, fila de cadastros e fila de alterações 
+// Painel admin: lista de restaurantes, fila de cadastros e fila de alterações (aprovar ou rejeitar).
 @Service
 public class AnaliseRestauranteService {
 
@@ -32,21 +42,27 @@ public class AnaliseRestauranteService {
     private final RestauranteAlteracaoRepository alteracaoRepository;
     private final CategoriaRepository categoriaRepository;
     private final RestauranteService restauranteService;
+    private final AvaliacaoService avaliacaoService;
     private final JsonMapper jsonMapper;
 
     public AnaliseRestauranteService(RestauranteRepository restauranteRepository,
                                      RestauranteAlteracaoRepository alteracaoRepository,
                                      CategoriaRepository categoriaRepository,
                                      RestauranteService restauranteService,
-                                     JsonMapper jsonMapper) {
+                                     AvaliacaoService avaliacaoService,
+                                 JsonMapper jsonMapper) {
         this.restauranteRepository = restauranteRepository;
         this.alteracaoRepository = alteracaoRepository;
         this.categoriaRepository = categoriaRepository;
         this.restauranteService = restauranteService;
+        this.avaliacaoService = avaliacaoService;
         this.jsonMapper = jsonMapper;
     }
 
-    //Restaurantes 
+    // ---------- Restaurantes ----------
+
+    // status vazio = todos (por nome); PENDENTE = fila, do mais antigo para o mais novo.
+    // busca procura no nome, no bairro, na categoria e na categoria sugerida.
     @Transactional(readOnly = true)
     public List<RestauranteGestaoResponse> listar(StatusAnalise status, String busca) {
         List<Restaurante> restaurantes = status == null
@@ -65,7 +81,8 @@ public class AnaliseRestauranteService {
         return paraResposta(buscarRestaurante(id));
     }
 
-    // Só cadastros PENDENTES
+    // Só cadastros PENDENTES. A categoria precisa ficar definida: a que o responsável escolheu,
+    // uma existente (categoriaId) ou uma nova (novaCategoria).
     @Transactional
     public RestauranteGestaoResponse aprovarCadastro(Integer id, AprovarCadastroRequest dados) {
         Restaurante restaurante = buscarRestaurante(id);
@@ -91,7 +108,7 @@ public class AnaliseRestauranteService {
         return paraResposta(restaurante);
     }
 
-    //Alterações de restaurantes aprovados 
+    // ---------- Alterações de restaurantes aprovados ----------
 
     @Transactional(readOnly = true)
     public List<AlteracaoResponse> listarAlteracoes(StatusAnalise status) {
@@ -124,7 +141,7 @@ public class AnaliseRestauranteService {
         alteracao.setDataAnalise(OffsetDateTime.now());
     }
 
-    //Apoio 
+    // ---------- Apoio ----------
 
     private Categoria resolverCategoria(Restaurante restaurante, AprovarCadastroRequest dados) {
         if (dados != null && dados.categoriaId() != null) {
@@ -175,7 +192,11 @@ public class AnaliseRestauranteService {
                 .findFirstByRestauranteIdOrderByDataEnvioDesc(restaurante.getId())
                 .filter(a -> a.getStatus() == StatusAnalise.PENDENTE)
                 .orElse(null);
-        return RestauranteGestaoResponse.de(restaurante, pendente);
+        // Nota média e total de avaliações 
+        ResumoNotas notas = restaurante.getId() == null
+                ? ResumoNotas.SEM_AVALIACOES
+                : avaliacaoService.notasDoRestaurante(restaurante.getId());
+        return RestauranteGestaoResponse.de(restaurante, pendente, notas);
     }
 
     private boolean combina(Restaurante r, String termo) {

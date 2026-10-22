@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fourbites.backend.dto.RestauranteFormulario;
 import com.fourbites.backend.dto.RestauranteGestaoResponse;
+import com.fourbites.backend.dto.ResumoNotas;
 import com.fourbites.backend.entity.Categoria;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.RestauranteAlteracao;
@@ -24,7 +25,7 @@ import com.fourbites.backend.repository.UsuarioRepository;
 
 import tools.jackson.databind.json.JsonMapper;
 
-// Área do responsável (conta RESTAURANTE): cadastrar, ver e editar os próprios restaurantes
+// Área do responsável (conta RESTAURANTE): cadastrar, ver e editar os próprios restaurantes.
 @Service
 public class MeuRestauranteService {
 
@@ -33,6 +34,7 @@ public class MeuRestauranteService {
     private final CategoriaRepository categoriaRepository;
     private final UsuarioRepository usuarioRepository;
     private final RestauranteService restauranteService;
+    private final AvaliacaoService avaliacaoService;
     private final JsonMapper jsonMapper;
 
     public MeuRestauranteService(RestauranteRepository restauranteRepository,
@@ -40,12 +42,14 @@ public class MeuRestauranteService {
                                  CategoriaRepository categoriaRepository,
                                  UsuarioRepository usuarioRepository,
                                  RestauranteService restauranteService,
+                                 AvaliacaoService avaliacaoService,
                                  JsonMapper jsonMapper) {
         this.restauranteRepository = restauranteRepository;
         this.alteracaoRepository = alteracaoRepository;
         this.categoriaRepository = categoriaRepository;
         this.usuarioRepository = usuarioRepository;
         this.restauranteService = restauranteService;
+        this.avaliacaoService = avaliacaoService;
         this.jsonMapper = jsonMapper;
     }
 
@@ -131,6 +135,7 @@ public class MeuRestauranteService {
         restaurante.setCategoriaSugerida(dados.categoriaSugerida().trim());
     }
 
+    // 404 se não existe; 403 se é de outro responsável.
     private Restaurante buscarDoResponsavel(Integer responsavelId, Integer restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Restaurante não encontrado."));
@@ -147,7 +152,10 @@ public class MeuRestauranteService {
                 : alteracaoRepository.findFirstByRestauranteIdOrderByDataEnvioDesc(restaurante.getId())
                         .filter(a -> a.getStatus() != StatusAnalise.APROVADO)
                         .orElse(null);
-        return RestauranteGestaoResponse.de(restaurante, ultima);
+        // Nota média e total de avaliações (restaurante recém-criado ainda não tem id antes de salvar).
+        ResumoNotas notas = restaurante.getId() == null
+                ? ResumoNotas.SEM_AVALIACOES
+                : avaliacaoService.notasDoRestaurante(restaurante.getId());
+        return RestauranteGestaoResponse.de(restaurante, ultima, notas);
     }
 }
-

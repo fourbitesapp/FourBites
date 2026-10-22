@@ -68,7 +68,13 @@ public record RestauranteGestaoResponse(
     }
 
     
+    // Sem as notas 
     public static RestauranteGestaoResponse de(Restaurante r, RestauranteAlteracao alteracao) {
+        return de(r, alteracao, ResumoNotas.SEM_AVALIACOES);
+    }
+
+    // Com as notas
+    public static RestauranteGestaoResponse de(Restaurante r, RestauranteAlteracao alteracao, ResumoNotas notas) {
         Categoria categoria = r.getCategoria();
         Usuario responsavel = r.getResponsavel();
         List<String> fotos = r.getFotos().stream().map(RestauranteFoto::getUrl).toList();
@@ -81,8 +87,8 @@ public record RestauranteGestaoResponse(
                 r.getFaixaPreco(),
                 r.getBairro(),
                 r.getCidade(),
-                null,
-                0,
+                notas.notaMedia(),
+                notas.totalAvaliacoes(),
                 fotos.isEmpty() ? null : fotos.get(0),
                 r.getLatitude(),
                 r.getLongitude(),
@@ -107,7 +113,7 @@ public record RestauranteGestaoResponse(
                 fotos,
                 r.getCardapioUrl(),
                 r.getCardapioLink(),
-                null,
+                notas.medias(),
                 responsavel == null ? null : responsavel.getId(),
                 null,
                 null,
