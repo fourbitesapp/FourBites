@@ -1,0 +1,22 @@
+### =============================================================
+### Teste: nota média e total de avaliações na área do restaurante e no painel admin
+### Use o banco LOCAL. Precisa de um restaurante APROVADO do responsável que já tenha avaliações
+### (avalie pelo site com uma conta USUARIO, se ainda não tiver).
+
+@api = http://localhost:8080
+@tokenResponsavel = COLE_O_TOKEN_DO_RESPONSAVEL
+@tokenAdmin = COLE_O_TOKEN_DO_ADMIN
+@restauranteId = 1
+
+### 1) Meus restaurantes -> 200; o aprovado com avaliações traz "notaMedia" (ex.: 4.25),
+###    "totalAvaliacoes" > 0 e "medias" preenchido. Sem avaliações: notaMedia null e totalAvaliacoes 0.
+GET {{api}}/meus-restaurantes
+Authorization: Bearer {{tokenResponsavel}}
+
+### 2) Um restaurante do responsável -> 200 com os mesmos campos preenchidos
+GET {{api}}/meus-restaurantes/{{restauranteId}}
+Authorization: Bearer {{tokenResponsavel}}
+
+### 3) Painel admin -> 200; os restaurantes também trazem "notaMedia" e "totalAvaliacoes"
+GET {{api}}/admin/restaurantes
+Authorization: Bearer {{tokenAdmin}}

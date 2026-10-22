@@ -7,15 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fourbites.backend.dto.AlteracaoResponse;
-package com.fourbites.backend.service;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fourbites.backend.dto.AlteracaoResponse;
 import com.fourbites.backend.dto.AprovarCadastroRequest;
 import com.fourbites.backend.dto.RestauranteFormulario;
 import com.fourbites.backend.dto.RestauranteGestaoResponse;
