@@ -165,7 +165,8 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-chip:hover, .fb-seletor:hover { transform: translateY(-2px); }
 .fb-chip.ativo, .fb-seletor.ativo { background: var(--fb-amarelo-medio); border-color: var(--fb-amarelo); }
 .fb-seletor-caixa { position: relative; }
-.fb-lista-opcoes { position: absolute; top: calc(100% + 0.6rem); left: 0; z-index: 1100; min-width: 15rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 0.5rem; box-shadow: 0 16px 36px rgba(36, 22, 18, 0.14); display: flex; flex-direction: column; gap: 0.15rem; list-style: none; margin: 0; }
+.fb-lista-opcoes { position: absolute; top: calc(100% + 0.6rem); left: 0; z-index: 1100; min-width: 15rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 0.5rem; box-shadow: 0 16px 36px rgba(36, 22, 18, 0.14); display: flex; flex-direction: column; gap: 0.15rem; list-style: none; margin: 0; max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; }
+.fb-lista-opcoes > li { flex-shrink: 0; }
 .fb-opcao-lista { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; width: 100%; border: 0; background: transparent; border-radius: 999px; padding: 0.65rem 1rem; font: inherit; font-weight: 700; font-size: 0.95rem; color: var(--fb-tinta); cursor: pointer; text-align: left; }
 .fb-opcao-lista:hover, .fb-opcao-lista:focus-visible { background: var(--fb-creme); outline: 0; }
 .fb-opcao-lista.marcada { background: var(--fb-vermelho); color: #fff; }
