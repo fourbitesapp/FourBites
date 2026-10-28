@@ -145,7 +145,6 @@ export default function Explorar() {
     { valor: '', rotulo: 'Ordem alfabética' },
     { valor: 'nota', rotulo: 'Mais bem avaliados' },
     { valor: 'avaliacoes', rotulo: 'Mais avaliações' },
-    ...(posicao ? [{ valor: 'distancia', rotulo: 'Mais perto' }] : []),
   ]
 
   return (
@@ -163,7 +162,7 @@ export default function Explorar() {
             aoMudar={(v) => mudarFiltro('faixaPreco', v)} />
           <Seletor rotulo="Nota mínima" valor={filtros.notaMin} opcoes={NOTAS}
             aoMudar={(v) => mudarFiltro('notaMin', v)} />
-          <Seletor rotulo="Ordenar por" valor={filtros.ordem} opcoes={opcoesOrdem}
+          <Seletor rotulo="Ordenar por" valor={filtros.ordem} opcoes={opcoesOrdem} textoSemEscolha="Ordenar por"
             aoMudar={(v) => mudarFiltro('ordem', v)} />
 
           <button type="button" className={`fb-chip ${filtros.pets ? 'ativo' : ''}`} aria-pressed={filtros.pets}

@@ -43,15 +43,11 @@ public class TokenRecuperacaoSenha {
 
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private OffsetDateTime dataCriacao;
-
+    
     @PrePersist
     void antesDeInserir() {
         if (dataCriacao == null) {
             dataCriacao = OffsetDateTime.now();
         }
-    }
-
-    public void setUsuario(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

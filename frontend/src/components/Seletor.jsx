@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 
 // Lista de escolha oval, no lugar do <select> do navegador (que não dá para estilizar e fica azul).
 // opcoes: [{ valor, rotulo, cor? }]. O primeiro item costuma ser o "todos" (valor '').
-export default function Seletor({ rotulo, valor, opcoes, aoMudar }) {
+export default function Seletor({ rotulo, valor, opcoes, aoMudar, textoSemEscolha }) {
   const [aberto, setAberto] = useState(false)
   const caixa = useRef(null)
-  const escolhida = opcoes.find((o) => String(o.valor) === String(valor)) || opcoes[0]
-  const temValor = valor !== '' && valor !== null && valor !== undefined
+  const escolhida = opcoes.find((o) => String(o.valor) === String(valor))
+  const temValor = Boolean(escolhida) && valor !== '' && valor !== null && valor !== undefined
+  const textoDoBotao = temValor ? escolhida.rotulo : (textoSemEscolha || (escolhida || opcoes[0]).rotulo)
 
   // Fecha ao clicar fora ou apertar Esc.
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function Seletor({ rotulo, valor, opcoes, aoMudar }) {
     <div className="fb-seletor-caixa" ref={caixa}>
       <button type="button" className={`fb-seletor ${temValor ? 'ativo' : ''}`} aria-haspopup="listbox"
         aria-expanded={aberto} aria-label={rotulo} onClick={() => setAberto(!aberto)}>
-        {escolhida.rotulo}
+        {textoDoBotao}
         <i className={`bi ${aberto ? 'bi-chevron-up' : 'bi-chevron-down'}`} aria-hidden="true"></i>
       </button>
       {aberto && (

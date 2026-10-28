@@ -40,7 +40,6 @@ export default function EsqueciSenha() {
 
       {enviado ? (
         <div>
-          <span className="fb-icone-suave mb-3"><i className="bi bi-envelope-check" aria-hidden="true"></i></span>
           <h1 className="mb-3">Confira seu e-mail</h1>
           <p className="fb-subtitulo">
             Se existir uma conta com <strong>{email.trim()}</strong>, você vai receber o link em alguns minutos.
