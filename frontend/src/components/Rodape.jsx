@@ -1,7 +1,18 @@
 import { Link } from 'react-router-dom'
 
+import { useAuth } from '../contexts/AuthContext.jsx'
+
+// O terceiro link muda conforme o tipo de conta.
+const AREA_DA_CONTA = {
+  RESTAURANTE: ['/meus-restaurantes', 'Meus restaurantes'],
+  ADMIN: ['/admin', 'Painel admin'],
+}
+
 // Rodapé reto e claro, igual em todas as páginas.
 export default function Rodape() {
+  const { usuario } = useAuth()
+  const [caminho, nome] = AREA_DA_CONTA[usuario?.papel] || ['/perfil', 'Perfil']
+
   return (
     <footer className="fb-rodape">
       <div className="fb-rodape-dentro">
@@ -15,7 +26,7 @@ export default function Rodape() {
             <strong>Navegar</strong>
             <Link to="/">Início</Link>
             <Link to="/explorar">Explorar</Link>
-            <Link to="/perfil">Perfil</Link>
+            <Link to={caminho}>{nome}</Link>
           </div>
           <div className="d-flex flex-column gap-2">
             <strong>Projeto</strong>

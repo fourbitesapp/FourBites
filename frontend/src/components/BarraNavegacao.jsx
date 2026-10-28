@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import Logo from './Logo.jsx'
 import Notificacoes from './Notificacoes.jsx'
 
-// Usuário: Início · Explorar · Novo post · Perfil e o sino de notificações. Restaurante e admin: Início · Explorar · Sair.
+// Usuário: Início · Explorar · Novo post · Perfil e o sino de notificações.
+// Restaurante: Início · Explorar · Meus restaurantes · Sair. Admin: Início · Explorar · Painel admin · Sair.
 export default function BarraNavegacao() {
   const { usuario, logado, sair } = useAuth()
   const navegar = useNavigate()
@@ -42,6 +43,12 @@ export default function BarraNavegacao() {
               <NavLink to="/perfil" className="fb-nav-link">Perfil</NavLink>
               <Notificacoes />
             </>
+          )}
+          {logado && usuario.papel === 'RESTAURANTE' && (
+            <NavLink to="/meus-restaurantes" className="fb-nav-link">Meus restaurantes</NavLink>
+          )}
+          {logado && usuario.papel === 'ADMIN' && (
+            <NavLink to="/admin" className="fb-nav-link">Painel admin</NavLink>
           )}
           {logado && usuario.papel !== 'USUARIO' && (
             <button type="button" className="fb-nav-link fb-botao-texto" onClick={aoSair}>Sair</button>

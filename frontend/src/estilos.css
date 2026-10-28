@@ -399,3 +399,115 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-notificacao:hover { background: var(--fb-creme); color: var(--fb-texto); }
 .fb-notificacao.nova { background: var(--fb-amarelo-claro); }
 .fb-notificacao strong { color: var(--fb-tinta); }
+/* ---------- Selos de situação (área do restaurante e admin) ---------- */
+.fb-ponto { width: 0.5rem; height: 0.5rem; border-radius: 999px; flex-shrink: 0; }
+.fb-selo-verde { background: var(--fb-verde-claro); }
+.fb-selo-verde .fb-ponto { background: #2fa36b; }
+.fb-selo-amarelo { background: var(--fb-amarelo-claro); }
+.fb-selo-amarelo .fb-ponto { background: #e39b00; }
+.fb-selo-vermelho { background: var(--fb-rosa-claro); }
+.fb-selo-vermelho .fb-ponto { background: var(--fb-vermelho); }
+.fb-selo-cinza { background: #efe9e2; }
+.fb-selo-cinza .fb-ponto { background: var(--fb-apagado); }
+.fb-recado { margin: 0.25rem 0 0; background: var(--fb-creme); border-radius: 16px; padding: 0.75rem 1rem; color: var(--fb-tinta); font-size: 0.95rem; }
+.fb-recado-vermelho { background: var(--fb-rosa-claro); }
+.fb-recado strong { display: block; margin-bottom: 0.1rem; }
+.fb-mini { width: 3.25rem; height: 3.25rem; border-radius: 16px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
+.fb-mini img { width: 100%; height: 100%; object-fit: cover; }
+.fb-mini-pequeno { width: 2.9rem; height: 2.9rem; }
+
+/* ---------- Meus restaurantes ---------- */
+.fb-cartao-gestao { display: flex; flex-wrap: wrap; gap: 1.4rem; border: 1.5px solid var(--fb-linha); border-radius: 28px; padding: 0.9rem; background: var(--fb-branco); }
+.fb-cartao-gestao.atencao { border-color: #ffb8c8; }
+.fb-gestao-foto { width: 190px; min-height: 150px; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.fb-gestao-foto img { width: 100%; height: 100%; object-fit: cover; }
+.fb-gestao-info { flex: 1 1 360px; display: flex; flex-direction: column; gap: 0.6rem; padding: 0.4rem 0.25rem; }
+.fb-gestao-info h2 { font-size: 1.75rem; margin: 0; }
+.fb-gestao-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; padding: 0.4rem; }
+
+/* ---------- Formulário do restaurante ---------- */
+.fb-dia { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--fb-linha); }
+.fb-dia:last-child { border-bottom: 0; }
+.fb-dia-nome { width: 6.9rem; color: var(--fb-tinta); }
+.fb-interruptor { display: inline-flex; align-items: center; gap: 0.6rem; background: none; border: 0; font: inherit; font-weight: 700; color: var(--fb-tinta); cursor: pointer; padding: 0; }
+.fb-interruptor:disabled { cursor: wait; opacity: 0.6; }
+.fb-trilho { width: 44px; height: 26px; border-radius: 999px; position: relative; flex-shrink: 0; background: #d9cfc5; transition: background 0.15s; }
+.fb-trilho span { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 999px; background: #fff; transition: left 0.15s; }
+.fb-interruptor[aria-checked="true"] .fb-trilho { background: #2fa36b; }
+.fb-interruptor[aria-checked="true"] .fb-trilho span { left: 21px; }
+.fb-interruptor:focus-visible { outline: 3px solid rgba(217, 35, 44, 0.4); outline-offset: 3px; border-radius: 999px; }
+.fb-hora { width: 7.2rem; border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.55rem 0.8rem; font: inherit; font-size: 0.95rem; color: var(--fb-tinta); text-align: center; }
+.fb-hora:focus { outline: 0; border-color: var(--fb-vermelho); box-shadow: 0 0 0 3px #ffe3a3; }
+.fb-precos-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fb-foto-restaurante { position: relative; width: 150px; height: 110px; border-radius: 18px; }
+.fb-foto-restaurante img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
+.fb-foto-restaurante .fb-etiqueta-capa { position: absolute; left: 0.5rem; bottom: 0.5rem; background: var(--fb-tinta); color: #fff; border-radius: 999px; padding: 0.1rem 0.6rem; font-size: 0.75rem; font-weight: 800; }
+.fb-foto-restaurante > button { position: absolute; top: -0.5rem; right: -0.5rem; width: 1.75rem; height: 1.75rem; border-radius: 999px; border: 0; background: var(--fb-tinta); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.fb-adicionar-foto { width: 150px; height: 110px; border: 1.5px dashed #e5c9a8; background: var(--fb-creme); border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; cursor: pointer; font: inherit; font-weight: 700; color: var(--fb-tinta); }
+.fb-adicionar-foto:hover { border-color: var(--fb-vermelho); }
+.fb-adicionar-foto .fb-icone-suave { width: 2.4rem; height: 2.4rem; background: var(--fb-amarelo); color: var(--fb-tinta); }
+.fb-arquivo { display: flex; align-items: center; gap: 0.9rem; border: 1.5px solid var(--fb-linha); border-radius: 22px; padding: 0.85rem 1rem; }
+.fb-arquivo-icone { width: 2.75rem; height: 2.75rem; border-radius: 14px; background: var(--fb-rosa-claro); color: var(--fb-vermelho); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 0.75rem; }
+.fb-faixa-envio { margin-top: 2rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.1rem; background: var(--fb-amarelo-claro); border-radius: 28px; padding: 1.4rem 1.6rem; }
+.fb-faixa-envio p { margin: 0; color: var(--fb-tinta); max-width: 30em; }
+.fb-dica-azul { margin: 1.25rem 0 0; display: flex; gap: 0.6rem; align-items: center; background: var(--fb-azul-claro); border-radius: 16px; padding: 0.75rem 1rem; color: var(--fb-tinta); font-size: 0.95rem; }
+.fb-tipos-conta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.fb-tipo-conta { flex: 1 1 12rem; display: flex; align-items: center; gap: 0.75rem; border: 1.5px solid var(--fb-linha); border-radius: 22px; padding: 0.85rem 1rem; background: var(--fb-branco); font: inherit; text-align: left; cursor: pointer; color: var(--fb-tinta); }
+.fb-tipo-conta:hover { border-color: var(--fb-vermelho); }
+.fb-tipo-conta[aria-checked="true"] { background: var(--fb-amarelo-claro); border-color: var(--fb-amarelo); }
+.fb-tipo-conta .fb-icone-suave { color: var(--fb-tinta); }
+.fb-tipo-conta[aria-checked="true"] .fb-icone-suave { background: var(--fb-amarelo); }
+.fb-tipo-conta small { display: block; color: var(--fb-apagado); font-size: 0.82rem; }
+
+/* ---------- Painel do admin ---------- */
+.fb-abas-painel { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.9rem; }
+.fb-aba-painel { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 999px; padding: 0.6rem 1.1rem; font-weight: 700; font-size: 0.95rem; text-decoration: none; border: 1.5px solid var(--fb-linha); color: var(--fb-tinta); background: var(--fb-branco); }
+.fb-aba-painel:hover { color: var(--fb-tinta); border-color: var(--fb-vermelho); }
+.fb-aba-painel.active { background: var(--fb-tinta); border-color: var(--fb-tinta); color: #fff; }
+.fb-contador { min-width: 1.4rem; height: 1.4rem; padding: 0 0.4rem; border-radius: 999px; background: var(--fb-vermelho); color: #fff; font-size: 0.75rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
+.fb-filtro { border-radius: 999px; padding: 0.5rem 1.1rem; font: inherit; font-weight: 700; font-size: 0.95rem; border: 1.5px solid var(--fb-linha); color: var(--fb-tinta); background: var(--fb-branco); cursor: pointer; }
+.fb-filtro:hover { border-color: var(--fb-vermelho); }
+.fb-filtro[aria-pressed="true"] { background: var(--fb-amarelo-medio); border-color: var(--fb-amarelo); }
+.fb-analise { display: flex; flex-wrap: wrap; gap: 1.75rem; margin-top: 2rem; align-items: flex-start; }
+.fb-analise-fila { flex: 1 1 300px; max-width: 360px; display: flex; flex-direction: column; gap: 0.75rem; }
+.fb-analise-detalhe { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
+.fb-fila { display: flex; align-items: center; gap: 0.9rem; width: 100%; border: 1.5px solid var(--fb-linha); border-radius: 22px; padding: 0.75rem 0.9rem; background: var(--fb-branco); font: inherit; text-align: left; color: var(--fb-tinta); cursor: pointer; }
+.fb-fila:hover { border-color: var(--fb-vermelho); }
+.fb-fila.ativa { border-color: var(--fb-tinta); box-shadow: 4px 5px 0 var(--fb-amarelo-medio); }
+.fb-fila strong { display: block; font-size: 1.05rem; }
+.fb-fila small { display: block; font-size: 0.82rem; color: var(--fb-apagado); }
+.fb-fila .fb-fila-meta { font-size: 0.88rem; color: var(--fb-apagado); }
+.fb-rotulo-dado { display: block; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--fb-apagado); margin-bottom: 0.25rem; }
+.fb-dados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.75rem; color: var(--fb-tinta); }
+.fb-dados .inteiro { grid-column: 1 / -1; }
+.fb-foto-pequena { width: 130px; height: 90px; border-radius: 16px; object-fit: cover; }
+.fb-foto-pequena.nova { box-shadow: 0 0 0 3px #2fa36b; }
+.fb-acoes-analise { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; border-top: 1.5px solid var(--fb-linha); padding-top: 1.4rem; }
+.fb-escolha-categoria { background: var(--fb-amarelo-claro); border-radius: 22px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; color: var(--fb-tinta); }
+.fb-opcao-radio { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.6rem 0.6rem 0.6rem 1.1rem; font-weight: 700; cursor: pointer; min-height: 3.1rem; }
+.fb-opcao-radio.ativo { border-color: var(--fb-tinta); }
+.fb-opcao-radio input { accent-color: var(--fb-vermelho); width: 1.1rem; height: 1.1rem; }
+.fb-tabela { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.fb-tabela th { text-align: left; padding: 0.75rem; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--fb-apagado); }
+.fb-tabela td { padding: 0.9rem 0.75rem; color: var(--fb-tinta); vertical-align: middle; }
+.fb-tabela tbody tr { border-top: 1.5px solid var(--fb-linha); }
+.fb-tabela th:first-child, .fb-tabela td:first-child { padding-left: 0; }
+.fb-tabela th:last-child, .fb-tabela td:last-child { padding-right: 0; }
+.fb-diferencas th[scope="row"] { color: var(--fb-tinta); width: 170px; vertical-align: top; text-transform: none; letter-spacing: 0; font-size: 1rem; }
+.fb-diferencas td { vertical-align: top; }
+.fb-antes { color: var(--fb-apagado) !important; text-decoration: line-through; text-decoration-color: rgba(118, 101, 92, 0.5); }
+.fb-depois { background: var(--fb-verde-claro); border-radius: 10px; padding: 0.2rem 0.5rem; font-weight: 700; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.fb-confirmar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; background: var(--fb-rosa-claro); border-radius: 999px; padding: 0.4rem 0.4rem 0.4rem 1.1rem; }
+.fb-confirmar strong { color: var(--fb-tinta); }
+.fb-lista-categorias { list-style: none; margin: 0; padding: 0; }
+.fb-lista-categorias li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; padding: 0.9rem 0; border-top: 1.5px solid var(--fb-linha); }
+.fb-lista-categorias li:first-child { border-top: 0; }
+.fb-explicacao { flex: 1 1 280px; max-width: 360px; background: var(--fb-creme); border-radius: 26px; padding: 1.5rem; color: var(--fb-tinta); display: flex; flex-direction: column; gap: 0.6rem; }
+.fb-explicacao h2 { font-size: 1.5rem; margin: 0; }
+.fb-explicacao p { margin: 0; font-size: 0.95rem; }
+
+@media (max-width: 767px) {
+  .fb-dados { grid-template-columns: 1fr; }
+  .fb-analise-fila { max-width: none; }
+  .fb-gestao-foto { width: 100%; min-height: 140px; }
+}
