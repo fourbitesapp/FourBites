@@ -43,26 +43,30 @@ public class AvaliacaoController {
         return avaliacaoService.editar(usuarioId, id, dados);
     }
 
+    // As rotas GET são públicas; com login, a resposta diz também quais avaliações a pessoa já curtiu.
     @GetMapping("/avaliacoes/{id}")
-    public AvaliacaoResponse buscarPorId(@PathVariable Integer id) {
-        return avaliacaoService.buscarPorId(id);
+    public AvaliacaoResponse buscarPorId(@PathVariable Integer id, Authentication autenticacao) {
+        return avaliacaoService.buscarPorId(id, quemVe(autenticacao));
     }
 
     @GetMapping("/restaurantes/{restauranteId}/avaliacoes")
-    public List<AvaliacaoResponse> listarDoRestaurante(@PathVariable Integer restauranteId) {
-        return avaliacaoService.listarDoRestaurante(restauranteId);
+    public List<AvaliacaoResponse> listarDoRestaurante(@PathVariable Integer restauranteId,
+                                                       Authentication autenticacao) {
+        return avaliacaoService.listarDoRestaurante(restauranteId, quemVe(autenticacao));
     }
     
     @GetMapping("/feed")
     public List<AvaliacaoResponse> feed(Authentication autenticacao) {
-        Integer usuarioLogadoId = autenticacao != null && autenticacao.getPrincipal() instanceof Integer id
-                ? id
-                : null;
-        return avaliacaoService.listarFeed(usuarioLogadoId);
+        return avaliacaoService.listarFeed(quemVe(autenticacao));
     }
 
     @GetMapping("/usuarios/{username}/avaliacoes")
-    public List<AvaliacaoResponse> listarDoUsuario(@PathVariable String username) {
-        return avaliacaoService.listarDoUsuario(username);
+    public List<AvaliacaoResponse> listarDoUsuario(@PathVariable String username, Authentication autenticacao) {
+        return avaliacaoService.listarDoUsuario(username, quemVe(autenticacao));
+    }
+
+    // Id de quem está logado, ou null para visitante
+    private Integer quemVe(Authentication autenticacao) {
+        return autenticacao != null && autenticacao.getPrincipal() instanceof Integer id ? id : null;
     }
 }

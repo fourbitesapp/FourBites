@@ -11,8 +11,26 @@ const FAIXAS = [
   { valor: '$$$', simbolo: '$$$', rotulo: 'mais caro' },
 ]
 
+// "Mais alguma coisa?": cada preferência combina com uma característica do restaurante.
+// Marcada, o restaurante que tem a característica ganha 2,5 pontos na compatibilidade.
+const EXTRAS = [
+  { campo: 'precisaAcessibilidade', icone: 'bi-universal-access', cor: '#b5dcf8', titulo: 'Acessibilidade',
+    texto: 'Lugares acessíveis' },
+  { campo: 'levaPets', icone: 'bi-pata', cor: '#ffc193', titulo: 'Levo pets',
+    texto: 'Lugares pet friendly' },
+  { campo: 'levaCriancas', icone: 'bi-balloon', cor: '#ffd98a', titulo: 'Vou com crianças',
+    texto: 'Lugares com espaço kids' },
+  { campo: 'precisaEstacionamento', icone: 'bi-car-front', cor: '#d9eda3', titulo: 'Estacionamento',
+    texto: 'Lugares com estacionamento' },
+  { campo: 'fuma', icone: 'bi-wind', cor: '#e6ddd3', titulo: 'Área para fumantes',
+    texto: 'Lugares com área para fumar' },
+  { campo: 'prefereLgbtFriendly', icone: 'bi-rainbow', cor: '#d8c4f5', titulo: 'LGBT+ friendly',
+    texto: 'Ambientes acolhedores' },
+]
+
 export const PREFERENCIAS_VAZIAS = {
-  categoriaIds: [], faixaPreco: null, precisaAcessibilidade: false, levaPets: false,
+  categoriaIds: [], faixaPreco: null,
+  ...Object.fromEntries(EXTRAS.map((e) => [e.campo, false])),
 }
 
 export default function CamposPreferencias({ categorias, dados, aoMudar }) {
@@ -43,8 +61,8 @@ export default function CamposPreferencias({ categorias, dados, aoMudar }) {
             return (
               <button key={c.id} type="button" aria-pressed={marcada} onClick={() => alternarCategoria(c.id)}
                 className="fb-opcao-cozinha" style={marcada ? { background: 'var(--fb-amarelo-claro)', borderColor: 'var(--fb-amarelo)' } : undefined}>
-                <span className="fb-opcao-cozinha-icone" style={{ background: corDaCozinha(c.id) }}>
-                  <IconeCozinha nome={c.nome} tamanho={22} />
+                <span className="fb-opcao-cozinha-icone" style={{ background: corDaCozinha(c) }}>
+                  <IconeCozinha nome={c.nome} icone={c.icone} tamanho={22} />
                 </span>
                 {c.nome}
                 <i className={`bi ${marcada ? 'bi-check-lg' : 'bi-plus-lg'}`} aria-hidden="true"></i>
@@ -76,13 +94,12 @@ export default function CamposPreferencias({ categorias, dados, aoMudar }) {
           <span className="fb-numero">3</span>
           <h2>Mais alguma coisa?</h2>
         </div>
+        <p className="fb-cartao-meta mb-3">Marque o que é importante pra você: os lugares que têm ganham pontos na compatibilidade.</p>
         <div className="fb-extras">
-          <Extra icone="bi-universal-access" cor="#b5dcf8" titulo="Preciso de acessibilidade"
-            texto="Lugares acessíveis ganham pontos na compatibilidade"
-            ligado={dados.precisaAcessibilidade} aoMudar={(v) => aoMudar({ ...dados, precisaAcessibilidade: v })} />
-          <Extra icone="bi-heart" cor="#ffc193" titulo="Costumo levar pets"
-            texto="Lugares pet friendly ganham pontos na compatibilidade"
-            ligado={dados.levaPets} aoMudar={(v) => aoMudar({ ...dados, levaPets: v })} />
+          {EXTRAS.map((e) => (
+            <Extra key={e.campo} icone={e.icone} cor={e.cor} titulo={e.titulo} texto={e.texto}
+              ligado={Boolean(dados[e.campo])} aoMudar={(v) => aoMudar({ ...dados, [e.campo]: v })} />
+          ))}
         </div>
       </section>
     </>
@@ -95,10 +112,10 @@ function Extra({ icone, cor, titulo, texto, ligado, aoMudar }) {
     <button type="button" className={`fb-extra ${ligado ? 'ativo' : ''}`} aria-pressed={ligado} onClick={() => aoMudar(!ligado)}>
       <span className="fb-extra-icone" style={{ background: cor }}><i className={`bi ${icone}`} aria-hidden="true"></i></span>
       <span className="flex-grow-1">
-        <strong className="d-block" style={{ fontSize: '1.08rem' }}>{titulo}</strong>
-        <span className="fb-cartao-meta d-block mt-0">{texto}</span>
+        <strong className="d-block">{titulo}</strong>
+        <small className="fb-apagado">{texto}</small>
       </span>
-      <span className="fw-bold small">{ligado ? 'Sim ✓' : 'Não'}</span>
+      <span className="fb-extra-estado">{ligado ? 'Sim' : 'Não'}</span>
     </button>
   )
 }

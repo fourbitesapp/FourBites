@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 import Avatar from './Avatar.jsx'
 
-// Janela com uma lista de pessoas (seguidores ou seguindo, no perfil).
-// "carregar" é a função que busca a lista na API.
+// Janela com uma lista de pessoas (seguidores ou seguindo, no perfil; quem curtiu uma avaliação).
+
 export default function JanelaPessoas({ titulo, carregar, vazio, aoFechar }) {
   const [pessoas, setPessoas] = useState(null)
   const [erro, setErro] = useState(null)
@@ -12,10 +12,8 @@ export default function JanelaPessoas({ titulo, carregar, vazio, aoFechar }) {
   useEffect(() => {
     carregar().then(setPessoas).catch((falha) => setErro(falha.message))
     // carrega uma vez, ao abrir a janela
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Fecha com Esc.
   useEffect(() => {
     function tecla(evento) {
       if (evento.key === 'Escape') aoFechar()

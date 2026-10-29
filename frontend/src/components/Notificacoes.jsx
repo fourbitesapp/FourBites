@@ -4,7 +4,15 @@ import { Link } from 'react-router-dom'
 import * as api from '../services/apiReal.js'
 import Avatar from './Avatar.jsx'
 
-// Mostra quem começou a seguir você e as avaliações de quem você segue (últimos 30 dias).
+// Conta de usuário: quem começou a seguir você e as avaliações de quem você segue
+// Conta de restaurante: o resultado das análises do admin (cadastro e alterações)
+
+const AVISOS_RESTAURANTE = {
+  CADASTRO_APROVADO: { icone: 'bi-check-circle', cor: 'var(--fb-verde)', texto: 'foi aprovado e já está no FourBites' },
+  CADASTRO_REJEITADO: { icone: 'bi-x-circle', cor: 'var(--fb-vermelho)', texto: 'não foi aprovado' },
+  ALTERACAO_APROVADA: { icone: 'bi-check-circle', cor: 'var(--fb-verde)', texto: 'teve as alterações aprovadas' },
+  ALTERACAO_REJEITADA: { icone: 'bi-x-circle', cor: 'var(--fb-vermelho)', texto: 'teve as alterações rejeitadas' },
+}
 
 export default function Notificacoes() {
   const [aberto, setAberto] = useState(false)
@@ -57,7 +65,7 @@ export default function Notificacoes() {
 
   return (
     <div className="fb-notificacoes" ref={caixa}>
-      <button type="button" className="fb-sino" aria-haspopup="true" aria-expanded={aberto} onClick={alternar}
+      <button type="button" className="fb-sino fb-icone-nav" aria-haspopup="true" aria-expanded={aberto} onClick={alternar}
         aria-label={novas > 0 ? `Notificações, ${novas} novas` : 'Notificações'}>
         <i className="bi bi-bell" aria-hidden="true"></i>
         {novas > 0 && <span className="fb-sino-contador">{novas > 9 ? '9+' : novas}</span>}
@@ -73,24 +81,41 @@ export default function Notificacoes() {
           {erro && <p className="fb-erro-campo px-2">{erro}</p>}
           {!erro && !dados && <p className="fb-vazio py-3">Carregando…</p>}
           {dados?.itens.length === 0 && (
-            <p className="fb-vazio py-3 px-2 mb-0">Nada por aqui ainda. Siga pessoas para ver o que elas andam avaliando!</p>
+            <p className="fb-vazio py-3 px-2 mb-0">Nada por aqui ainda.</p>
           )}
 
-          {dados?.itens.map((n, i) => (
-            <Link key={`${n.tipo}-${n.usuario.id}-${n.data}-${i}`} onClick={() => setAberto(false)}
-              to={n.tipo === 'SEGUIDOR' ? `/perfil/${n.usuario.username}` : `/restaurantes/${n.restauranteId}`}
-              className={`fb-notificacao ${n.nova ? 'nova' : ''}`}>
-              <Avatar nome={n.usuario.nome} foto={n.usuario.fotoPerfil} />
-              <span className="flex-grow-1">
-                {n.tipo === 'SEGUIDOR' ? (
-                  <><strong>{n.usuario.nome}</strong> começou a seguir você</>
+          {dados?.itens.map((n, i) => {
+            const aviso = AVISOS_RESTAURANTE[n.tipo]
+            return (
+              <Link key={`${n.tipo}-${n.restauranteId ?? n.usuario?.id}-${n.data}-${i}`} onClick={() => setAberto(false)}
+                to={aviso ? '/meus-restaurantes'
+                  : n.tipo === 'SEGUIDOR' ? `/perfil/${n.usuario.username}` : `/restaurantes/${n.restauranteId}`}
+                className={`fb-notificacao ${n.nova ? 'nova' : ''}`}>
+                {aviso ? (
+                  <span className="fb-icone-aviso" style={{ color: aviso.cor }}>
+                    <i className={`bi ${aviso.icone}`} aria-hidden="true"></i>
+                  </span>
                 ) : (
-                  <><strong>{n.usuario.nome}</strong> avaliou <strong>{n.restauranteNome}</strong></>
+                  <Avatar nome={n.usuario.nome} foto={n.usuario.fotoPerfil} />
                 )}
-                <span className="d-block fb-cartao-meta mt-0">{tempoAtras(n.data)}</span>
-              </span>
-            </Link>
-          ))}
+                <span className="flex-grow-1">
+                  {aviso && (
+                    <>
+                      {n.tipo.startsWith('CADASTRO') ? 'O cadastro de ' : ''}
+                      <strong>{n.restauranteNome}</strong> {aviso.texto}
+                      {n.motivo && <span className="d-block mt-1">Motivo: {n.motivo}</span>}
+                    </>
+                  )}
+                  {n.tipo === 'SEGUIDOR' && <><strong>{n.usuario.nome}</strong> começou a seguir você</>}
+                  {n.tipo === 'AVALIACAO' && <><strong>{n.usuario.nome}</strong> avaliou <strong>{n.restauranteNome}</strong></>}
+                  {n.tipo === 'CURTIDA' && (
+                    <><strong>{n.usuario.nome}</strong> curtiu sua avaliação de <strong>{n.restauranteNome}</strong></>
+                  )}
+                  <span className="d-block fb-cartao-meta mt-0">{tempoAtras(n.data)}</span>
+                </span>
+              </Link>
+            )
+          })}
         </div>
       )}
     </div>

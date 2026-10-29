@@ -10,7 +10,7 @@ import com.fourbites.backend.entity.StatusAnalise;
 public record RestauranteResumoResponse(
         Integer id,
         String nome,
-        OpcaoResponse categoria,
+        CategoriaResponse categoria,
         String categoriaSugerida,
         String faixaPreco,
         String bairro,
@@ -23,6 +23,10 @@ public record RestauranteResumoResponse(
         BigDecimal distanciaKm,    
         boolean aceitaPets,
         boolean acessivel,
+        boolean estacionamento,
+        boolean areaCriancas,
+        boolean areaFumantes,
+        boolean lgbtFriendly,
         StatusAnalise status,
         boolean ativo
 ) {
@@ -34,7 +38,7 @@ public record RestauranteResumoResponse(
         return new RestauranteResumoResponse(
                 r.getId(),
                 r.getNome(),
-                categoria == null ? null : new OpcaoResponse(categoria.getId(), categoria.getNome()),
+                CategoriaResponse.de(categoria),
                 r.getCategoriaSugerida(),
                 r.getFaixaPreco(),
                 r.getBairro(),
@@ -47,6 +51,10 @@ public record RestauranteResumoResponse(
                 distanciaKm,
                 r.isAceitaPets(),
                 r.isAcessivel(),
+                r.isEstacionamento(),
+                r.isAreaCriancas(),
+                r.isAreaFumantes(),
+                r.isLgbtFriendly(),
                 r.getStatus(),
                 r.isAtivo());
     }

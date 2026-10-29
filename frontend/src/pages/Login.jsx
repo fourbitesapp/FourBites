@@ -6,15 +6,15 @@ import Campo from '../components/Campo.jsx'
 import TelaAcesso from '../components/TelaAcesso.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
-import { erroDeValidacao, temErros, validarEmail } from '../utils/validacoes.js'
+import { erroDeValidacao, temErros } from '../utils/validacoes.js'
 
-// Tela de entrar: painel vermelho à esquerda e o formulário à direita.
+// Tela de entrar
 export default function Login() {
   const { entrar } = useAuth()
   const navegar = useNavigate()
   const local = useLocation()
 
-  const [email, setEmail] = useState('')
+  const [login, setLogin] = useState('') // e-mail ou nome de usuário
   const [senha, setSenha] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState(null)
@@ -34,7 +34,10 @@ export default function Login() {
 
   async function aoEnviar(evento) {
     evento.preventDefault()
-    const errosNaTela = { ...validarEmail(email), ...(senha ? {} : { senha: 'A senha é obrigatória.' }) }
+    const errosNaTela = {
+      ...(login.trim() ? {} : { login: 'Informe o e-mail ou o nome de usuário.' }),
+      ...(senha ? {} : { senha: 'A senha é obrigatória.' }),
+    }
     if (temErros(errosNaTela)) {
       setErro(erroDeValidacao(errosNaTela))
       return
@@ -42,8 +45,10 @@ export default function Login() {
     setErro(null)
     setEnviando(true)
     try {
-      const usuario = await entrar(email, senha)
-      const destino = local.state?.voltarPara || '/'
+      const usuario = await entrar(login.trim(), senha)
+      // Sem página para voltar: restaurante vai para "Meus restaurantes" e admin para o painel.
+      const areaDaConta = { RESTAURANTE: '/meus-restaurantes', ADMIN: '/admin' }[usuario.papel] || '/'
+      const destino = local.state?.voltarPara || areaDaConta
 
       // Primeiro acesso: conta USUARIO que ainda não tem preferências vai para a tela de preferências.
       if (usuario.papel === 'USUARIO' && !(await temPreferencias())) {
@@ -60,13 +65,15 @@ export default function Login() {
 
   return (
     <TelaAcesso frase="bem-vindo de volta!" titulo="Seu próximo lugar favorito tá aqui.">
+      <Link to="/" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar para o início</Link>
+
       <div className="fb-abas">
         <span className="fb-aba ativa" aria-current="page">Entrar</span>
         <Link to="/cadastro" className="fb-aba">Criar conta</Link>
       </div>
 
       <div>
-        <h1 className="mb-2">Bora entrar</h1>
+        <h1 className="visually-hidden">Entrar</h1>
         <p className="fb-subtitulo mb-0">O mesmo acesso vale para clientes e restaurantes.</p>
       </div>
 
@@ -75,9 +82,9 @@ export default function Login() {
         <Aviso>{erro?.message}</Aviso>
 
         <Campo
-          rotulo="E-mail" name="email" type="email" icone="bi-envelope" placeholder="seu@email.com"
-          autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
-          erro={erro?.campos.email} required
+          rotulo="E-mail ou nome de usuário" name="login" icone="bi-person" placeholder="seu@email.com ou @usuario"
+          autoComplete="username" autoCapitalize="none" value={login} onChange={(e) => setLogin(e.target.value)}
+          erro={erro?.campos.login} required
         />
 
         <div className="mb-2">
@@ -108,7 +115,7 @@ export default function Login() {
 
       <div className="fb-divisor my-2">ou</div>
 
-      <Link to="/explorar" className="fb-botao fb-botao-suave w-100">Continuar sem entrar e só explorar</Link>
+      <Link to="/explorar" className="fb-botao fb-botao-contorno w-100">Explorar sem entrar</Link>
     </TelaAcesso>
   )
 }

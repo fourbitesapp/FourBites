@@ -29,4 +29,7 @@ public class Categoria {
 
     @Column(length = 255)
     private String icone;
+
+    @Column(length = 7)
+    private String cor;
 }

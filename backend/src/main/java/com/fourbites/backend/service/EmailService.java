@@ -28,20 +28,23 @@ public class EmailService {
     }
 
     public void enviarRecuperacaoSenha(String emailDestino, String nomeDestino, String link) {
-        if (apiKey.isBlank() || remetente.isBlank()) {
-            log.warn("Brevo não configurado. Link de redefinição para {}: {}", emailDestino, link);
-            return;
-        }
-
         String html = "<p>Olá, " + nomeDestino + "!</p>"
                 + "<p>Recebemos um pedido para redefinir a sua senha no FourBites.</p>"
                 + "<p><a href=\"" + link + "\">Clique aqui para criar uma nova senha</a></p>"
                 + "<p>Se você não fez esse pedido, ignore este e-mail. A sua senha continua a mesma.</p>";
+        enviar(emailDestino, nomeDestino, "Redefinição de senha - FourBites", html);
+    }
+
+    public void enviar(String emailDestino, String nomeDestino, String assunto, String html) {
+        if (apiKey.isBlank() || remetente.isBlank()) {
+            log.warn("Brevo não configurado. E-mail \"{}\" para {} não foi enviado:\n{}", assunto, emailDestino, html);
+            return;
+        }
 
         Map<String, Object> corpo = Map.of(
                 "sender", Map.of("name", "FourBites", "email", remetente),
                 "to", List.of(Map.of("email", emailDestino, "name", nomeDestino)),
-                "subject", "Redefinição de senha - FourBites",
+                "subject", assunto,
                 "htmlContent", html);
 
         brevo.post()

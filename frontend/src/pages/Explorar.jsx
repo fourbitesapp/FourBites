@@ -8,11 +8,14 @@ import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
 import MapaExplorar from '../components/MapaExplorar.jsx'
 import Rodape from '../components/Rodape.jsx'
 import Seletor from '../components/Seletor.jsx'
+import SeletorMultiplo from '../components/SeletorMultiplo.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 
 const FILTROS_INICIAIS = {
-  busca: '', categoriaId: '', faixaPreco: '', notaMin: '', pets: false, acessivel: false, ordem: '',
+  busca: '', categoriaId: '', faixaPreco: '', notaMin: '', ordem: '',
+  ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.filtro, false])), // pets, areaCriancas, estacionamento...
 }
 
 const PRECOS = [
@@ -102,6 +105,14 @@ export default function Explorar() {
     setFiltros({ ...filtros, [nome]: valor })
   }
 
+  // Comodidades (pets, crianças, estacionamento...): cada uma é um filtro sim/não; o seletor devolve as marcadas.
+  const opcoesComodidades = CARACTERISTICAS.map((c) => ({ valor: c.filtro, rotulo: c.rotulo, icone: c.icone }))
+  const comodidadesMarcadas = CARACTERISTICAS.filter((c) => filtros[c.filtro]).map((c) => c.filtro)
+
+  function escolherComodidades(marcadas) {
+    setFiltros({ ...filtros, ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.filtro, marcadas.includes(c.filtro)])) })
+  }
+
   function usarMinhaLocalizacao() {
     setAvisoLocalizacao(null)
     if (!navigator.geolocation) {
@@ -139,13 +150,12 @@ export default function Explorar() {
 
   const opcoesCategoria = [
     { valor: '', rotulo: 'Todas as cozinhas' },
-    ...categorias.map((c) => ({ valor: String(c.id), rotulo: c.nome, cor: corDaCozinha(c.id) })),
+    ...categorias.map((c) => ({ valor: String(c.id), rotulo: c.nome, cor: corDaCozinha(c) })),
   ]
   const opcoesOrdem = [
     { valor: '', rotulo: 'Ordem alfabética' },
     { valor: 'nota', rotulo: 'Mais bem avaliados' },
     { valor: 'avaliacoes', rotulo: 'Mais avaliações' },
-    ...(posicao ? [{ valor: 'distancia', rotulo: 'Mais perto' }] : []),
   ]
 
   return (
@@ -163,17 +173,11 @@ export default function Explorar() {
             aoMudar={(v) => mudarFiltro('faixaPreco', v)} />
           <Seletor rotulo="Nota mínima" valor={filtros.notaMin} opcoes={NOTAS}
             aoMudar={(v) => mudarFiltro('notaMin', v)} />
-          <Seletor rotulo="Ordenar por" valor={filtros.ordem} opcoes={opcoesOrdem}
+          <Seletor rotulo="Ordenar por" valor={filtros.ordem} opcoes={opcoesOrdem} textoSemEscolha="Ordenar por"
             aoMudar={(v) => mudarFiltro('ordem', v)} />
+          <SeletorMultiplo rotulo="Comodidades" opcoes={opcoesComodidades} marcados={comodidadesMarcadas}
+            aoMudar={escolherComodidades} />
 
-          <button type="button" className={`fb-chip ${filtros.pets ? 'ativo' : ''}`} aria-pressed={filtros.pets}
-            onClick={() => mudarFiltro('pets', !filtros.pets)}>
-            Pet friendly
-          </button>
-          <button type="button" className={`fb-chip ${filtros.acessivel ? 'ativo' : ''}`}
-            aria-pressed={filtros.acessivel} onClick={() => mudarFiltro('acessivel', !filtros.acessivel)}>
-            Acessível
-          </button>
           <button type="button" className={`fb-chip ${posicao ? 'ativo' : ''}`} aria-pressed={Boolean(posicao)}
             onClick={posicao ? deixarDeUsarLocalizacao : usarMinhaLocalizacao}>
             Perto de mim
@@ -258,3 +262,4 @@ export default function Explorar() {
     </>
   )
 }
+

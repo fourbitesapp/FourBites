@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
@@ -71,16 +71,10 @@ export default function Preferencias() {
     <>
       <BarraNavegacao />
       <main className="fb-pagina-media">
-        {!primeiroAcesso && (
-          <Link to={destino} className="fb-link-discreto">
-            <i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar {destino === '/perfil' ? 'ao perfil' : ''}
-          </Link>
-        )}
-
-        <div className="text-center mt-4 mb-5">
-          <span className="fb-mao">só leva um minutinho!</span>
-          <h1 className="mt-2">Do que você gosta de <span className="fb-sublinhado">comer</span>?</h1>
-          <p className="fb-subtitulo mx-auto" style={{ maxWidth: '34em' }}>
+        <div className="mb-5">
+          <span className="fb-mao">só leva um minutinho</span>
+          <h1 className="mt-1">Do que você gosta de comer?</h1>
+          <p className="fb-subtitulo mb-0" style={{ maxWidth: '40em' }}>
             Usamos isso para calcular a compatibilidade e recomendar restaurantes. Você pode mudar quando quiser.
           </p>
         </div>
@@ -100,7 +94,7 @@ export default function Preferencias() {
                   Pular por enquanto
                 </button>
               )}
-              <button type="button" className="fb-botao fb-botao-escuro" disabled={enviando}
+              <button type="button" className="fb-botao fb-botao-principal" disabled={enviando}
                 onClick={() => salvar(dados)}>
                 {enviando ? 'Salvando…' : primeiroAcesso ? 'Salvar e começar' : 'Salvar preferências'}
                 {!enviando && <i className="bi bi-arrow-right ms-2" aria-hidden="true"></i>}
@@ -119,3 +113,4 @@ export default function Preferencias() {
     </>
   )
 }
+

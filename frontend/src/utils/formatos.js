@@ -54,3 +54,10 @@ export function estaAberto(horarios, agora = new Date()) {
     return h.diaSemana === ontem && viraONoite && minutoAtual < fecha
   })
 }
+
+// "enviado hoje", "há 1 dia", "há 5 dias" (filas do admin).
+export function haQuantoTempo(dataIso) {
+  const dias = Math.floor((Date.now() - new Date(dataIso).getTime()) / 86400000)
+  if (dias <= 0) return 'hoje'
+  return dias === 1 ? 'há 1 dia' : `há ${dias} dias`
+}

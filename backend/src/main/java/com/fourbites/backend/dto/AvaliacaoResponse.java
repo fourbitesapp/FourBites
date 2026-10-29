@@ -21,17 +21,24 @@ public record AvaliacaoResponse(
         String comentario,
         List<String> fotos,
         OffsetDateTime dataAvaliacao,
-        boolean editada
+        boolean editada,
+        long curtidas,     
+        boolean curtiu     
 ) {
 
     public record Autor(Integer id, String nome, String username, String fotoPerfil) {
     }
 
-    public record RestauranteDaAvaliacao(Integer id, String nome, String fotoCapa, OpcaoResponse categoria,
+    public record RestauranteDaAvaliacao(Integer id, String nome, String fotoCapa, CategoriaResponse categoria,
                                          String bairro) {
     }
 
+    // Sem informação de curtidas
     public static AvaliacaoResponse de(Avaliacao a) {
+        return de(a, 0, false);
+    }
+
+    public static AvaliacaoResponse de(Avaliacao a, long curtidas, boolean curtiu) {
         Usuario autor = a.getUsuario();
         Restaurante r = a.getRestaurante();
         Categoria categoria = r.getCategoria();
@@ -41,7 +48,7 @@ public record AvaliacaoResponse(
                 a.getId(),
                 new Autor(autor.getId(), autor.getNome(), autor.getUsername(), autor.getFotoPerfil()),
                 new RestauranteDaAvaliacao(r.getId(), r.getNome(), fotoCapa,
-                        categoria == null ? null : new OpcaoResponse(categoria.getId(), categoria.getNome()),
+                        CategoriaResponse.de(categoria),
                         r.getBairro()),
                 a.getNotaComida(),
                 a.getNotaAmbiente(),
@@ -51,6 +58,8 @@ public record AvaliacaoResponse(
                 a.getComentario(),
                 a.getFotos().stream().map(foto -> foto.getUrl()).toList(),
                 a.getDataAvaliacao(),
-                a.getDataAtualizacao() != null);
+                a.getDataAtualizacao() != null,
+                curtidas,
+                curtiu);
     }
 }

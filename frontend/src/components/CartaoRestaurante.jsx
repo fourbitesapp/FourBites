@@ -2,15 +2,15 @@ import { Link } from 'react-router-dom'
 
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 import IconeCozinha from './IconeCozinha.jsx'
 import SeloCompatibilidade from './SeloCompatibilidade.jsx'
 
 // Cartão de um restaurante (Início, Explorar).
-// "compatibilidade" só vem nas recomendações; "ranking" ({ posicao, nota, avaliacoes, periodo }) só no ranking.
-// "destaque" e "aoPassarMouse" ligam o cartão ao pino do mapa no Explorar.
+
 export default function CartaoRestaurante({ restaurante, compatibilidade, ranking, destaque, aoPassarMouse }) {
   const r = restaurante
-  const cor = corDaCozinha(r.categoria?.id)
+  const cor = corDaCozinha(r.categoria)
 
   return (
     <Link to={`/restaurantes/${r.id}`} className={`fb-cartao-restaurante ${destaque ? 'destaque' : ''}`}
@@ -19,7 +19,7 @@ export default function CartaoRestaurante({ restaurante, compatibilidade, rankin
         {r.fotoCapa ? (
           <img src={r.fotoCapa} alt="" />
         ) : (
-          <span className="fb-sem-foto"><IconeCozinha nome={r.categoria?.nome} tamanho={48} /></span>
+          <span className="fb-sem-foto"><IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={48} /></span>
         )}
         {ranking && <span className="fb-selo-posicao">{ranking.posicao}º</span>}
         {r.distanciaKm !== null && r.distanciaKm !== undefined && (
@@ -40,7 +40,7 @@ export default function CartaoRestaurante({ restaurante, compatibilidade, rankin
 
         {(compatibilidade !== undefined || ranking) && (
           <div className="mt-1">
-            {compatibilidade !== undefined && <SeloCompatibilidade valor={compatibilidade} />}
+            {compatibilidade !== undefined && <SeloCompatibilidade valor={compatibilidade} dentroDeLink />}
             {ranking && (
               <span className="fb-selo" style={{ background: 'var(--fb-rosa-claro)' }}>
                 ★ {formatarNota(ranking.nota)} {ranking.periodo === 'semanal' ? 'na semana' : 'no mês'} · {ranking.avaliacoes} avaliações
@@ -49,10 +49,13 @@ export default function CartaoRestaurante({ restaurante, compatibilidade, rankin
           </div>
         )}
 
-        {(r.aceitaPets || r.acessivel) && (
+        {CARACTERISTICAS.some((c) => r[c.campo]) && (
           <div className="d-flex flex-wrap gap-2 mt-1">
-            {r.aceitaPets && <span className="fb-etiqueta">Pet friendly</span>}
-            {r.acessivel && <span className="fb-etiqueta fb-etiqueta-azul">Acessível</span>}
+            {CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => (
+              <span key={c.campo} className="fb-etiqueta" style={{ background: c.cor }}>
+                <i className={`bi ${c.icone}`} aria-hidden="true"></i>{c.rotulo}
+              </span>
+            ))}
           </div>
         )}
       </div>

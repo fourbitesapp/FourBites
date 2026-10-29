@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
+import BuscaRestaurante from '../components/BuscaRestaurante.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
@@ -20,6 +21,7 @@ export default function GerenciarFavoritos() {
   const [removido, setRemovido] = useState(null) // { posicao, restaurante } para o "Desfazer"
   const [erro, setErro] = useState(null)
   const [ocupado, setOcupado] = useState(false)
+  const [escolhendoEm, setEscolhendoEm] = useState(null) // posição livre em que a pessoa está buscando um restaurante
 
   const podeUsar = logado && usuario.papel === 'USUARIO'
 
@@ -59,6 +61,13 @@ export default function GerenciarFavoritos() {
     executar(() => api.removerFavorito(favorito.posicao))
   }
 
+  // Posição livre: busca o restaurante ali mesmo, sem precisar abrir o perfil dele.
+  function adicionar(posicao, restaurante) {
+    setRemovido(null)
+    setEscolhendoEm(null)
+    executar(() => api.colocarFavorito(posicao, restaurante.id))
+  }
+
   function desfazer() {
     const { posicao, restaurante } = removido
     setRemovido(null)
@@ -71,9 +80,7 @@ export default function GerenciarFavoritos() {
     <>
       <BarraNavegacao />
       <main className="fb-conteudo">
-        <Link to="/perfil" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</Link>
-
-        <div className="d-flex flex-wrap justify-content-between align-items-end gap-3 mt-4 mb-5">
+        <div className="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-5">
           <div>
             <span className="fb-mao">os 4 do coração</span>
             <h1 className="mt-1 mb-2">Restaurantes favoritos</h1>
@@ -102,13 +109,13 @@ export default function GerenciarFavoritos() {
                 <div key={posicao} className="col-lg-6">
                   {f ? (
                     <article className="fb-cartao fb-favorito-edicao">
-                      <div className="fb-favorito-edicao-foto" style={{ background: corDaCozinha(f.restaurante.categoria?.id) }}>
+                      <div className="fb-favorito-edicao-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                         {f.restaurante.fotoCapa
                           ? <img src={f.restaurante.fotoCapa} alt="" />
-                          : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} tamanho={40} /></span>}
+                          : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                         <span className="fb-numero-favorito">{posicao}</span>
                       </div>
-                      <div className="flex-grow-1 p-4 d-flex flex-column justify-content-between gap-3">
+                      <div className="fb-favorito-edicao-info flex-grow-1 p-4 d-flex flex-column justify-content-between gap-3">
                         <div>
                           <h3 className="fb-cartao-titulo" style={{ fontSize: '1.25rem' }}>{f.restaurante.nome}</h3>
                           <div className="fb-cartao-meta mt-0">
@@ -134,12 +141,26 @@ export default function GerenciarFavoritos() {
                   ) : (
                     <article className="fb-posicao-livre">
                       <span className="fb-numero" style={{ background: 'var(--fb-amarelo)', color: 'var(--fb-tinta)' }}>{posicao}</span>
-                      <div>
-                        <strong className="fb-autor">Posição livre</strong>
-                        <p className="fb-cartao-meta mb-0">
-                          Abra o perfil de um restaurante e toque em <strong className="fb-texto-destaque">Favoritar</strong> para adicioná-lo aqui.
-                        </p>
-                      </div>
+                      {escolhendoEm === posicao ? (
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <strong className="fb-autor">Escolha o restaurante</strong>
+                            <button type="button" className="fb-botao-texto fb-link" onClick={() => setEscolhendoEm(null)}>
+                              Cancelar
+                            </button>
+                          </div>
+                          <BuscaRestaurante aoEscolher={(r) => adicionar(posicao, r)} />
+                        </div>
+                      ) : (
+                        <div className="flex-grow-1">
+                          <strong className="fb-autor">Posição livre</strong>
+                          <p className="fb-cartao-meta mb-2">Busque um restaurante para colocar aqui.</p>
+                          <button type="button" className="fb-botao fb-botao-principal fb-botao-pequeno" disabled={ocupado}
+                            onClick={() => setEscolhendoEm(posicao)}>
+                            <i className="bi bi-plus-lg" aria-hidden="true"></i> Adicionar restaurante
+                          </button>
+                        </div>
+                      )}
                     </article>
                   )}
                 </div>
@@ -152,3 +173,4 @@ export default function GerenciarFavoritos() {
     </>
   )
 }
+

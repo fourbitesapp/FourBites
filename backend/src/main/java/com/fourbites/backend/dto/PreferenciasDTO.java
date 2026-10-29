@@ -17,7 +17,15 @@ public record PreferenciasDTO(
 
         boolean precisaAcessibilidade,
 
-        boolean levaPets
+        boolean levaPets,
+
+        boolean levaCriancas,
+
+        boolean precisaEstacionamento,
+
+        boolean fuma,
+
+        boolean prefereLgbtFriendly
 ) {
 
     public static PreferenciasDTO de(UsuarioPreferencia preferencia) {
@@ -25,7 +33,11 @@ public record PreferenciasDTO(
                 preferencia.getCategoriaIds().stream().sorted().toList(),
                 preferencia.getFaixaPreco(),
                 preferencia.isPrecisaAcessibilidade(),
-                preferencia.isLevaPets());
+                preferencia.isLevaPets(),
+                preferencia.isLevaCriancas(),
+                preferencia.isPrecisaEstacionamento(),
+                preferencia.isFuma(),
+                preferencia.isPrefereLgbtFriendly());
     }
 }
 

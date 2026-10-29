@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { agruparHorarios, estaAberto, formatarNota } from '../utils/formatos.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 
 // Perfil do restaurante: fotos, notas, avaliações e, ao lado, mapa, horário e cardápio.
 export default function Restaurante() {
@@ -119,8 +120,8 @@ export default function Restaurante() {
             {r.fotos.slice(0, 3).map((url) => <img key={url} src={url} alt="" />)}
           </div>
         ) : (
-          <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria?.id) }}>
-            <IconeCozinha nome={r.categoria?.nome} tamanho={110} />
+          <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria) }}>
+            <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={110} />
           </div>
         )}
 
@@ -134,21 +135,26 @@ export default function Restaurante() {
             <div className="d-flex flex-wrap gap-2">
               {r.horarios.length > 0 && (
                 <span className={`fb-etiqueta ${aberto ? 'fb-etiqueta-verde' : 'fb-etiqueta-cinza'}`}>
-                  {aberto ? 'Aberto agora' : 'Fechado agora'}
+                  <i className="bi bi-clock" aria-hidden="true"></i>{aberto ? 'Aberto agora' : 'Fechado agora'}
                 </span>
               )}
-              {r.aceitaPets && <span className="fb-etiqueta">Pet friendly</span>}
-              {r.acessivel && <span className="fb-etiqueta fb-etiqueta-azul">Acessível</span>}
+              {CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => (
+                <span key={c.campo} className="fb-etiqueta" style={{ background: c.cor }}>
+                  <i className={`bi ${c.icone}`} aria-hidden="true"></i>{c.rotulo}
+                </span>
+              ))}
             </div>
           </div>
 
-          <div className="d-flex flex-column align-items-md-end gap-3">
-            <div className="d-flex flex-wrap align-items-center gap-3">
+          <div className="fb-restaurante-resumo d-flex flex-column align-items-md-end gap-3">
+            <div className="fb-restaurante-notas d-flex flex-wrap align-items-center gap-3">
               {r.compatibilidade !== null && r.compatibilidade !== undefined && (
                 <SeloCompatibilidade valor={r.compatibilidade} />
               )}
               <div className="text-md-end">
-                <div className="fb-nota-grande">★ {formatarNota(r.notaMedia)}</div>
+                <div className="fb-nota-grande">
+                  <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
+                </div>
                 <div className="fb-cartao-meta">
                   {r.totalAvaliacoes === 0
                     ? 'Ainda sem avaliações'
@@ -158,14 +164,14 @@ export default function Restaurante() {
             </div>
 
             {podeAvaliar && (
-              <div className="d-flex flex-wrap gap-2 justify-content-md-end">
+              <div className="fb-acoes-restaurante ms-md-auto">
                 <button type="button" className="fb-botao fb-botao-contorno" onClick={alternarFavorito}
                   disabled={salvandoFavorito} aria-pressed={Boolean(r.favoritoPosicao)}>
                   <i className={r.favoritoPosicao ? 'bi bi-heart-fill' : 'bi bi-heart'} aria-hidden="true"></i>
                   {r.favoritoPosicao ? 'Nos favoritos' : 'Favoritar'}
                 </button>
                 <Link to={`/restaurantes/${r.id}/avaliar`} className="fb-botao fb-botao-principal">
-                  {r.minhaAvaliacaoId ? 'Editar minha avaliação' : 'Avaliar'}
+                  {r.minhaAvaliacaoId ? 'Editar avaliação' : 'Avaliar'}
                 </Link>
               </div>
             )}

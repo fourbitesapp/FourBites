@@ -37,6 +37,18 @@ public class UsuarioPreferencia {
     @Column(name = "leva_pets", nullable = false)
     private boolean levaPets;
 
+    @Column(name = "leva_criancas", nullable = false)
+    private boolean levaCriancas;
+
+    @Column(name = "precisa_estacionamento", nullable = false)
+    private boolean precisaEstacionamento;
+
+    @Column(nullable = false)
+    private boolean fuma;
+
+    @Column(name = "prefere_lgbt_friendly", nullable = false)
+    private boolean prefereLgbtFriendly;
+
     @Column(name = "data_atualizacao", nullable = false)
     private OffsetDateTime dataAtualizacao;
 

@@ -18,7 +18,7 @@ public record RestauranteGestaoResponse(
 
         Integer id,
         String nome,
-        OpcaoResponse categoria,
+        CategoriaResponse categoria,
         String categoriaSugerida,
         String faixaPreco,
         String bairro,
@@ -31,6 +31,10 @@ public record RestauranteGestaoResponse(
         BigDecimal distanciaKm,     
         boolean aceitaPets,
         boolean acessivel,
+        boolean estacionamento,
+        boolean areaCriancas,
+        boolean areaFumantes,
+        boolean lgbtFriendly,
         StatusAnalise status,
         boolean ativo,
 
@@ -68,7 +72,13 @@ public record RestauranteGestaoResponse(
     }
 
     
+    // Sem as notas 
     public static RestauranteGestaoResponse de(Restaurante r, RestauranteAlteracao alteracao) {
+        return de(r, alteracao, ResumoNotas.SEM_AVALIACOES);
+    }
+
+    // Com as notas
+    public static RestauranteGestaoResponse de(Restaurante r, RestauranteAlteracao alteracao, ResumoNotas notas) {
         Categoria categoria = r.getCategoria();
         Usuario responsavel = r.getResponsavel();
         List<String> fotos = r.getFotos().stream().map(RestauranteFoto::getUrl).toList();
@@ -76,19 +86,23 @@ public record RestauranteGestaoResponse(
         return new RestauranteGestaoResponse(
                 r.getId(),
                 r.getNome(),
-                categoria == null ? null : new OpcaoResponse(categoria.getId(), categoria.getNome()),
+                CategoriaResponse.de(categoria),
                 r.getCategoriaSugerida(),
                 r.getFaixaPreco(),
                 r.getBairro(),
                 r.getCidade(),
-                null,
-                0,
+                notas.notaMedia(),
+                notas.totalAvaliacoes(),
                 fotos.isEmpty() ? null : fotos.get(0),
                 r.getLatitude(),
                 r.getLongitude(),
                 null,
                 r.isAceitaPets(),
                 r.isAcessivel(),
+                r.isEstacionamento(),
+                r.isAreaCriancas(),
+                r.isAreaFumantes(),
+                r.isLgbtFriendly(),
                 r.getStatus(),
                 r.isAtivo(),
                 r.getDescricao(),
@@ -107,7 +121,7 @@ public record RestauranteGestaoResponse(
                 fotos,
                 r.getCardapioUrl(),
                 r.getCardapioLink(),
-                null,
+                notas.medias(),
                 responsavel == null ? null : responsavel.getId(),
                 null,
                 null,

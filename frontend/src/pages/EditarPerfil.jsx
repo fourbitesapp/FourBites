@@ -115,9 +115,13 @@ export default function EditarPerfil() {
     <>
       <BarraNavegacao />
       <main className="fb-pagina-media">
-        <Link to="/perfil" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</Link>
-        <h1 className="mt-4 mb-2">Editar perfil</h1>
-        <p className="fb-subtitulo mb-5">Essas informações aparecem no seu perfil público, exceto telefone e e-mail.</p>
+        <div className="mb-5">
+          <span className="fb-mao">deixe com a sua cara</span>
+          <h1 className="mt-1">Editar perfil</h1>
+          <p className="fb-subtitulo mb-0" style={{ maxWidth: '40em' }}>
+            Essas informações aparecem no seu perfil público, exceto telefone e e-mail.
+          </p>
+        </div>
 
         {!dados ? (
           erro ? <Aviso>{erro.message}</Aviso> : <p className="fb-vazio">Carregando…</p>
@@ -223,4 +227,3 @@ export default function EditarPerfil() {
     </>
   )
 }
-
