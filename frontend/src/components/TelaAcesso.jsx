@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import mascote from '../assets/mascote.webp'
 import IconeCozinha from './IconeCozinha.jsx'
 import Logo from './Logo.jsx'
 
@@ -27,13 +28,10 @@ export default function TelaAcesso({ frase, titulo, children }) {
       <aside className="fb-acesso-vitrine">
         <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
 
-        {/* enfeites: prato no círculo vermelho e etiquetas de cozinhas */}
+        {/* enfeites: mascote no círculo vermelho e etiquetas de cozinhas */}
         <span className="fb-acesso-prato" aria-hidden="true">
           <span>
-            <svg width="110" height="110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2"
-              strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12h18a9 7 0 0 1-18 0ZM12 5v2M8 6l1 2M16 6l-1 2" />
-            </svg>
+            <img src={mascote} alt="" className="fb-acesso-mascote" />
           </span>
         </span>
         <ul className="fb-acesso-etiquetas" aria-hidden="true">

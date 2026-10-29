@@ -207,6 +207,7 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-busca-grande { display: flex; align-items: center; gap: 0.75rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.45rem 0.45rem 0.45rem 1.4rem; box-shadow: 0 10px 26px rgba(36, 22, 18, 0.1); max-width: 560px; }
 .fb-busca-grande input { border: 0; outline: 0; flex: 1; min-width: 0; font: inherit; font-size: 1.05rem; color: var(--fb-tinta); }
 .fb-destaque-arte { flex: 1 1 380px; position: relative; height: 420px; }
+.fb-destaque-mascote { position: absolute; left: 118px; top: 22px; width: 236px; height: auto; z-index: 1; filter: drop-shadow(0 14px 18px rgba(36, 22, 18, 0.2)); }
 .fb-bolha { position: absolute; border-radius: 999px; }
 .fb-adesivo { position: absolute; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.7rem 1rem; transform: rotate(5deg); box-shadow: 0 8px 20px rgba(36, 22, 18, 0.12); text-decoration: none; }
 .fb-cozinhas { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 6px 2px 10px; scrollbar-width: none; }
@@ -366,6 +367,9 @@ fieldset.fb-desativado { opacity: 0.5; }
 /* Círculo vermelho com o prato, saindo pela direita do painel */
 .fb-acesso-prato { position: absolute; right: -110px; top: 90px; width: 360px; height: 360px; border-radius: 50%; background: var(--fb-vermelho); display: flex; align-items: center; justify-content: center; }
 .fb-acesso-prato > span { width: 236px; height: 236px; margin-right: 70px; border-radius: 50%; background: var(--fb-creme); color: var(--fb-vermelho); display: flex; align-items: center; justify-content: center; }
+/* Mascote: maior que o círculo creme, "saindo" dele por cima, com uma sombra leve.
+   Puxado para a esquerda para a mão que acena não ser cortada pela borda do painel. */
+.fb-acesso-mascote { width: 250px; height: auto; margin-top: -40px; transform: translateX(-38px); filter: drop-shadow(0 12px 16px rgba(36, 22, 18, 0.22)); }
 /* Etiquetas de cozinha espalhadas à esquerda do prato, levemente tortas */
 .fb-acesso-etiquetas { position: relative; z-index: 1; max-width: 62%; list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.9rem 0.7rem; }
 .fb-acesso-etiquetas li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.95rem 0.4rem 0.4rem; border-radius: 999px; background: #fff; box-shadow: 0 5px 0 rgba(36, 22, 18, 0.12); font-family: var(--fb-titulo); font-weight: 700; font-size: 1rem; color: var(--fb-tinta); white-space: nowrap; transform: rotate(-3deg); }

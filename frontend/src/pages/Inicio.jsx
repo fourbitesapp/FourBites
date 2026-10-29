@@ -7,11 +7,11 @@ import CarrosselCozinhas from '../components/CarrosselCozinhas.jsx'
 import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
 import Carrossel from '../components/Carrossel.jsx'
 import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
-import IconeCozinha from '../components/IconeCozinha.jsx'
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { formatarNota } from '../utils/formatos.js'
+import mascoteSuco from '../assets/mascote-suco.webp'
 
 const FEED_POR_VEZ = 10
 
@@ -150,15 +150,13 @@ export default function Inicio() {
               )}
             </div>
 
-            {/* Composição: a foto do 1º do ranking (ou um prato desenhado) */}
+            {/* Composição: o mascote no círculo creme (e, se houver, o adesivo do 1º do ranking) */}
             <div className="fb-destaque-arte d-none d-md-block" aria-hidden="true">
               <span className="fb-bolha" style={{ inset: '20px 0 0 30px', background: 'var(--fb-amarelo)', borderRadius: '46% 54% 42% 58% / 52% 40% 60% 48%' }}></span>
-              <span className="fb-bolha d-flex align-items-center justify-content-center overflow-hidden"
-                style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)', color: 'var(--fb-vermelho)' }}>
-                {primeiroDoRanking?.restaurante.fotoCapa
-                  ? <img src={primeiroDoRanking.restaurante.fotoCapa} alt="" className="w-100 h-100" style={{ objectFit: 'cover' }} />
-                  : <IconeCozinha nome={primeiroDoRanking?.restaurante.categoria?.nome} icone={primeiroDoRanking?.restaurante.categoria?.icone} tamanho={110} />}
-              </span>
+              <span className="fb-bolha"
+                style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)' }}></span>
+              {/* Fora do círculo (sem overflow) para o mascote poder "sair" por cima dele */}
+              <img src={mascoteSuco} alt="" className="fb-destaque-mascote" />
               <span className="fb-bolha" style={{ right: '10px', top: '10px', width: '110px', height: '110px', background: '#ff8fa9' }}></span>
               <span className="fb-bolha" style={{ left: '10px', bottom: '30px', width: '96px', height: '96px', background: '#7fd1a3' }}></span>
               {primeiroDoRanking && (
