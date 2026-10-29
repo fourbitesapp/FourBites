@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import VoltarAoTopo from './components/VoltarAoTopo.jsx'
 import AdminAvaliacoes from './pages/admin/AdminAvaliacoes.jsx'
 import AdminCadastros from './pages/admin/AdminCadastros.jsx'
 import AdminCategorias from './pages/admin/AdminCategorias.jsx'
@@ -12,6 +13,8 @@ import Explorar from './pages/Explorar.jsx'
 import FormularioRestaurante from './pages/FormularioRestaurante.jsx'
 import GerenciarFavoritos from './pages/GerenciarFavoritos.jsx'
 import Inicio from './pages/Inicio.jsx'
+import Lista from './pages/Lista.jsx'
+import ListaFormulario from './pages/ListaFormulario.jsx'
 import Login from './pages/Login.jsx'
 import MeusRestaurantes from './pages/MeusRestaurantes.jsx'
 import NovaAvaliacao from './pages/NovaAvaliacao.jsx'
@@ -23,6 +26,8 @@ import Restaurante from './pages/Restaurante.jsx'
 // Mapa de telas do site
 export default function App() {
   return (
+    <>
+    <VoltarAoTopo />
     <Routes>
       <Route path="/" element={<Inicio />} />
       <Route path="/login" element={<Login />} />
@@ -38,6 +43,11 @@ export default function App() {
       <Route path="/perfil/editar" element={<EditarPerfil />} />
       <Route path="/perfil/favoritos" element={<GerenciarFavoritos />} />
       <Route path="/perfil/:username" element={<Perfil />} />
+
+      {/* Listas de restaurantes */}
+      <Route path="/listas/nova" element={<ListaFormulario modo="nova" />} />
+      <Route path="/listas/:id" element={<Lista />} />
+      <Route path="/listas/:id/editar" element={<ListaFormulario modo="editar" />} />
 
       {/* Área do restaurante (conta RESTAURANTE) */}
       <Route path="/meus-restaurantes" element={<MeusRestaurantes />} />
@@ -55,5 +65,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }

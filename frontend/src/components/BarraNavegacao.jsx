@@ -80,8 +80,9 @@ export default function BarraNavegacao() {
 
       {/* Botão flutuante para publicar uma avaliação (só conta de usuário) */}
       {papel === 'USUARIO' && !escrevendoAvaliacao && (
-        <Link to="/novo-post" className="fb-botao-flutuante" aria-label="Novo post" title="Novo post">
+        <Link to="/novo-post" className="fb-botao-flutuante" aria-label="Novo post">
           <i className="bi bi-plus-lg" aria-hidden="true"></i>
+          <span className="fb-dica" aria-hidden="true">Novo post</span>
         </Link>
       )}
     </>

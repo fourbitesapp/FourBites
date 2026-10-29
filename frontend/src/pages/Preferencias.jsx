@@ -71,10 +71,10 @@ export default function Preferencias() {
     <>
       <BarraNavegacao />
       <main className="fb-pagina-media">
-        <div className="text-center mb-5">
-          <span className="fb-mao">só leva um minutinho!</span>
-          <h1 className="mt-2">Do que você gosta de <span className="fb-sublinhado">comer</span>?</h1>
-          <p className="fb-subtitulo mx-auto" style={{ maxWidth: '34em' }}>
+        <div className="mb-5">
+          <span className="fb-mao">só leva um minutinho</span>
+          <h1 className="mt-1">Do que você gosta de comer?</h1>
+          <p className="fb-subtitulo mb-0" style={{ maxWidth: '40em' }}>
             Usamos isso para calcular a compatibilidade e recomendar restaurantes. Você pode mudar quando quiser.
           </p>
         </div>
@@ -113,3 +113,4 @@ export default function Preferencias() {
     </>
   )
 }
+

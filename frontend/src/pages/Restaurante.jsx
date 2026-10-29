@@ -164,14 +164,14 @@ export default function Restaurante() {
             </div>
 
             {podeAvaliar && (
-              <div className="d-flex flex-wrap gap-2 justify-content-md-end">
+              <div className="fb-acoes-restaurante ms-md-auto">
                 <button type="button" className="fb-botao fb-botao-contorno" onClick={alternarFavorito}
                   disabled={salvandoFavorito} aria-pressed={Boolean(r.favoritoPosicao)}>
                   <i className={r.favoritoPosicao ? 'bi bi-heart-fill' : 'bi bi-heart'} aria-hidden="true"></i>
                   {r.favoritoPosicao ? 'Nos favoritos' : 'Favoritar'}
                 </button>
                 <Link to={`/restaurantes/${r.id}/avaliar`} className="fb-botao fb-botao-principal">
-                  {r.minhaAvaliacaoId ? 'Editar minha avaliação' : 'Avaliar'}
+                  {r.minhaAvaliacaoId ? 'Editar avaliação' : 'Avaliar'}
                 </Link>
               </div>
             )}

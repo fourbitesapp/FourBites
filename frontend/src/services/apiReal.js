@@ -176,3 +176,14 @@ export const adminExcluirCategoria = (id) => chamar('DELETE', `/admin/categorias
 // Notificações
 export const listarNotificacoes = () => chamar('GET', '/notificacoes') // { novas, itens }
 export const marcarNotificacoesVistas = () => chamar('POST', '/notificacoes/vistas')
+
+// Listas de restaurantes (criar e mudar: só conta USUARIO; privadas só o dono vê)
+// dados: { nome, descricao, cor, icone, publica }
+export const listarMinhasListas = () => chamar('GET', '/usuarios/me/listas')
+export const listarListasDoUsuario = (username) => chamar('GET', `/usuarios/${username}/listas`)
+export const buscarLista = (id) => chamar('GET', `/listas/${id}`)
+export const criarLista = (dados) => chamar('POST', '/usuarios/me/listas', dados)
+export const editarLista = (id, dados) => chamar('PUT', `/listas/${id}`, dados)
+export const excluirLista = (id) => chamar('DELETE', `/listas/${id}`)
+export const adicionarNaLista = (id, restauranteId) => chamar('POST', `/listas/${id}/restaurantes`, { restauranteId })
+export const tirarDaLista = (id, restauranteId) => chamar('DELETE', `/listas/${id}/restaurantes/${restauranteId}`)

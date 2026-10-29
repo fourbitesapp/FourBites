@@ -570,7 +570,7 @@ function Comodidade({ icone, cor, titulo, texto, ligado, aoMudar }) {
         <strong className="d-block">{titulo}</strong>
         <small className="fb-apagado">{texto}</small>
       </span>
-      <strong>{ligado ? 'Sim ✓' : 'Não'}</strong>
+      <span className="fb-extra-estado">{ligado ? 'Sim' : 'Não'}</span>
     </button>
   )
 }

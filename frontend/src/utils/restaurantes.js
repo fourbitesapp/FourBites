@@ -13,7 +13,7 @@ export const FAIXAS_DE_PRECO = [
 // Características do restaurante (sim/não). Uma lista só para o formulário, os selos e os filtros do Explorar.
 // campo = nome no restaurante (API); filtro = parâmetro do GET /restaurantes.
 export const CARACTERISTICAS = [
-  { campo: 'aceitaPets', filtro: 'pets', rotulo: 'Pet friendly', icone: 'bi-heart', cor: '#ffc193',
+  { campo: 'aceitaPets', filtro: 'pets', rotulo: 'Pet friendly', icone: 'bi-pata', cor: '#ffc193',
     texto: 'Clientes podem levar seus bichinhos' },
   { campo: 'areaCriancas', filtro: 'areaCriancas', rotulo: 'Área para crianças', icone: 'bi-balloon', cor: '#ffd98a',
     texto: 'Espaço ou brinquedos para os pequenos' },
@@ -218,3 +218,4 @@ export function diferencas(restaurante, proposto, categorias, formas) {
     .filter(([, antes, depois]) => String(antes ?? '') !== String(depois ?? ''))
     .map(([campo, antes, depois]) => ({ campo, antes, depois }))
 }
+

@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
+import BuscaRestaurante from '../components/BuscaRestaurante.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
@@ -20,6 +21,7 @@ export default function GerenciarFavoritos() {
   const [removido, setRemovido] = useState(null) // { posicao, restaurante } para o "Desfazer"
   const [erro, setErro] = useState(null)
   const [ocupado, setOcupado] = useState(false)
+  const [escolhendoEm, setEscolhendoEm] = useState(null) // posição livre em que a pessoa está buscando um restaurante
 
   const podeUsar = logado && usuario.papel === 'USUARIO'
 
@@ -57,6 +59,13 @@ export default function GerenciarFavoritos() {
   function remover(favorito) {
     setRemovido(favorito)
     executar(() => api.removerFavorito(favorito.posicao))
+  }
+
+  // Posição livre: busca o restaurante ali mesmo, sem precisar abrir o perfil dele.
+  function adicionar(posicao, restaurante) {
+    setRemovido(null)
+    setEscolhendoEm(null)
+    executar(() => api.colocarFavorito(posicao, restaurante.id))
   }
 
   function desfazer() {
@@ -132,12 +141,26 @@ export default function GerenciarFavoritos() {
                   ) : (
                     <article className="fb-posicao-livre">
                       <span className="fb-numero" style={{ background: 'var(--fb-amarelo)', color: 'var(--fb-tinta)' }}>{posicao}</span>
-                      <div>
-                        <strong className="fb-autor">Posição livre</strong>
-                        <p className="fb-cartao-meta mb-0">
-                          Abra o perfil de um restaurante e toque em <strong className="fb-texto-destaque">Favoritar</strong> para adicioná-lo aqui.
-                        </p>
-                      </div>
+                      {escolhendoEm === posicao ? (
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <strong className="fb-autor">Escolha o restaurante</strong>
+                            <button type="button" className="fb-botao-texto fb-link" onClick={() => setEscolhendoEm(null)}>
+                              Cancelar
+                            </button>
+                          </div>
+                          <BuscaRestaurante aoEscolher={(r) => adicionar(posicao, r)} />
+                        </div>
+                      ) : (
+                        <div className="flex-grow-1">
+                          <strong className="fb-autor">Posição livre</strong>
+                          <p className="fb-cartao-meta mb-2">Busque um restaurante para colocar aqui.</p>
+                          <button type="button" className="fb-botao fb-botao-principal fb-botao-pequeno" disabled={ocupado}
+                            onClick={() => setEscolhendoEm(posicao)}>
+                            <i className="bi bi-plus-lg" aria-hidden="true"></i> Adicionar restaurante
+                          </button>
+                        </div>
+                      )}
                     </article>
                   )}
                 </div>
@@ -150,3 +173,4 @@ export default function GerenciarFavoritos() {
     </>
   )
 }
+

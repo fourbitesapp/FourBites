@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import Avatar from '../components/Avatar.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CapaPerfil from '../components/CapaPerfil.jsx'
+import CartaoLista from '../components/CartaoLista.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import JanelaPessoas from '../components/JanelaPessoas.jsx'
 import Rodape from '../components/Rodape.jsx'
@@ -33,12 +34,12 @@ export function MeuPerfil() {
 // Perfil de um usuário: o próprio (com edição) ou o de outra pessoa (com o botão Seguir).
 export default function Perfil() {
   const { username } = useParams()
-  const { usuario, logado, sair } = useAuth()
-  const navegar = useNavigate()
+  const { usuario, logado } = useAuth()
   const local = useLocation()
 
   const [perfil, setPerfil] = useState(null)
   const [favoritos, setFavoritos] = useState([])
+  const [listas, setListas] = useState([])
   const [avaliacoes, setAvaliacoes] = useState([])
   const [preferencias, setPreferencias] = useState(null) // só no próprio perfil
   const [categorias, setCategorias] = useState([])
@@ -65,6 +66,11 @@ export default function Perfil() {
         }
       })
       .catch((falha) => !cancelada && setErro(falha))
+
+    // Listas: o dono vê todas (públicas e privadas); os outros, só as públicas. Se falhar, a seção fica vazia.
+    const buscarListas = ehMeuPerfil && usuario.papel === 'USUARIO'
+      ? api.listarMinhasListas() : api.listarListasDoUsuario(username)
+    buscarListas.then((dados) => !cancelada && setListas(dados)).catch(() => !cancelada && setListas([]))
 
     // O resumo de preferências só aparece para o dono do perfil (conta USUARIO).
     if (ehMeuPerfil && usuario.papel === 'USUARIO') {
@@ -94,11 +100,6 @@ export default function Perfil() {
     } finally {
       setSeguindoAgora(false)
     }
-  }
-
-  function aoSair() {
-    sair()
-    navegar('/')
   }
 
   if (erro) {
@@ -142,14 +143,8 @@ export default function Perfil() {
         <div className="fb-perfil-topo">
           <Avatar nome={perfil.nome} foto={perfil.fotoPerfil} tamanho="perfil" />
           <div className="d-flex flex-wrap gap-2 justify-content-end">
-            {ehUsuarioDono && (
-              <Link to="/novo-post" className="fb-botao fb-botao-principal">Nova publicação</Link>
-            )}
             {ehMeuPerfil && (
-              <>
-                <Link to="/perfil/editar" className="fb-botao fb-botao-claro">Editar perfil</Link>
-                <button type="button" className="fb-botao fb-botao-claro" onClick={aoSair}>Sair</button>
-              </>
+              <Link to="/perfil/editar" className="fb-botao fb-botao-claro">Editar perfil</Link>
             )}
             {podeSeguir && (
               <button type="button" disabled={seguindoAgora} onClick={alternarSeguir}
@@ -168,7 +163,7 @@ export default function Perfil() {
         </div>
 
         <div className="mt-3 px-sm-4">
-          <h1 className="mb-0">{perfil.nome}</h1>
+          <h1 className="mb-0 fb-perfil-nome">{perfil.nome}</h1>
           <p className="fb-autor fb-apagado mb-0">@{perfil.username}</p>
           {perfil.bio && <p className="mt-2 mb-0" style={{ color: 'var(--fb-tinta)', fontSize: '1.05rem' }}>{perfil.bio}</p>}
           <div className="mt-2"><Aviso>{erroSeguir}</Aviso></div>
@@ -262,6 +257,29 @@ export default function Perfil() {
           )}
         </section>
 
+        {/* Listas */}
+        <section style={{ marginTop: '4rem' }}>
+          <div className="fb-secao-topo">
+            <div>
+              <h2 className="mb-1">Listas</h2>
+              <p className="fb-cartao-meta mb-0">
+                {ehUsuarioDono ? 'Separe restaurantes por ocasião. Você decide quais ficam públicas.' : 'Restaurantes separados por ocasião.'}
+              </p>
+            </div>
+          </div>
+          <div className="fb-listas">
+            {ehUsuarioDono && (
+              <Link to="/listas/nova" className="fb-cartao-lista fb-lista-nova">
+                <span className="fb-icone-suave"><i className="bi bi-plus-lg" aria-hidden="true"></i></span>
+                <strong style={{ fontFamily: 'var(--fb-titulo)', fontSize: '1.1rem' }}>Nova lista</strong>
+                <small>Pra date, com a família, pro aniversário…</small>
+              </Link>
+            )}
+            {listas.map((l) => <CartaoLista key={l.id} lista={l} />)}
+          </div>
+          {listas.length === 0 && !ehUsuarioDono && <p className="fb-vazio">Nenhuma lista pública ainda.</p>}
+        </section>
+
         {/* Posts */}
         <section style={{ marginTop: '4rem' }}>
           <h2 className="mb-4">Posts recentes</h2>
@@ -295,3 +313,5 @@ export default function Perfil() {
     </>
   )
 }
+
+
