@@ -83,7 +83,7 @@ a:hover { color: var(--fb-vermelho-escuro); }
 .fb-barra-dentro { max-width: 1200px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
 .fb-marca { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--fb-tinta); font-family: var(--fb-titulo); font-variation-settings: 'SOFT' 100; font-weight: 700; font-size: 1.75rem; }
 .fb-marca:hover { color: var(--fb-tinta); }
-.fb-logo { width: 2.6rem; height: 2.6rem; border-radius: 999px; background: var(--fb-vermelho); color: var(--fb-amarelo); display: inline-flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex-shrink: 0; }
+.fb-logo { width: 2.6rem; height: 2.6rem; transform: rotate(-8deg); flex-shrink: 0; }
 .fb-busca-barra { flex: 1 1 260px; display: flex; align-items: center; gap: 0.6rem; background: var(--fb-creme); border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.55rem 1.1rem; color: var(--fb-apagado); }
 .fb-busca-barra:focus-within { border-color: var(--fb-vermelho); }
 .fb-busca-barra input { border: 0; outline: 0; background: transparent; flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; color: var(--fb-tinta); }
@@ -360,7 +360,6 @@ fieldset.fb-desativado { opacity: 0.5; }
 /* O painel fica parado (sticky) e só o formulário rola: no Criar conta, que é mais comprido, ele não estica */
 .fb-acesso-vitrine { flex: 1 1 420px; position: sticky; top: 2rem; height: calc(100vh - 4rem); min-height: 600px; border-radius: 34px; background: var(--fb-amarelo); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; padding: 2.25rem; }
 .fb-acesso-vitrine .fb-marca { color: var(--fb-tinta); position: relative; z-index: 1; }
-.fb-acesso-vitrine .fb-logo { background: var(--fb-vermelho); color: #fff; }
 .fb-acesso-frase { position: relative; z-index: 1; }
 .fb-acesso-vitrine h2 { color: var(--fb-tinta); font-size: clamp(1.9rem, 3.4vw, 2.5rem); max-width: 11em; margin: 0.4rem 0 0; }
 .fb-acesso-vitrine .fb-mao { color: var(--fb-vermelho-escuro); font-size: 2rem; }
