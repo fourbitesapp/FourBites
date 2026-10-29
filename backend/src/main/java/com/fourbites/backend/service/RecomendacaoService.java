@@ -99,13 +99,17 @@ public class RecomendacaoService {
         historico.addAll(favoritoRepository.categoriasFavoritas(usuarioId));
 
         if (preferencia == null) {
-            return new PerfilDoUsuario(Set.of(), null, false, false, historico);
+            return new PerfilDoUsuario(Set.of(), null, false, false, false, false, false, false, historico);
         }
         return new PerfilDoUsuario(
                 preferencia.getCategoriaIds(),
                 preferencia.getFaixaPreco(),
                 preferencia.isPrecisaAcessibilidade(),
                 preferencia.isLevaPets(),
+                preferencia.isLevaCriancas(),
+                preferencia.isPrecisaEstacionamento(),
+                preferencia.isFuma(),
+                preferencia.isPrefereLgbtFriendly(),
                 historico);
     }
 
@@ -115,6 +119,10 @@ public class RecomendacaoService {
                 restaurante.getFaixaPreco(),
                 restaurante.isAcessivel(),
                 restaurante.isAceitaPets(),
+                restaurante.isAreaCriancas(),
+                restaurante.isEstacionamento(),
+                restaurante.isAreaFumantes(),
+                restaurante.isLgbtFriendly(),
                 notaMedia);
     }
 }

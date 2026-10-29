@@ -6,8 +6,8 @@ export default function MiniRestaurante({ restaurante, pequeno = false }) {
   const r = restaurante
   return (
     <span className={`fb-mini ${pequeno ? 'fb-mini-pequeno' : ''}`} aria-hidden="true"
-      style={{ background: corDaCozinha(r.categoria?.id) }}>
-      {r.fotoCapa ? <img src={r.fotoCapa} alt="" /> : <IconeCozinha nome={r.categoria?.nome} tamanho={26} />}
+      style={{ background: corDaCozinha(r.categoria) }}>
+      {r.fotoCapa ? <img src={r.fotoCapa} alt="" /> : <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={26} />}
     </span>
   )
 }

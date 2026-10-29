@@ -11,8 +11,25 @@ const FAIXAS = [
   { valor: '$$$', simbolo: '$$$', rotulo: 'mais caro' },
 ]
 
+// "Mais alguma coisa?": cada preferência combina com uma característica do restaurante
+const EXTRAS = [
+  { campo: 'precisaAcessibilidade', icone: 'bi-universal-access', cor: '#b5dcf8', titulo: 'Preciso de acessibilidade',
+    texto: 'Lugares acessíveis ganham pontos na compatibilidade' },
+  { campo: 'levaPets', icone: 'bi-heart', cor: '#ffc193', titulo: 'Costumo levar pets',
+    texto: 'Lugares pet friendly ganham pontos na compatibilidade' },
+  { campo: 'levaCriancas', icone: 'bi-balloon', cor: '#ffd98a', titulo: 'Vou com crianças',
+    texto: 'Lugares com área para crianças ganham pontos na compatibilidade' },
+  { campo: 'precisaEstacionamento', icone: 'bi-car-front', cor: '#d9eda3', titulo: 'Preciso de estacionamento',
+    texto: 'Lugares com estacionamento ganham pontos na compatibilidade' },
+  { campo: 'fuma', icone: 'bi-wind', cor: '#e6ddd3', titulo: 'Preciso de área para fumantes',
+    texto: 'Lugares com área para fumantes ganham pontos na compatibilidade' },
+  { campo: 'prefereLgbtFriendly', icone: 'bi-rainbow', cor: '#d8c4f5', titulo: 'Prefiro lugares LGBT+ friendly',
+    texto: 'Lugares LGBT+ friendly ganham pontos na compatibilidade' },
+]
+
 export const PREFERENCIAS_VAZIAS = {
-  categoriaIds: [], faixaPreco: null, precisaAcessibilidade: false, levaPets: false,
+  categoriaIds: [], faixaPreco: null,
+  ...Object.fromEntries(EXTRAS.map((e) => [e.campo, false])),
 }
 
 export default function CamposPreferencias({ categorias, dados, aoMudar }) {
@@ -43,8 +60,8 @@ export default function CamposPreferencias({ categorias, dados, aoMudar }) {
             return (
               <button key={c.id} type="button" aria-pressed={marcada} onClick={() => alternarCategoria(c.id)}
                 className="fb-opcao-cozinha" style={marcada ? { background: 'var(--fb-amarelo-claro)', borderColor: 'var(--fb-amarelo)' } : undefined}>
-                <span className="fb-opcao-cozinha-icone" style={{ background: corDaCozinha(c.id) }}>
-                  <IconeCozinha nome={c.nome} tamanho={22} />
+                <span className="fb-opcao-cozinha-icone" style={{ background: corDaCozinha(c) }}>
+                  <IconeCozinha nome={c.nome} icone={c.icone} tamanho={22} />
                 </span>
                 {c.nome}
                 <i className={`bi ${marcada ? 'bi-check-lg' : 'bi-plus-lg'}`} aria-hidden="true"></i>
@@ -77,12 +94,10 @@ export default function CamposPreferencias({ categorias, dados, aoMudar }) {
           <h2>Mais alguma coisa?</h2>
         </div>
         <div className="fb-extras">
-          <Extra icone="bi-universal-access" cor="#b5dcf8" titulo="Preciso de acessibilidade"
-            texto="Lugares acessíveis ganham pontos na compatibilidade"
-            ligado={dados.precisaAcessibilidade} aoMudar={(v) => aoMudar({ ...dados, precisaAcessibilidade: v })} />
-          <Extra icone="bi-heart" cor="#ffc193" titulo="Costumo levar pets"
-            texto="Lugares pet friendly ganham pontos na compatibilidade"
-            ligado={dados.levaPets} aoMudar={(v) => aoMudar({ ...dados, levaPets: v })} />
+          {EXTRAS.map((e) => (
+            <Extra key={e.campo} icone={e.icone} cor={e.cor} titulo={e.titulo} texto={e.texto}
+              ligado={Boolean(dados[e.campo])} aoMudar={(v) => aoMudar({ ...dados, [e.campo]: v })} />
+          ))}
         </div>
       </section>
     </>

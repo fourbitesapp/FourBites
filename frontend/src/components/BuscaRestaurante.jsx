@@ -45,8 +45,8 @@ export default function BuscaRestaurante({ aoEscolher }) {
           {sugestoes.map((r) => (
             <button key={r.id} type="button" role="option" aria-selected="false" className="fb-sugestao" onClick={() => aoEscolher(r)}>
               {r.fotoCapa ? <img src={r.fotoCapa} alt="" /> : (
-                <span className="fb-sem-foto" style={{ background: corDaCozinha(r.categoria?.id) }}>
-                  <IconeCozinha nome={r.categoria?.nome} tamanho={24} />
+                <span className="fb-sem-foto" style={{ background: corDaCozinha(r.categoria) }}>
+                  <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={24} />
                 </span>
               )}
               <span className="flex-grow-1 text-start">
@@ -63,3 +63,4 @@ export default function BuscaRestaurante({ aoEscolher }) {
     </div>
   )
 }
+

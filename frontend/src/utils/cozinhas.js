@@ -1,7 +1,7 @@
 // Cor e ícone de cada cozinha nas telas
 
-// Tons claros, para o texto escuro continuar legível em cima.
-const CORES = [
+// Tons claros, para o texto escuro continuar legível em cima. Também são as opções de cor do admin
+export const CORES = [
   '#ffd98a', // amarelo
   '#a8e2c2', // verde
   '#ffb8c8', // rosa
@@ -14,7 +14,7 @@ const CORES = [
   '#f6c6a8', // pêssego
 ]
 
-// Desenhos simples (traço de 24×24), um por cozinha. A chave é o nome sem acento e em minúsculas.
+// Desenhos simples , um por cozinha
 const ICONES = {
   // panela com vapor
   brasileira: 'M4 9h16v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4ZM2 10h2M20 10h2M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2',
@@ -63,11 +63,25 @@ function simplificar(texto) {
   return texto.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim()
 }
 
-export function corDaCozinha(id) {
-  return CORES[(Number(id) || 0) % CORES.length]
+// Opções de desenho para o admin escolher 
+export const OPCOES_DE_ICONE = [
+  ...Object.keys(ICONES).map((chave) => ({ chave, rotulo: chave.charAt(0).toUpperCase() + chave.slice(1) })),
+  { chave: 'prato', rotulo: 'Prato' },
+]
+
+// Recebe a categoria ({ id, nome, cor, icone }) ou só o id.
+// Com cor escolhida pelo admin, usa ela; senão, a paleta pelo id.
+export function corDaCozinha(categoria) {
+  if (categoria && typeof categoria === 'object') {
+    return categoria.cor || CORES[(Number(categoria.id) || 0) % CORES.length]
+  }
+  return CORES[(Number(categoria) || 0) % CORES.length]
 }
 
-export function iconeDaCozinha(nome) {
+// icone = desenho escolhido pelo admin (pode vir vazio); sem ele, procura pelo nome da cozinha.
+export function iconeDaCozinha(nome, icone) {
+  if (icone === 'prato') return PRATO
+  if (icone && ICONES[icone]) return ICONES[icone]
   const chave = simplificar(nome || '')
   if (ICONES[chave]) return ICONES[chave]
   const parecida = PALAVRAS.find(([palavra]) => chave.includes(palavra))

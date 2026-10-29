@@ -49,8 +49,8 @@ export default function CarrosselCozinhas({ categorias }) {
       <div className="fb-cozinhas" ref={fileira} onScroll={conferirSetas}>
         {categorias.map((c) => (
           <Link key={c.id} to={`/explorar?categoriaId=${c.id}`} className="fb-cozinha"
-            style={{ background: corDaCozinha(c.id) }}>
-            <IconeCozinha nome={c.nome} tamanho={44} />
+            style={{ background: corDaCozinha(c) }}>
+            <IconeCozinha nome={c.nome} icone={c.icone} tamanho={44} />
             <span className="fb-cozinha-nome">{c.nome}</span>
           </Link>
         ))}

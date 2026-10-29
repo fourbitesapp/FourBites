@@ -168,8 +168,9 @@ export const adminListarAvaliacoes = (busca) => chamar('GET', '/admin/avaliacoes
 export const adminExcluirAvaliacao = (id) => chamar('DELETE', `/admin/avaliacoes/${id}`)
 
 export const adminListarCategorias = () => chamar('GET', '/admin/categorias')
-export const adminRenomearCategoria = (id, nome) => chamar('PUT', `/admin/categorias/${id}`, { nome })
-export const adminCriarCategoria = (nome) => chamar('POST', '/admin/categorias', { nome })
+// dados: { nome, cor, icone } — cor e icone podem ir null (padrão)
+export const adminAtualizarCategoria = (id, dados) => chamar('PUT', `/admin/categorias/${id}`, dados)
+export const adminCriarCategoria = (dados) => chamar('POST', '/admin/categorias', dados)
 export const adminExcluirCategoria = (id) => chamar('DELETE', `/admin/categorias/${id}`) // 409 se algum restaurante usa
 
 // Notificações

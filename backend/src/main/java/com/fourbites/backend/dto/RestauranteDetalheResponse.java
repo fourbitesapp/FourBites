@@ -12,7 +12,7 @@ public record RestauranteDetalheResponse(
 
         Integer id,
         String nome,
-        OpcaoResponse categoria,
+        CategoriaResponse categoria,
         String categoriaSugerida,
         String faixaPreco,
         String bairro,
@@ -61,7 +61,7 @@ public record RestauranteDetalheResponse(
         return new RestauranteDetalheResponse(
                 r.getId(),
                 r.getNome(),
-                categoria == null ? null : new OpcaoResponse(categoria.getId(), categoria.getNome()),
+                CategoriaResponse.de(categoria),
                 r.getCategoriaSugerida(),
                 r.getFaixaPreco(),
                 r.getBairro(),

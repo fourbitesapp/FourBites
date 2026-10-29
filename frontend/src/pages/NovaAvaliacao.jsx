@@ -176,8 +176,8 @@ export default function NovaAvaliacao() {
                     {restaurante.fotos?.[0] ? (
                       <img src={restaurante.fotos[0]} alt="" />
                     ) : (
-                      <span className="fb-sem-foto" style={{ background: corDaCozinha(restaurante.categoria?.id) }}>
-                        <IconeCozinha nome={restaurante.categoria?.nome} tamanho={28} />
+                      <span className="fb-sem-foto" style={{ background: corDaCozinha(restaurante.categoria) }}>
+                        <IconeCozinha nome={restaurante.categoria?.nome} icone={restaurante.categoria?.icone} tamanho={28} />
                       </span>
                     )}
                     <div className="flex-grow-1">

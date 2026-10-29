@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fourbites.backend.dto.CategoriaResponse;
 import com.fourbites.backend.dto.OpcaoResponse;
 import com.fourbites.backend.repository.CategoriaRepository;
 import com.fourbites.backend.repository.FormaPagamentoRepository;
@@ -24,9 +25,9 @@ public class OpcoesController {
     }
 
     @GetMapping("/categorias")
-    public List<OpcaoResponse> listarCategorias() {
+    public List<CategoriaResponse> listarCategorias() {
         return categoriaRepository.findAll(Sort.by("nome")).stream()
-                .map(categoria -> new OpcaoResponse(categoria.getId(), categoria.getNome()))
+                .map(CategoriaResponse::de)
                 .toList();
     }
 

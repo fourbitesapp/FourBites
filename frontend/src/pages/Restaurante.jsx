@@ -120,8 +120,8 @@ export default function Restaurante() {
             {r.fotos.slice(0, 3).map((url) => <img key={url} src={url} alt="" />)}
           </div>
         ) : (
-          <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria?.id) }}>
-            <IconeCozinha nome={r.categoria?.nome} tamanho={110} />
+          <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria) }}>
+            <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={110} />
           </div>
         )}
 
@@ -135,12 +135,12 @@ export default function Restaurante() {
             <div className="d-flex flex-wrap gap-2">
               {r.horarios.length > 0 && (
                 <span className={`fb-etiqueta ${aberto ? 'fb-etiqueta-verde' : 'fb-etiqueta-cinza'}`}>
-                  {aberto ? 'Aberto agora' : 'Fechado agora'}
+                  <i className="bi bi-clock" aria-hidden="true"></i>{aberto ? 'Aberto agora' : 'Fechado agora'}
                 </span>
               )}
               {CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => (
                 <span key={c.campo} className="fb-etiqueta" style={{ background: c.cor }}>
-                  <i className={`bi ${c.icone} me-1`} aria-hidden="true"></i>{c.rotulo}
+                  <i className={`bi ${c.icone}`} aria-hidden="true"></i>{c.rotulo}
                 </span>
               ))}
             </div>
@@ -152,7 +152,9 @@ export default function Restaurante() {
                 <SeloCompatibilidade valor={r.compatibilidade} />
               )}
               <div className="text-md-end">
-                <div className="fb-nota-grande">★ {formatarNota(r.notaMedia)}</div>
+                <div className="fb-nota-grande">
+                  <i className="bi bi-star-fill" aria-hidden="true"></i> {formatarNota(r.notaMedia)}
+                </div>
                 <div className="fb-cartao-meta">
                   {r.totalAvaliacoes === 0
                     ? 'Ainda sem avaliações'

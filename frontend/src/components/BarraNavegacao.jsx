@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
+import Avatar from './Avatar.jsx'
 import BotaoVoltar from './BotaoVoltar.jsx'
 import Logo from './Logo.jsx'
 import Notificacoes from './Notificacoes.jsx'
 
 // Todos: Início e Explorar
-// Usuário: perfil, sino e sair
+// Usuário: perfil (foto ou iniciais), sino e sair
 // Restaurante: meus restaurantes, sino, sair - Admin: painel admin e sair.
 
 export default function BarraNavegacao() {
@@ -50,8 +51,8 @@ export default function BarraNavegacao() {
             <NavLink to="/explorar" className="fb-nav-link">Explorar</NavLink>
 
             {papel === 'USUARIO' && (
-              <NavLink to="/perfil" className="fb-icone-nav" aria-label="Meu perfil" title="Meu perfil">
-                <i className="bi bi-person" aria-hidden="true"></i>
+              <NavLink to="/perfil" className="fb-avatar-link" aria-label="Meu perfil" title="Meu perfil">
+                <Avatar nome={usuario.nome} foto={usuario.fotoPerfil} tamanho="nav" />
               </NavLink>
             )}
             {papel === 'RESTAURANTE' && (

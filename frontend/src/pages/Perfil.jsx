@@ -15,6 +15,12 @@ import { formatarNota } from '../utils/formatos.js'
 
 const POSICOES = [1, 2, 3, 4]
 
+// Rótulos curtos das preferências extras, para as pílulas do perfil.
+const ROTULOS_DOS_EXTRAS = {
+  precisaAcessibilidade: 'Acessibilidade', levaPets: 'Leva pets', levaCriancas: 'Vai com crianças',
+  precisaEstacionamento: 'Estacionamento', fuma: 'Área para fumantes', prefereLgbtFriendly: 'LGBT+ friendly',
+}
+
 // /perfil leva para o perfil de quem está logado.
 export function MeuPerfil() {
   const { usuario, logado } = useAuth()
@@ -121,6 +127,9 @@ export default function Perfil() {
   const minhasCozinhas = (preferencias?.categoriaIds || [])
     .map((id) => categorias.find((c) => c.id === id))
     .filter(Boolean)
+  const extrasMarcados = Object.entries(ROTULOS_DOS_EXTRAS)
+    .filter(([campo]) => preferencias?.[campo])
+    .map(([, rotulo]) => rotulo)
   const ehUsuarioDono = ehMeuPerfil && usuario.papel === 'USUARIO'
 
   return (
@@ -196,13 +205,11 @@ export default function Perfil() {
                 {preferencias ? (
                   <>
                     {minhasCozinhas.map((c) => (
-                      <span key={c.id} className="fb-pilula" style={{ background: corDaCozinha(c.id) }}>{c.nome}</span>
+                      <span key={c.id} className="fb-pilula" style={{ background: corDaCozinha(c) }}>{c.nome}</span>
                     ))}
                     {preferencias.faixaPreco && <span className="fb-pilula">{preferencias.faixaPreco}</span>}
-                    {preferencias.precisaAcessibilidade && <span className="fb-pilula">Acessibilidade</span>}
-                    {preferencias.levaPets && <span className="fb-pilula">Leva pets</span>}
-                    {minhasCozinhas.length === 0 && !preferencias.faixaPreco &&
-                      !preferencias.precisaAcessibilidade && !preferencias.levaPets && (
+                    {extrasMarcados.map((rotulo) => <span key={rotulo} className="fb-pilula">{rotulo}</span>)}
+                    {minhasCozinhas.length === 0 && !preferencias.faixaPreco && extrasMarcados.length === 0 && (
                       <span className="fb-apagado">Nenhuma marcada</span>
                     )}
                   </>
@@ -235,10 +242,10 @@ export default function Perfil() {
               {POSICOES.map((posicao) => favoritoNa(posicao)).filter(Boolean).map((f) => (
                 <div key={f.posicao} className="col-sm-6 col-lg-3">
                   <Link to={`/restaurantes/${f.restaurante.id}`} className="fb-cartao-restaurante">
-                    <div className="fb-favorito-foto" style={{ background: corDaCozinha(f.restaurante.categoria?.id) }}>
+                    <div className="fb-favorito-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                       {f.restaurante.fotoCapa
                         ? <img src={f.restaurante.fotoCapa} alt="" />
-                        : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} tamanho={40} /></span>}
+                        : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                       <span className="fb-numero-favorito">{f.posicao}</span>
                     </div>
                     <div className="d-flex justify-content-between align-items-start gap-2 pt-3 px-2 pb-1">
@@ -271,10 +278,10 @@ export default function Perfil() {
               const foto = a.fotos[0] || a.restaurante.fotoCapa
               return (
                   <Link key={a.id} to={`/restaurantes/${a.restaurante.id}`} className="fb-post"
-                    style={{ background: corDaCozinha(a.restaurante.categoria?.id) }}>
+                    style={{ background: corDaCozinha(a.restaurante.categoria) }}>
                     {foto
                       ? <img src={foto} alt="" />
-                      : <span className="fb-sem-foto pb-5"><IconeCozinha nome={a.restaurante.categoria?.nome} tamanho={40} /></span>}
+                      : <span className="fb-sem-foto pb-5"><IconeCozinha nome={a.restaurante.categoria?.nome} icone={a.restaurante.categoria?.icone} tamanho={40} /></span>}
                     <span className="fb-post-nota">{formatarNota(a.notaGeral, 2)}</span>
                     <span className="fb-post-nome">{a.restaurante.nome}</span>
                   </Link>

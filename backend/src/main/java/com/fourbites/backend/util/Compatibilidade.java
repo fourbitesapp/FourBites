@@ -7,8 +7,9 @@ import java.util.Set;
 // Parte 1 - preferências marcadas no primeiro acesso (60 pontos):
 // categoria preferida = 30
 // faixa de preço igual (uma faixa de diferença: 7,5) = 15
-// acessibilidade (se o usuário precisa) = 7,5
-// aceita pets (se o usuário leva) = 7,5
+// extras, 2,5 cada (os 15 pontos divididos entre os 6):
+//   acessibilidade (se o usuário precisa), aceita pets (se leva), área para crianças (se vai com crianças),
+//   estacionamento (se precisa), área para fumantes (se fuma), LGBT+ friendly (se prefere)
 //  Critério que o usuário não marcou não atrapalha: vale os pontos inteiros.
 
 // Parte 2 - histórico do usuário na plataforma (40 pontos):
@@ -16,6 +17,8 @@ import java.util.Set;
 //   nota média do restaurante no FourBites (média / 5 x 15) = até 15
 
 public final class Compatibilidade {
+
+    private static final double EXTRA = 2.5;
 
     private Compatibilidade() {
     }
@@ -25,6 +28,10 @@ public final class Compatibilidade {
             String faixaPrecoPreferida,
             boolean precisaAcessibilidade,
             boolean levaPets,
+            boolean levaCriancas,
+            boolean precisaEstacionamento,
+            boolean fuma,
+            boolean prefereLgbtFriendly,
             Set<Integer> categoriasDoHistorico
     ) {
     }
@@ -34,6 +41,10 @@ public final class Compatibilidade {
             String faixaPreco,
             boolean acessivel,
             boolean aceitaPets,
+            boolean areaCriancas,
+            boolean estacionamento,
+            boolean areaFumantes,
+            boolean lgbtFriendly,
             BigDecimal notaMedia
     ) {
     }
@@ -50,10 +61,22 @@ public final class Compatibilidade {
         pontos += pontosDoPreco(usuario.faixaPrecoPreferida(), restaurante.faixaPreco());
 
         if (!usuario.precisaAcessibilidade() || restaurante.acessivel()) {
-            pontos += 7.5;
+            pontos += EXTRA;
         }
         if (!usuario.levaPets() || restaurante.aceitaPets()) {
-            pontos += 7.5;
+            pontos += EXTRA;
+        }
+        if (!usuario.levaCriancas() || restaurante.areaCriancas()) {
+            pontos += EXTRA;
+        }
+        if (!usuario.precisaEstacionamento() || restaurante.estacionamento()) {
+            pontos += EXTRA;
+        }
+        if (!usuario.fuma() || restaurante.areaFumantes()) {
+            pontos += EXTRA;
+        }
+        if (!usuario.prefereLgbtFriendly() || restaurante.lgbtFriendly()) {
+            pontos += EXTRA;
         }
 
         // Parte 2: histórico (40) 

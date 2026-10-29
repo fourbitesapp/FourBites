@@ -49,6 +49,10 @@ public class PreferenciaService {
         preferencia.setFaixaPreco(dados.faixaPreco());
         preferencia.setPrecisaAcessibilidade(dados.precisaAcessibilidade());
         preferencia.setLevaPets(dados.levaPets());
+        preferencia.setLevaCriancas(dados.levaCriancas());
+        preferencia.setPrecisaEstacionamento(dados.precisaEstacionamento());
+        preferencia.setFuma(dados.fuma());
+        preferencia.setPrefereLgbtFriendly(dados.prefereLgbtFriendly());
         preferencia.getCategoriaIds().clear();
         preferencia.getCategoriaIds().addAll(categoriaIds);
 

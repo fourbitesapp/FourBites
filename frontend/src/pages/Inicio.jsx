@@ -161,7 +161,7 @@ export default function Inicio() {
                 style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)', color: 'var(--fb-vermelho)' }}>
                 {primeiroDoRanking?.restaurante.fotoCapa
                   ? <img src={primeiroDoRanking.restaurante.fotoCapa} alt="" className="w-100 h-100" style={{ objectFit: 'cover' }} />
-                  : <IconeCozinha nome={primeiroDoRanking?.restaurante.categoria?.nome} tamanho={110} />}
+                  : <IconeCozinha nome={primeiroDoRanking?.restaurante.categoria?.nome} icone={primeiroDoRanking?.restaurante.categoria?.icone} tamanho={110} />}
               </span>
               <span className="fb-bolha" style={{ right: '10px', top: '10px', width: '110px', height: '110px', background: '#ff8fa9' }}></span>
               <span className="fb-bolha" style={{ left: '10px', bottom: '30px', width: '96px', height: '96px', background: '#7fd1a3' }}></span>
@@ -325,3 +325,4 @@ export default function Inicio() {
     </>
   )
 }
+

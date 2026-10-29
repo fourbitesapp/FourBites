@@ -36,12 +36,12 @@ public class AdminCategoriaController {
 
     @PostMapping
     public ResponseEntity<CategoriaAdminResponse> criar(@Valid @RequestBody CategoriaRequest dados) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.criar(dados.nome()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.criar(dados));
     }
 
     @PutMapping("/{id}")
-    public CategoriaAdminResponse renomear(@PathVariable Integer id, @Valid @RequestBody CategoriaRequest dados) {
-        return categoriaService.renomear(id, dados.nome());
+    public CategoriaAdminResponse atualizar(@PathVariable Integer id, @Valid @RequestBody CategoriaRequest dados) {
+        return categoriaService.atualizar(id, dados);
     }
 
     @DeleteMapping("/{id}")
@@ -50,3 +50,4 @@ public class AdminCategoriaController {
         return ResponseEntity.noContent().build();
     }
 }
+

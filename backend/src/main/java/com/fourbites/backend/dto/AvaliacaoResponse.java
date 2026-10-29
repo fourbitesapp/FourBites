@@ -27,7 +27,7 @@ public record AvaliacaoResponse(
     public record Autor(Integer id, String nome, String username, String fotoPerfil) {
     }
 
-    public record RestauranteDaAvaliacao(Integer id, String nome, String fotoCapa, OpcaoResponse categoria,
+    public record RestauranteDaAvaliacao(Integer id, String nome, String fotoCapa, CategoriaResponse categoria,
                                          String bairro) {
     }
 
@@ -41,7 +41,7 @@ public record AvaliacaoResponse(
                 a.getId(),
                 new Autor(autor.getId(), autor.getNome(), autor.getUsername(), autor.getFotoPerfil()),
                 new RestauranteDaAvaliacao(r.getId(), r.getNome(), fotoCapa,
-                        categoria == null ? null : new OpcaoResponse(categoria.getId(), categoria.getNome()),
+                        CategoriaResponse.de(categoria),
                         r.getBairro()),
                 a.getNotaComida(),
                 a.getNotaAmbiente(),

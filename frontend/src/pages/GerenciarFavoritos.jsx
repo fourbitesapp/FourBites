@@ -71,9 +71,7 @@ export default function GerenciarFavoritos() {
     <>
       <BarraNavegacao />
       <main className="fb-conteudo">
-        <Link to="/perfil" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</Link>
-
-        <div className="d-flex flex-wrap justify-content-between align-items-end gap-3 mt-4 mb-5">
+        <div className="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-5">
           <div>
             <span className="fb-mao">os 4 do coração</span>
             <h1 className="mt-1 mb-2">Restaurantes favoritos</h1>
@@ -102,10 +100,10 @@ export default function GerenciarFavoritos() {
                 <div key={posicao} className="col-lg-6">
                   {f ? (
                     <article className="fb-cartao fb-favorito-edicao">
-                      <div className="fb-favorito-edicao-foto" style={{ background: corDaCozinha(f.restaurante.categoria?.id) }}>
+                      <div className="fb-favorito-edicao-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                         {f.restaurante.fotoCapa
                           ? <img src={f.restaurante.fotoCapa} alt="" />
-                          : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} tamanho={40} /></span>}
+                          : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                         <span className="fb-numero-favorito">{posicao}</span>
                       </div>
                       <div className="flex-grow-1 p-4 d-flex flex-column justify-content-between gap-3">
