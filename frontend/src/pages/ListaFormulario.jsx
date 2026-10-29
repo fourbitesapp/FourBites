@@ -112,7 +112,6 @@ export default function ListaFormulario({ modo }) {
                         className={`fb-escolha-icone fb-escolha-icone-lista ${form.icone === opcao.icone ? 'marcada' : ''}`}
                         onClick={() => mudar('icone', opcao.icone)}>
                         <i className={`bi ${opcao.icone}`} aria-hidden="true"></i>
-                        <small>{opcao.rotulo}</small>
                       </button>
                     ))}
                   </div>

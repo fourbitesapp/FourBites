@@ -95,7 +95,7 @@ a:hover { color: var(--fb-vermelho-escuro); }
 /* ---------- Rodapé ---------- */
 .fb-rodape { margin-top: 7rem; background: var(--fb-creme); border-top: 1px solid var(--fb-linha); color: var(--fb-texto); }
 .fb-rodape-dentro { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem 2.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2.5rem; }
-.fb-rodape strong { color: var(--fb-tinta); font-family: var(--fb-titulo); font-variation-settings: 'SOFT' 100; font-weight: 600; }
+.fb-rodape strong { color: var(--fb-tinta); font-family: var(--fb-titulo); font-variation-settings: 'SOFT' 100; }
 .fb-rodape a { color: var(--fb-texto); text-decoration: none; }
 .fb-rodape a:hover { color: var(--fb-vermelho); }
 
