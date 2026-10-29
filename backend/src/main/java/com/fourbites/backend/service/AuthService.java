@@ -1,5 +1,7 @@
 package com.fourbites.backend.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,7 @@ import com.fourbites.backend.seguranca.JwtService;
 @Service
 public class AuthService {
 
-    private static final String MENSAGEM_ERRO = "E-mail ou senha incorretos.";
+    private static final String MENSAGEM_ERRO = "Login ou senha incorretos.";
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,9 +32,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest dados) {
-        String email = dados.email().trim().toLowerCase();
-
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = buscarPeloLogin(dados.login())
                 .orElseThrow(() -> new CredenciaisInvalidasException(MENSAGEM_ERRO));
 
         if (!passwordEncoder.matches(dados.senha(), usuario.getSenha())) {
@@ -41,5 +41,17 @@ public class AuthService {
 
         String token = jwtService.gerarToken(usuario);
         return new LoginResponse(token, UsuarioResponse.de(usuario));
+    }
+
+    // O nome de usuário só aceita letras, números, ponto e sublinhado, então nunca tem "@".
+    private Optional<Usuario> buscarPeloLogin(String login) {
+        String texto = login.trim();
+        if (texto.startsWith("@")) {
+            return usuarioRepository.findByUsernameIgnoreCase(texto.substring(1));
+        }
+        if (texto.contains("@")) {
+            return usuarioRepository.findByEmail(texto.toLowerCase());
+        }
+        return usuarioRepository.findByUsernameIgnoreCase(texto);
     }
 }

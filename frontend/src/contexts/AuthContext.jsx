@@ -14,8 +14,9 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('fourbites:sessao-encerrada', encerrar)
   }, [])
 
-  async function entrar(email, senha) {
-    const resposta = await api.login(email, senha) // { token, usuario }
+  // login = e-mail ou nome de usuário
+  async function entrar(login, senha) {
+    const resposta = await api.login(login, senha) // { token, usuario }
     api.salvarSessao(resposta)
     setSessao(resposta)
     return resposta.usuario

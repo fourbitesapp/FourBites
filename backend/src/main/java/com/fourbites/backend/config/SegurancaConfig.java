@@ -50,6 +50,7 @@ public class SegurancaConfig {
                 .requestMatchers("/notificacoes/**").hasAnyRole("USUARIO", "RESTAURANTE")
                 .requestMatchers(HttpMethod.POST, "/restaurantes/*/avaliacoes").hasRole("USUARIO") 
                 .requestMatchers(HttpMethod.PUT, "/avaliacoes/*").hasRole("USUARIO")
+                .requestMatchers("/avaliacoes/*/curtir").hasRole("USUARIO")
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()        
                 .anyRequest().authenticated())                                 
             .exceptionHandling(erros -> erros

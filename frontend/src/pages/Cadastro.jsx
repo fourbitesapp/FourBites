@@ -95,7 +95,7 @@ export default function Cadastro() {
       </div>
 
       <div>
-        <h1 className="mb-2">Criar sua conta</h1>
+        <h1 className="visually-hidden">Criar sua conta</h1>
         <p className="fb-subtitulo mb-0">{textos.subtitulo}</p>
       </div>
 
@@ -115,13 +115,18 @@ export default function Cadastro() {
       <form onSubmit={aoEnviar} noValidate className="mt-2">
         <Aviso>{erro?.message}</Aviso>
 
-        <Campo rotulo={ehRestaurante ? 'Seu nome completo' : 'Nome completo'} name="nome" icone="bi-person"
-          autoComplete="name" placeholder={ehRestaurante ? 'Nome de quem cuida do restaurante' : ''}
-          value={dados.nome} onChange={aoDigitar} erro={campos.nome} required />
-
-        <Campo rotulo="Nome de usuário" name="username" icone="bi-at" autoComplete="username"
-          value={dados.username} onChange={aoDigitar} erro={campos.username}
-          ajuda="Só letras, números, ponto e sublinhado." required />
+        <div className="row g-3">
+          <div className="col-sm-6">
+            <Campo rotulo={ehRestaurante ? 'Seu nome completo' : 'Nome completo'} name="nome" icone="bi-person"
+              autoComplete="name" placeholder={ehRestaurante ? 'Quem cuida do restaurante' : ''}
+              value={dados.nome} onChange={aoDigitar} erro={campos.nome} required />
+          </div>
+          <div className="col-sm-6">
+            <Campo rotulo="Nome de usuário" name="username" icone="bi-at" autoComplete="username"
+              value={dados.username} onChange={aoDigitar} erro={campos.username}
+              ajuda="Letras, números, ponto e _" required />
+          </div>
+        </div>
 
         {ehRestaurante ? (
           <div className="row g-3">
@@ -152,12 +157,17 @@ export default function Cadastro() {
           </>
         )}
 
-        <Campo rotulo="Senha" name="senha" type="password" icone="bi-lock" autoComplete="new-password"
-          value={dados.senha} onChange={aoDigitar} erro={campos.senha} ajuda="No mínimo 8 caracteres." required />
-
-        <Campo rotulo="Confirmar senha" name="confirmacaoSenha" type="password" icone="bi-lock"
-          autoComplete="new-password" value={dados.confirmacaoSenha} onChange={aoDigitar}
-          erro={campos.confirmacaoSenha} required />
+        <div className="row g-3">
+          <div className="col-sm-6">
+            <Campo rotulo="Senha" name="senha" type="password" icone="bi-lock" autoComplete="new-password"
+              value={dados.senha} onChange={aoDigitar} erro={campos.senha} ajuda="No mínimo 8 caracteres." required />
+          </div>
+          <div className="col-sm-6">
+            <Campo rotulo="Confirmar senha" name="confirmacaoSenha" type="password" icone="bi-lock"
+              autoComplete="new-password" value={dados.confirmacaoSenha} onChange={aoDigitar}
+              erro={campos.confirmacaoSenha} required />
+          </div>
+        </div>
 
         {ehRestaurante && (
           <Aviso tipo="info">
@@ -177,3 +187,4 @@ export default function Cadastro() {
     </TelaAcesso>
   )
 }
+

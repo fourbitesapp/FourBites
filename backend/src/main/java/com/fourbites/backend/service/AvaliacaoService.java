@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,17 +39,20 @@ public class AvaliacaoService {
     private final UsuarioRepository usuarioRepository;
     private final UploadService uploadService;
     private final SeguidorRepository seguidorRepository;
+    private final CurtidaService curtidaService;
 
     public AvaliacaoService(AvaliacaoRepository avaliacaoRepository,
                             RestauranteRepository restauranteRepository,
                             UsuarioRepository usuarioRepository,
                             UploadService uploadService,
-                            SeguidorRepository seguidorRepository) {
+                            SeguidorRepository seguidorRepository,
+                            CurtidaService curtidaService) {
         this.avaliacaoRepository = avaliacaoRepository;
         this.restauranteRepository = restauranteRepository;
         this.usuarioRepository = usuarioRepository;
         this.uploadService = uploadService;
         this.seguidorRepository = seguidorRepository;
+        this.curtidaService = curtidaService;
     }
 
     // Publica uma avaliação. Cada usuário só pode avaliar cada restaurante uma vez.
@@ -83,7 +87,7 @@ public class AvaliacaoService {
         preencher(avaliacao, dados);
         avaliacao.setDataAtualizacao(OffsetDateTime.now());
 
-        return AvaliacaoResponse.de(avaliacao);
+        return comCurtidas(List.of(avaliacao), usuarioId).get(0);
     }
 
     // Admin apaga uma avaliação
@@ -109,29 +113,25 @@ public class AvaliacaoService {
     }
 
     @Transactional(readOnly = true)
-    public AvaliacaoResponse buscarPorId(Integer id) {
+    public AvaliacaoResponse buscarPorId(Integer id, Integer quemVe) {
         Avaliacao avaliacao = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Avaliação não encontrada."));
-        return AvaliacaoResponse.de(avaliacao);
+        return comCurtidas(List.of(avaliacao), quemVe).get(0);
     }
 
     // Avaliações de um restaurante, da mais recente para a mais antiga.
     @Transactional(readOnly = true)
-    public List<AvaliacaoResponse> listarDoRestaurante(Integer restauranteId) {
+    public List<AvaliacaoResponse> listarDoRestaurante(Integer restauranteId, Integer quemVe) {
         buscarRestaurantePublicado(restauranteId);
-        return avaliacaoRepository.findByRestauranteIdOrderByDataAvaliacaoDesc(restauranteId).stream()
-                .map(AvaliacaoResponse::de)
-                .toList();
+        return comCurtidas(avaliacaoRepository.findByRestauranteIdOrderByDataAvaliacaoDesc(restauranteId), quemVe);
     }
 
     // Avaliações escritas por um usuário (aparecem no perfil dele), mais recentes primeiro.
     @Transactional(readOnly = true)
-    public List<AvaliacaoResponse> listarDoUsuario(String username) {
+    public List<AvaliacaoResponse> listarDoUsuario(String username, Integer quemVe) {
         Usuario usuario = usuarioRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
-        return avaliacaoRepository.findByUsuarioIdOrderByDataAvaliacaoDesc(usuario.getId()).stream()
-                .map(AvaliacaoResponse::de)
-                .toList();
+        return comCurtidas(avaliacaoRepository.findByUsuarioIdOrderByDataAvaliacaoDesc(usuario.getId()), quemVe);
     }
 
     // Feed da Home: até 50 avaliações, as mais recentes primeiro.
@@ -156,7 +156,7 @@ public class AvaliacaoService {
                     PageRequest.of(0, faltam)));
         }
 
-        return feed.stream().map(AvaliacaoResponse::de).toList();
+        return comCurtidas(feed, usuarioId);
     }
 
     //Notas dos restaurantes (usadas na busca e no perfil)
@@ -185,6 +185,16 @@ public class AvaliacaoService {
     }
 
     //Regras internas
+
+    // Monta as respostas com o total de curtidas de cada avaliação e se quem está vendo já curtiu
+    private List<AvaliacaoResponse> comCurtidas(List<Avaliacao> avaliacoes, Integer quemVe) {
+        List<Integer> ids = avaliacoes.stream().map(Avaliacao::getId).toList();
+        Map<Integer, Long> totais = curtidaService.totais(ids);
+        Set<Integer> curtidas = curtidaService.curtidasPor(quemVe, ids);
+        return avaliacoes.stream()
+                .map(a -> AvaliacaoResponse.de(a, totais.getOrDefault(a.getId(), 0L), curtidas.contains(a.getId())))
+                .toList();
+    }
 
     private void preencher(Avaliacao avaliacao, AvaliacaoRequest dados) {
         uploadService.conferirEnderecos("fotos", dados.fotos());

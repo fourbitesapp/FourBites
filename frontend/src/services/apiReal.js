@@ -81,7 +81,8 @@ function montarConsulta(filtros) {
 
 //Autenticação
 
-export const login = (email, senha) => chamar('POST', '/auth/login', { email, senha })
+// login = e-mail ou nome de usuário
+export const login = (login, senha) => chamar('POST', '/auth/login', { login, senha })
 export const cadastrar = (dados) => chamar('POST', '/auth/cadastro', dados)
 export const cadastrarResponsavel = (dados) => chamar('POST', '/auth/cadastro-responsavel', dados)
 export const esqueciSenha = (email) => chamar('POST', '/auth/esqueci-senha', { email })
@@ -99,6 +100,11 @@ export const listarSeguidores = (username) => chamar('GET', `/usuarios/${encodeU
 export const listarSeguindo = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}/seguindo`)
 export const seguir = (username) => chamar('POST', `/usuarios/${encodeURIComponent(username)}/seguir`)
 export const deixarDeSeguir = (username) => chamar('DELETE', `/usuarios/${encodeURIComponent(username)}/seguir`)
+
+// Curtidas nas avaliações
+export const curtir = (avaliacaoId) => chamar('POST', `/avaliacoes/${avaliacaoId}/curtir`)
+export const descurtir = (avaliacaoId) => chamar('DELETE', `/avaliacoes/${avaliacaoId}/curtir`)
+export const listarCurtidas = (avaliacaoId) => chamar('GET', `/avaliacoes/${avaliacaoId}/curtidas`)
 
 function comArquivo(arquivo) {
   const formulario = new FormData()

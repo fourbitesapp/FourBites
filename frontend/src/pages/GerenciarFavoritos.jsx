@@ -115,7 +115,7 @@ export default function GerenciarFavoritos() {
                           : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                         <span className="fb-numero-favorito">{posicao}</span>
                       </div>
-                      <div className="flex-grow-1 p-4 d-flex flex-column justify-content-between gap-3">
+                      <div className="fb-favorito-edicao-info flex-grow-1 p-4 d-flex flex-column justify-content-between gap-3">
                         <div>
                           <h3 className="fb-cartao-titulo" style={{ fontSize: '1.25rem' }}>{f.restaurante.nome}</h3>
                           <div className="fb-cartao-meta mt-0">

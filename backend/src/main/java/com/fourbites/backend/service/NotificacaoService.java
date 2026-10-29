@@ -15,6 +15,7 @@ import com.fourbites.backend.dto.NotificacaoResponse;
 import com.fourbites.backend.dto.NotificacoesResponse;
 import com.fourbites.backend.dto.UsuarioResumoResponse;
 import com.fourbites.backend.entity.Avaliacao;
+import com.fourbites.backend.entity.Curtida;
 import com.fourbites.backend.entity.Papel;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.RestauranteAlteracao;
@@ -23,6 +24,7 @@ import com.fourbites.backend.entity.StatusAnalise;
 import com.fourbites.backend.entity.Usuario;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
 import com.fourbites.backend.repository.AvaliacaoRepository;
+import com.fourbites.backend.repository.CurtidaRepository;
 import com.fourbites.backend.repository.RestauranteAlteracaoRepository;
 import com.fourbites.backend.repository.RestauranteRepository;
 import com.fourbites.backend.repository.SeguidorRepository;
@@ -39,15 +41,18 @@ public class NotificacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final RestauranteRepository restauranteRepository;
     private final RestauranteAlteracaoRepository alteracaoRepository;
+    private final CurtidaRepository curtidaRepository;
 
     public NotificacaoService(UsuarioRepository usuarioRepository, SeguidorRepository seguidorRepository,
                               AvaliacaoRepository avaliacaoRepository, RestauranteRepository restauranteRepository,
-                              RestauranteAlteracaoRepository alteracaoRepository) {
+                              RestauranteAlteracaoRepository alteracaoRepository,
+                              CurtidaRepository curtidaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.seguidorRepository = seguidorRepository;
         this.avaliacaoRepository = avaliacaoRepository;
         this.restauranteRepository = restauranteRepository;
         this.alteracaoRepository = alteracaoRepository;
+        this.curtidaRepository = curtidaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -125,6 +130,25 @@ public class NotificacaoService {
                     .findByUsuarioIdInAndDataAvaliacaoAfterOrderByDataAvaliacaoDesc(seguidos, desde)) {
                 itens.add(new NotificacaoResponse("AVALIACAO", a.getDataAvaliacao(), UsuarioResumoResponse.de(a.getUsuario()),
                         a.getRestaurante().getId(), a.getRestaurante().getNome(), ehNova(a.getDataAvaliacao(), vistasEm), null));
+            }
+        }
+
+        // 3) Curtidas nas avaliações do usuário (uma notificação por curtida)
+        List<Curtida> curtidas = curtidaRepository.recebidasDesde(usuarioId, desde);
+        Map<Integer, Usuario> quemCurtiu = usuarioRepository
+                .findAllById(curtidas.stream().map(Curtida::getUsuarioId).distinct().toList())
+                .stream()
+                .collect(Collectors.toMap(Usuario::getId, Function.identity()));
+        Map<Integer, Avaliacao> avaliacoesCurtidas = avaliacaoRepository
+                .findAllById(curtidas.stream().map(Curtida::getAvaliacaoId).distinct().toList())
+                .stream()
+                .collect(Collectors.toMap(Avaliacao::getId, Function.identity()));
+        for (Curtida c : curtidas) {
+            Usuario autor = quemCurtiu.get(c.getUsuarioId());
+            Avaliacao a = avaliacoesCurtidas.get(c.getAvaliacaoId());
+            if (autor != null && a != null) {
+                itens.add(new NotificacaoResponse("CURTIDA", c.getDataCurtida(), UsuarioResumoResponse.de(autor),
+                        a.getRestaurante().getId(), a.getRestaurante().getNome(), ehNova(c.getDataCurtida(), vistasEm), null));
             }
         }
 

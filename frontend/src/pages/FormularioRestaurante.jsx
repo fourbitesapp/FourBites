@@ -17,7 +17,7 @@ import { conferirImagem, erroDeValidacao, TAMANHO_MAXIMO_ARQUIVO, temErros } fro
 // Um formulário para três situações (prop "modo"):
 //  - "novo":   o responsável cadastra um restaurante  → POST /meus-restaurantes (fica em análise)
 //  - "editar": o responsável edita ou corrige um seu → PUT /meus-restaurantes/{id}
-//  - "admin":  o admin cadastra direto                → POST /admin/restaurantes (já entra publicado)
+//  - "admin":  o admin cadastra direto → POST /admin/restaurantes (já entra publicado)
 export default function FormularioRestaurante({ modo }) {
   return (
     <AreaRestrita papel={modo === 'admin' ? 'ADMIN' : 'RESTAURANTE'}>
@@ -294,9 +294,8 @@ function Formulario({ modo }) {
     <>
       <BarraNavegacao />
       <main className="fb-pagina-media">
-        <Link to={voltarPara} className="fb-link-discreto">← {modo === 'admin' ? 'Painel admin' : 'Meus restaurantes'}</Link>
-        <span className="fb-mao d-block mt-4">{textos.mao}</span>
-        <h1 className="mt-1">{textos.titulo}</h1>
+        <span className="fb-mao d-block">{textos.mao}</span>
+        <h1 className="mt-3">{textos.titulo}</h1>
         <p className="fb-subtitulo">{textos.subtitulo}</p>
 
         {motivo && (
@@ -505,9 +504,10 @@ function Formulario({ modo }) {
             <p className="fb-ajuda ms-0 mt-2">JPG ou PNG, até 5 MB cada. A primeira foto vira a capa.</p>
 
             <span className="fb-rotulo mt-4">Cardápio <span className="fw-normal fb-apagado">(opcional, um ou os dois)</span></span>
-            <div className="row g-3 align-items-start">
+            <div className="row g-3 align-items-start fb-cardapio">
               <div className="col-md-6">
-                <input ref={seletorDeCardapio} type="file" accept="application/pdf,image/jpeg,image/png" hidden
+                <span className="fb-rotulo">Arquivo do cardápio</span>
+                <input ref={seletorDeCardapio}type="file" accept="application/pdf,image/jpeg,image/png" hidden
                   onChange={enviarCardapio} />
                 <div className="fb-arquivo">
                   <span className="fb-arquivo-icone">{form.cardapioUrl ? 'OK' : 'PDF'}</span>

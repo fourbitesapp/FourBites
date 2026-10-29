@@ -5,6 +5,7 @@ import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CarrosselCozinhas from '../components/CarrosselCozinhas.jsx'
 import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
+import Carrossel from '../components/Carrossel.jsx'
 import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import Rodape from '../components/Rodape.jsx'
@@ -12,8 +13,6 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { formatarNota } from '../utils/formatos.js'
 
-const RECOMENDADOS_VISIVEIS = 4
-const RANKING_VISIVEIS = 4
 const FEED_POR_VEZ = 10
 
 // Tela inicial: destaque com busca, cozinhas, recomendações (só USUARIO), ranking, avaliações recentes e "perto de você".
@@ -25,12 +24,10 @@ export default function Inicio() {
   const [busca, setBusca] = useState('')
   const [categorias, setCategorias] = useState([])
   const [recomendacoes, setRecomendacoes] = useState(null)
-  const [verTodasRecomendacoes, setVerTodasRecomendacoes] = useState(false)
   const [feed, setFeed] = useState(null)
   const [feedVisivel, setFeedVisivel] = useState(FEED_POR_VEZ)
   const [periodo, setPeriodo] = useState('semanal')
   const [ranking, setRanking] = useState(null)
-  const [verTodoRanking, setVerTodoRanking] = useState(false)
   const [perto, setPerto] = useState(null)
   const [buscandoPerto, setBuscandoPerto] = useState(false)
   const [erros, setErros] = useState({})
@@ -112,7 +109,6 @@ export default function Inicio() {
     navegar(termo ? `/explorar?busca=${encodeURIComponent(termo)}` : '/explorar')
   }
 
-  const recomendadosNaTela = verTodasRecomendacoes ? recomendacoes : recomendacoes?.slice(0, RECOMENDADOS_VISIVEIS)
   const primeiroDoRanking = ranking?.[0]
 
   return (
@@ -185,32 +181,24 @@ export default function Inicio() {
         {/* Recomendados */}
         {recebeRecomendacoes && (
           <section className="fb-conteudo fb-secao pt-0">
-            <div className="fb-secao-topo">
+            {/* Fileira com setinhas: mostra todas as recomendações (antes era "Ver todos") */}
+            <Carrossel nome="Recomendados" className="fb-carrossel-cartoes" titulo={
               <div>
                 <h2 className="mb-0">Recomendados para você</h2>
                 <p>Pelas suas preferências e pelo que você já avaliou e favoritou.</p>
               </div>
-              {recomendacoes?.length > RECOMENDADOS_VISIVEIS && (
-                <button type="button" className="fb-ver-tudo fb-botao-texto"
-                  onClick={() => setVerTodasRecomendacoes(!verTodasRecomendacoes)}>
-                  {verTodasRecomendacoes ? 'Mostrar menos' : `Ver todos (${recomendacoes.length})`}
-                </button>
-              )}
-            </div>
+            }>
+              {recomendacoes?.map((item) => (
+                <div key={item.restaurante.id}>
+                  <CartaoRestaurante restaurante={item.restaurante} compatibilidade={item.compatibilidade} />
+                </div>
+              ))}
+            </Carrossel>
 
             <Aviso>{erros.recomendacoes}</Aviso>
             {!erros.recomendacoes && recomendacoes === null && <p className="fb-vazio">Carregando…</p>}
             {recomendacoes?.length === 0 && (
               <p className="fb-vazio">Você já avaliou todos os restaurantes do FourBites. Volte quando chegarem novos!</p>
-            )}
-            {recomendacoes?.length > 0 && (
-              <div className="row g-4">
-                {recomendadosNaTela.map((item) => (
-                  <div key={item.restaurante.id} className="col-sm-6 col-lg-3">
-                    <CartaoRestaurante restaurante={item.restaurante} compatibilidade={item.compatibilidade} />
-                  </div>
-                ))}
-              </div>
             )}
           </section>
         )}
@@ -219,18 +207,29 @@ export default function Inicio() {
         <section className="fb-faixa-ranking">
           <div className="fb-conteudo">
             <span className="fb-mao">os queridinhos</span>
-            <div className="fb-secao-topo mt-1">
-              <h2 className="mb-0">Ranking {periodo === 'semanal' ? 'da semana' : 'do mês'}</h2>
-              <div className="d-flex gap-2" role="group" aria-label="Período do ranking">
-                {['semanal', 'mensal'].map((p) => (
-                  <button key={p} type="button" aria-pressed={periodo === p}
-                    className={`fb-botao fb-botao-pequeno ${periodo === p ? 'fb-botao-principal' : 'fb-botao-claro'}`}
-                    onClick={() => { setPeriodo(p); setVerTodoRanking(false) }}>
-                    {p === 'semanal' ? 'Semana' : 'Mês'}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Fileira com setinhas: mostra o ranking inteiro (antes era "Ver todo o ranking") */}
+            <Carrossel nome="Ranking" className="fb-carrossel-cartoes"
+              titulo={<h2 className="mb-0">Ranking {periodo === 'semanal' ? 'da semana' : 'do mês'}</h2>}
+              acoes={
+                <div className="d-flex gap-2" role="group" aria-label="Período do ranking">
+                  {['semanal', 'mensal'].map((p) => (
+                    <button key={p} type="button" aria-pressed={periodo === p}
+                      className={`fb-botao fb-botao-pequeno ${periodo === p ? 'fb-botao-principal' : 'fb-botao-claro'}`}
+                      onClick={() => setPeriodo(p)}>
+                      {p === 'semanal' ? 'Semana' : 'Mês'}
+                    </button>
+                  ))}
+                </div>
+              }>
+              {ranking?.map((item) => (
+                <div key={item.restaurante.id}>
+                  <CartaoRestaurante
+                    restaurante={item.restaurante}
+                    ranking={{ posicao: item.posicao, nota: item.notaPeriodo, avaliacoes: item.avaliacoesPeriodo, periodo }}
+                  />
+                </div>
+              ))}
+            </Carrossel>
 
             <Aviso>{erros.ranking}</Aviso>
             {!erros.ranking && ranking === null && <p className="fb-vazio">Carregando…</p>}
@@ -238,27 +237,6 @@ export default function Inicio() {
               <p className="fb-vazio">
                 Nenhum restaurante teve 2 avaliações {periodo === 'semanal' ? 'nos últimos 7 dias' : 'nos últimos 30 dias'} ainda.
               </p>
-            )}
-            {ranking?.length > 0 && (
-              <>
-                <div className="row g-4">
-                  {(verTodoRanking ? ranking : ranking.slice(0, RANKING_VISIVEIS)).map((item) => (
-                    <div key={item.restaurante.id} className="col-sm-6 col-lg-3">
-                      <CartaoRestaurante
-                        restaurante={item.restaurante}
-                        ranking={{ posicao: item.posicao, nota: item.notaPeriodo, avaliacoes: item.avaliacoesPeriodo, periodo }}
-                      />
-                    </div>
-                  ))}
-                </div>
-                {ranking.length > RANKING_VISIVEIS && (
-                  <div className="text-center mt-4">
-                    <button type="button" className="fb-botao fb-botao-claro" onClick={() => setVerTodoRanking(!verTodoRanking)}>
-                      {verTodoRanking ? 'Mostrar menos' : `Ver todo o ranking (${ranking.length})`}
-                    </button>
-                  </div>
-                )}
-              </>
             )}
           </div>
         </section>
@@ -325,4 +303,3 @@ export default function Inicio() {
     </>
   )
 }
-

@@ -108,6 +108,9 @@ export default function Notificacoes() {
                   )}
                   {n.tipo === 'SEGUIDOR' && <><strong>{n.usuario.nome}</strong> começou a seguir você</>}
                   {n.tipo === 'AVALIACAO' && <><strong>{n.usuario.nome}</strong> avaliou <strong>{n.restauranteNome}</strong></>}
+                  {n.tipo === 'CURTIDA' && (
+                    <><strong>{n.usuario.nome}</strong> curtiu sua avaliação de <strong>{n.restauranteNome}</strong></>
+                  )}
                   <span className="d-block fb-cartao-meta mt-0">{tempoAtras(n.data)}</span>
                 </span>
               </Link>

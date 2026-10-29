@@ -146,8 +146,8 @@ export default function Restaurante() {
             </div>
           </div>
 
-          <div className="d-flex flex-column align-items-md-end gap-3">
-            <div className="d-flex flex-wrap align-items-center gap-3">
+          <div className="fb-restaurante-resumo d-flex flex-column align-items-md-end gap-3">
+            <div className="fb-restaurante-notas d-flex flex-wrap align-items-center gap-3">
               {r.compatibilidade !== null && r.compatibilidade !== undefined && (
                 <SeloCompatibilidade valor={r.compatibilidade} />
               )}

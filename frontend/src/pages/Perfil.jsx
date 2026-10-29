@@ -5,6 +5,7 @@ import Aviso from '../components/Aviso.jsx'
 import Avatar from '../components/Avatar.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CapaPerfil from '../components/CapaPerfil.jsx'
+import Carrossel from '../components/Carrossel.jsx'
 import CartaoLista from '../components/CartaoLista.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import JanelaPessoas from '../components/JanelaPessoas.jsx'
@@ -221,21 +222,22 @@ export default function Perfil() {
 
         {/* Favoritos */}
         <section className="fb-secao" style={{ marginTop: '4rem' }}>
-          <div className="fb-secao-topo">
-            <h2 className="mb-0">Restaurantes favoritos</h2>
-            {ehUsuarioDono && <Link to="/perfil/favoritos" className="fb-ver-tudo">Gerenciar favoritos</Link>}
-          </div>
-
-          {favoritos.length === 0 ? (
+          {favoritos.length === 0 ? (<>
+            <div className="fb-secao-topo">
+              <h2 className="mb-0">Restaurantes favoritos</h2>
+              {ehUsuarioDono && <Link to="/perfil/favoritos" className="fb-ver-tudo">Gerenciar favoritos</Link>}
+            </div>
             <p className="fb-vazio">
               {ehMeuPerfil
                 ? 'Você ainda não tem favoritos. Abra um restaurante e toque em Favoritar.'
                 : 'Nenhum restaurante favorito ainda.'}
             </p>
-          ) : (
-            <div className="row g-4">
+          </>) : (
+            <Carrossel nome="Favoritos" className="fb-carrossel-cartoes"
+              titulo={<h2 className="mb-0">Restaurantes favoritos</h2>}
+              acoes={ehUsuarioDono && <Link to="/perfil/favoritos" className="fb-ver-tudo">Gerenciar favoritos</Link>}>
               {POSICOES.map((posicao) => favoritoNa(posicao)).filter(Boolean).map((f) => (
-                <div key={f.posicao} className="col-sm-6 col-lg-3">
+                <div key={f.posicao}>
                   <Link to={`/restaurantes/${f.restaurante.id}`} className="fb-cartao-restaurante">
                     <div className="fb-favorito-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                       {f.restaurante.fotoCapa
@@ -253,7 +255,7 @@ export default function Perfil() {
                   </Link>
                 </div>
               ))}
-            </div>
+            </Carrossel>
           )}
         </section>
 
@@ -282,9 +284,8 @@ export default function Perfil() {
 
         {/* Posts */}
         <section style={{ marginTop: '4rem' }}>
-          <h2 className="mb-4">Posts recentes</h2>
-          {/* Grade com tamanho fixo de coluna: o cartão não estica quando há poucos posts */}
-          <div className="fb-posts">
+          {/* Fileira com setinhas; cada post tem largura fixa, então não estica quando há poucos */}
+          <Carrossel nome="Posts" className="fb-carrossel-posts" titulo={<h2 className="mb-0">Posts recentes</h2>}>
             {ehUsuarioDono && (
                 <Link to="/novo-post" className="fb-post fb-post-novo">
                   <span className="fb-icone-suave"><i className="bi bi-plus-lg" aria-hidden="true"></i></span>
@@ -305,7 +306,7 @@ export default function Perfil() {
                   </Link>
               )
             })}
-          </div>
+          </Carrossel>
           {avaliacoes.length === 0 && !ehMeuPerfil && <p className="fb-vazio">Nenhum post ainda.</p>}
         </section>
       </main>
@@ -313,5 +314,3 @@ export default function Perfil() {
     </>
   )
 }
-
-

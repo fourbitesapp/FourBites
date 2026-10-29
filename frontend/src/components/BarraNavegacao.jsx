@@ -35,7 +35,8 @@ export default function BarraNavegacao() {
     <>
       <header className="fb-barra">
         <div className="fb-barra-dentro">
-          <div className="d-flex align-items-center gap-3">
+          {/* No celular: voltar à esquerda e o FourBites no centro (estilos.css) */}
+          <div className="fb-barra-marca d-flex align-items-center gap-3">
             {pathname !== '/' && <BotaoVoltar />}
             <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
           </div>

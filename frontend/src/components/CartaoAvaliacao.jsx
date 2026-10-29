@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { formatarData, formatarNota } from '../utils/formatos.js'
 import Avatar from './Avatar.jsx'
+import Curtidas from './Curtidas.jsx'
 
 const CATEGORIAS = [
   ['Comida', 'notaComida'],
@@ -10,7 +11,7 @@ const CATEGORIAS = [
   ['Custo-benefício', 'notaCusto'],
 ]
 
-// Uma avaliação: autor, restaurante (no feed), nota geral, as 4 notas, comentário e fotos.
+// Uma avaliação: autor, restaurante (no feed), nota geral, as 4 notas, comentário, fotos e curtidas.
 // No perfil do restaurante, mostrarRestaurante = false.
 // "children" aparece no fim do cartão (o painel admin coloca ali o botão de excluir).
 export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, destaque = false, children }) {
@@ -54,6 +55,8 @@ export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, 
           {a.fotos.map((url) => <img key={url} src={url} alt="" className="fb-foto-avaliacao" />)}
         </div>
       )}
+
+      <Curtidas avaliacao={a} />
 
       {children}
     </article>
