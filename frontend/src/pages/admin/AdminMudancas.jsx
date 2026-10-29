@@ -141,7 +141,7 @@ function DetalheDaMudanca({ alteracao, categorias, formas, aoTerminar }) {
         {linhas.length === 0 ? (
           <p className="fb-aviso fb-aviso-info">Nenhum campo diferente da versão publicada.</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div className="fb-rolagem-lateral">
             <table className="fb-tabela fb-diferencas">
               <thead>
                 <tr>

@@ -768,3 +768,13 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
   .fb-restaurante-notas .fb-balao::before { left: auto; right: 1.6rem; }
   .fb-acoes-restaurante { max-width: none; }
 }
+
+/* Tabelas largas (admin): rolagem para o lado*/
+.fb-rolagem-lateral { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--fb-vermelho) var(--fb-creme); padding-bottom: 0.5rem; }
+.fb-rolagem-lateral::-webkit-scrollbar { height: 8px; }
+.fb-rolagem-lateral::-webkit-scrollbar-track { background: var(--fb-creme); border-radius: 999px; }
+.fb-rolagem-lateral::-webkit-scrollbar-thumb { background: var(--fb-vermelho); border-radius: 999px; }
+.fb-dica-rolagem { display: none; }
+@media (max-width: 767px) {
+  .fb-dica-rolagem { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0; font-size: 0.85rem; font-weight: 700; color: var(--fb-apagado); }
+}
