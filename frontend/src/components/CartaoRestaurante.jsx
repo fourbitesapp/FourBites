@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom'
 
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 import IconeCozinha from './IconeCozinha.jsx'
 import SeloCompatibilidade from './SeloCompatibilidade.jsx'
 
 // Cartão de um restaurante (Início, Explorar).
-// "compatibilidade" só vem nas recomendações; "ranking" ({ posicao, nota, avaliacoes, periodo }) só no ranking.
-// "destaque" e "aoPassarMouse" ligam o cartão ao pino do mapa no Explorar.
+
 export default function CartaoRestaurante({ restaurante, compatibilidade, ranking, destaque, aoPassarMouse }) {
   const r = restaurante
   const cor = corDaCozinha(r.categoria?.id)
@@ -49,10 +49,11 @@ export default function CartaoRestaurante({ restaurante, compatibilidade, rankin
           </div>
         )}
 
-        {(r.aceitaPets || r.acessivel) && (
+        {CARACTERISTICAS.some((c) => r[c.campo]) && (
           <div className="d-flex flex-wrap gap-2 mt-1">
-            {r.aceitaPets && <span className="fb-etiqueta">Pet friendly</span>}
-            {r.acessivel && <span className="fb-etiqueta fb-etiqueta-azul">Acessível</span>}
+            {CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => (
+              <span key={c.campo} className="fb-etiqueta" style={{ background: c.cor }}>{c.rotulo}</span>
+            ))}
           </div>
         )}
       </div>

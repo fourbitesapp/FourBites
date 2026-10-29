@@ -10,9 +10,11 @@ import Rodape from '../components/Rodape.jsx'
 import Seletor from '../components/Seletor.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 
 const FILTROS_INICIAIS = {
-  busca: '', categoriaId: '', faixaPreco: '', notaMin: '', pets: false, acessivel: false, ordem: '',
+  busca: '', categoriaId: '', faixaPreco: '', notaMin: '', ordem: '',
+  ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.filtro, false])), // pets, areaCriancas, estacionamento...
 }
 
 const PRECOS = [
@@ -165,14 +167,12 @@ export default function Explorar() {
           <Seletor rotulo="Ordenar por" valor={filtros.ordem} opcoes={opcoesOrdem} textoSemEscolha="Ordenar por"
             aoMudar={(v) => mudarFiltro('ordem', v)} />
 
-          <button type="button" className={`fb-chip ${filtros.pets ? 'ativo' : ''}`} aria-pressed={filtros.pets}
-            onClick={() => mudarFiltro('pets', !filtros.pets)}>
-            Pet friendly
-          </button>
-          <button type="button" className={`fb-chip ${filtros.acessivel ? 'ativo' : ''}`}
-            aria-pressed={filtros.acessivel} onClick={() => mudarFiltro('acessivel', !filtros.acessivel)}>
-            Acessível
-          </button>
+          {CARACTERISTICAS.map((c) => (
+            <button key={c.filtro} type="button" className={`fb-chip ${filtros[c.filtro] ? 'ativo' : ''}`}
+              aria-pressed={filtros[c.filtro]} onClick={() => mudarFiltro(c.filtro, !filtros[c.filtro])}>
+              {c.rotulo}
+            </button>
+          ))}
           <button type="button" className={`fb-chip ${posicao ? 'ativo' : ''}`} aria-pressed={Boolean(posicao)}
             onClick={posicao ? deixarDeUsarLocalizacao : usarMinhaLocalizacao}>
             Perto de mim
@@ -257,3 +257,4 @@ export default function Explorar() {
     </>
   )
 }
+

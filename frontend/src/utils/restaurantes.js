@@ -10,6 +10,23 @@ export const FAIXAS_DE_PRECO = [
   { valor: '$$$', rotulo: 'mais caro' },
 ]
 
+// Características do restaurante (sim/não). Uma lista só para o formulário, os selos e os filtros do Explorar.
+// campo = nome no restaurante (API); filtro = parâmetro do GET /restaurantes.
+export const CARACTERISTICAS = [
+  { campo: 'aceitaPets', filtro: 'pets', rotulo: 'Pet friendly', icone: 'bi-heart', cor: '#ffc193',
+    texto: 'Clientes podem levar seus bichinhos' },
+  { campo: 'areaCriancas', filtro: 'areaCriancas', rotulo: 'Área para crianças', icone: 'bi-balloon', cor: '#ffd98a',
+    texto: 'Espaço ou brinquedos para os pequenos' },
+  { campo: 'estacionamento', filtro: 'estacionamento', rotulo: 'Estacionamento', icone: 'bi-car-front', cor: '#d9eda3',
+    texto: 'Lugar para deixar o carro' },
+  { campo: 'areaFumantes', filtro: 'areaFumantes', rotulo: 'Área para fumantes', icone: 'bi-wind', cor: '#e6ddd3',
+    texto: 'Espaço separado para quem fuma' },
+  { campo: 'acessivel', filtro: 'acessivel', rotulo: 'Acessível', icone: 'bi-universal-access', cor: '#b5dcf8',
+    texto: 'Espaço acessível para pessoas com deficiência' },
+  { campo: 'lgbtFriendly', filtro: 'lgbtFriendly', rotulo: 'LGBT+ friendly', icone: 'bi-rainbow', cor: '#d8c4f5',
+    texto: 'Ambiente acolhedor para pessoas LGBT+' },
+]
+
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
   'outubro', 'novembro', 'dezembro']
 
@@ -74,7 +91,8 @@ export function formularioVazio() {
     nome: '', cnpj: '', telefone: '', categoriaId: '', categoriaSugerida: '', abriuEm: '', descricao: '',
     endereco: { cep: '', logradouro: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' },
     dias: DIAS_DA_SEMANA.map(() => ({ aberto: false, periodos: [{ abertura: '', fechamento: '' }] })),
-    faixaPreco: '', formasPagamentoIds: [], aceitaPets: false, acessivel: false,
+    faixaPreco: '', formasPagamentoIds: [],
+    ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.campo, false])),
     fotos: [], cardapioUrl: '', cardapioLink: '',
   }
 }
@@ -99,8 +117,7 @@ export function formularioDoRestaurante(r) {
     dias,
     faixaPreco: r.faixaPreco,
     formasPagamentoIds: r.formasPagamento.map((f) => f.id),
-    aceitaPets: r.aceitaPets,
-    acessivel: r.acessivel,
+    ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.campo, Boolean(r[c.campo])])),
     fotos: r.fotos,
     cardapioUrl: r.cardapioUrl || '',
     cardapioLink: r.cardapioLink || '',
@@ -125,8 +142,7 @@ export function montarEnvio(f) {
     formasPagamentoIds: f.formasPagamentoIds,
     horarios: f.dias.flatMap((dia, i) =>
       dia.aberto ? dia.periodos.map((p) => ({ diaSemana: i + 1, abertura: p.abertura, fechamento: p.fechamento })) : []),
-    aceitaPets: f.aceitaPets,
-    acessivel: f.acessivel,
+    ...Object.fromEntries(CARACTERISTICAS.map((c) => [c.campo, f[c.campo]])),
     fotos: f.fotos,
     cardapioUrl: textoOuNulo(f.cardapioUrl),
     cardapioLink: textoOuNulo(f.cardapioLink),
@@ -184,8 +200,7 @@ export function diferencas(restaurante, proposto, categorias, formas) {
     linhas.push([`Horário · ${dia.dia.toLowerCase()}`, dia.periodos, horariosDepois[i].periodos])
   })
 
-  linhas.push(['Acessível', simNao(r.acessivel), simNao(p.acessivel)])
-  linhas.push(['Aceita pets', simNao(r.aceitaPets), simNao(p.aceitaPets)])
+  CARACTERISTICAS.forEach((c) => linhas.push([c.rotulo, simNao(r[c.campo]), simNao(p[c.campo])]))
 
   const fotosPropostas = p.fotos || []
   const novas = fotosPropostas.filter((url) => !r.fotos.includes(url)).length

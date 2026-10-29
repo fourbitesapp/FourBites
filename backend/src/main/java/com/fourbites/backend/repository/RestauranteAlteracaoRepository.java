@@ -1,5 +1,6 @@
 package com.fourbites.backend.repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +20,10 @@ public interface RestauranteAlteracaoRepository extends JpaRepository<Restaurant
 
     // A alteração mais recente de um restaurante 
     Optional<RestauranteAlteracao> findFirstByRestauranteIdOrderByDataEnvioDesc(Integer restauranteId);
+
+    // Avisos para o responsável: alterações analisadas a partir de uma data.
+    @EntityGraph(attributePaths = {"restaurante"})
+    List<RestauranteAlteracao> findByRestauranteResponsavelIdAndDataAnaliseAfter(Integer responsavelId,
+                                                                                 OffsetDateTime desde);
 }
+

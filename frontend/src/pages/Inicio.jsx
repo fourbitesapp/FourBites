@@ -3,18 +3,17 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
+import CarrosselCozinhas from '../components/CarrosselCozinhas.jsx'
 import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
 import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
-import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 
 const RECOMENDADOS_VISIVEIS = 4
 const RANKING_VISIVEIS = 4
-const COZINHAS_VISIVEIS = 6
 const FEED_POR_VEZ = 10
 
 // Tela inicial: destaque com busca, cozinhas, recomendações (só USUARIO), ranking, avaliações recentes e "perto de você".
@@ -181,25 +180,7 @@ export default function Inicio() {
         </section>
 
         {/* Explore por cozinha */}
-        {categorias.length > 0 && (
-          <section className="fb-conteudo">
-            <div className="fb-secao-topo mt-4">
-              <h2 className="mb-0">Explore por cozinha</h2>
-              <Link to="/explorar" className="fb-ver-tudo">Ver tudo</Link>
-            </div>
-            <div className="fb-cozinhas">
-              {categorias.slice(0, COZINHAS_VISIVEIS).map((c) => (
-                <Link key={c.id} to={`/explorar?categoriaId=${c.id}`} className="fb-cozinha" style={{ background: corDaCozinha(c.id) }}>
-                  <IconeCozinha nome={c.nome} tamanho={44} />
-                  <span className="fb-cozinha-nome">
-                    {c.nome}
-                    <span className="fb-seta"><i className="bi bi-arrow-right" aria-hidden="true"></i></span>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        <CarrosselCozinhas categorias={categorias} />
 
         {/* Recomendados */}
         {recebeRecomendacoes && (

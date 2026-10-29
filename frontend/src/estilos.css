@@ -193,11 +193,11 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-destaque-arte { flex: 1 1 380px; position: relative; height: 420px; }
 .fb-bolha { position: absolute; border-radius: 999px; }
 .fb-adesivo { position: absolute; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.7rem 1rem; transform: rotate(5deg); box-shadow: 0 8px 20px rgba(36, 22, 18, 0.12); text-decoration: none; }
-.fb-cozinhas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.1rem; }
-.fb-cozinha { border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 1.2rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 1.2rem; text-decoration: none; color: var(--fb-tinta); transition: transform 0.15s; }
+.fb-cozinhas { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 6px 2px 10px; scrollbar-width: none; }
+.fb-cozinhas::-webkit-scrollbar { display: none; }
+.fb-cozinha { flex: 0 0 170px; scroll-snap-align: start; border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 1.2rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 1.2rem; text-decoration: none; color: var(--fb-tinta); transition: transform 0.15s; }
 .fb-cozinha:hover { transform: rotate(-2deg) translateY(-3px); color: var(--fb-tinta); }
 .fb-cozinha-nome { display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; font-family: var(--fb-titulo); font-variation-settings: 'SOFT' 100; font-weight: 600; font-size: 1.15rem; }
-.fb-seta { width: 2.1rem; height: 2.1rem; border-radius: 999px; background: var(--fb-branco); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .fb-faixa-ranking { margin-top: 6rem; background: var(--fb-amarelo-claro); }
 .fb-faixa-ranking .fb-conteudo { padding-top: 4rem; padding-bottom: 4.5rem; }
 .fb-perto { background: var(--fb-verde-claro); border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
@@ -390,6 +390,20 @@ fieldset.fb-desativado { opacity: 0.5; }
 
 /* ---------- Sininho de notificações ---------- */
 .fb-notificacoes { position: relative; }
+
+/* Botões redondos de ícone: voltar, perfil, sino, sair e as setas das cozinhas */
+.fb-icone-nav { position: relative; flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 999px; border: 1.5px solid var(--fb-linha); background: var(--fb-branco); color: var(--fb-tinta); font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; padding: 0; }
+.fb-icone-nav:hover, .fb-icone-nav.active { border-color: var(--fb-vermelho); color: var(--fb-vermelho); }
+.fb-icone-nav:disabled { opacity: 0.35; cursor: default; border-color: var(--fb-linha); color: var(--fb-tinta); }
+.fb-icone-nav:focus-visible { outline: 3px solid var(--fb-amarelo); outline-offset: 2px; }
+
+/* Botão flutuante "+" (novo post) */
+.fb-botao-flutuante { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 1050; width: 3.8rem; height: 3.8rem; border-radius: 999px; background: var(--fb-vermelho); color: #fff; font-size: 1.7rem; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 12px 28px rgba(168, 18, 26, 0.35); transition: transform 0.15s; }
+.fb-botao-flutuante:hover { color: #fff; background: var(--fb-vermelho-escuro); transform: translateY(-3px) rotate(90deg); }
+.fb-botao-flutuante:focus-visible { outline: 3px solid var(--fb-amarelo); outline-offset: 3px; }
+
+/* Ícone dos avisos do restaurante no sininho (mesmo tamanho do avatar) */
+.fb-icone-aviso { flex-shrink: 0; width: 3rem; height: 3rem; border-radius: 999px; background: var(--fb-creme); display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 .fb-sino { position: relative; width: 2.6rem; height: 2.6rem; border-radius: 999px; border: 1.5px solid var(--fb-linha); background: var(--fb-branco); color: var(--fb-tinta); font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 .fb-sino:hover, .fb-sino[aria-expanded="true"] { border-color: var(--fb-vermelho); color: var(--fb-vermelho); }
 .fb-sino-contador { position: absolute; top: -0.35rem; right: -0.35rem; min-width: 1.3rem; height: 1.3rem; padding: 0 0.3rem; border-radius: 999px; background: var(--fb-vermelho); color: #fff; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--fb-branco); }

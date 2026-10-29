@@ -43,7 +43,7 @@ public class SegurancaConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/meus-restaurantes/**").hasRole("RESTAURANTE")
                 .requestMatchers("/recomendacoes/**").hasRole("USUARIO")
-                .requestMatchers("/notificacoes/**").hasRole("USUARIO")
+                .requestMatchers("/notificacoes/**").hasAnyRole("USUARIO", "RESTAURANTE")
                 .requestMatchers(HttpMethod.POST, "/restaurantes/*/avaliacoes").hasRole("USUARIO") 
                 .requestMatchers(HttpMethod.PUT, "/avaliacoes/*").hasRole("USUARIO")
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()        

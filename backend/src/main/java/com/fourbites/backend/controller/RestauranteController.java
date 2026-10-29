@@ -32,11 +32,15 @@ public class RestauranteController {
             @RequestParam(required = false) Double notaMin,
             @RequestParam(defaultValue = "false") boolean pets,
             @RequestParam(defaultValue = "false") boolean acessivel,
+            @RequestParam(defaultValue = "false") boolean estacionamento,
+            @RequestParam(defaultValue = "false") boolean areaCriancas,
+            @RequestParam(defaultValue = "false") boolean areaFumantes,
+            @RequestParam(defaultValue = "false") boolean lgbtFriendly,
             @RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lng,
             @RequestParam(required = false) String ordem) {
         return restauranteService.buscarPublicos(busca, categoriaId, faixaPreco, notaMin, pets, acessivel,
-                lat, lng, ordem);
+                estacionamento, areaCriancas, areaFumantes, lgbtFriendly, lat, lng, ordem);
     }
 
     @GetMapping("/{id}")

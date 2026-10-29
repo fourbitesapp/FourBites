@@ -1,16 +1,23 @@
 import { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
+import BotaoVoltar from './BotaoVoltar.jsx'
 import Logo from './Logo.jsx'
 import Notificacoes from './Notificacoes.jsx'
 
-// Usuário: Início · Explorar · Novo post · Perfil e o sino de notificações.
-// Restaurante: Início · Explorar · Meus restaurantes · Sair. Admin: Início · Explorar · Painel admin · Sair.
+// Todos: Início e Explorar
+// Usuário: perfil, sino e sair
+// Restaurante: meus restaurantes, sino, sair - Admin: painel admin e sair.
+
 export default function BarraNavegacao() {
   const { usuario, logado, sair } = useAuth()
   const navegar = useNavigate()
+  const { pathname } = useLocation()
   const [busca, setBusca] = useState('')
+
+  const papel = logado ? usuario.papel : null
+  const escrevendoAvaliacao = pathname === '/novo-post' || pathname.endsWith('/avaliar')
 
   function buscar(evento) {
     evento.preventDefault()
@@ -24,40 +31,58 @@ export default function BarraNavegacao() {
   }
 
   return (
-    <header className="fb-barra">
-      <div className="fb-barra-dentro">
-        <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
+    <>
+      <header className="fb-barra">
+        <div className="fb-barra-dentro">
+          <div className="d-flex align-items-center gap-3">
+            {pathname !== '/' && <BotaoVoltar />}
+            <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
+          </div>
 
-        <form className="fb-busca-barra" role="search" onSubmit={buscar}>
-          <i className="bi bi-search" aria-hidden="true"></i>
-          <input type="search" placeholder="Buscar restaurante, bairro ou pessoa" aria-label="Buscar"
-            value={busca} onChange={(e) => setBusca(e.target.value)} />
-        </form>
+          <form className="fb-busca-barra" role="search" onSubmit={buscar}>
+            <i className="bi bi-search" aria-hidden="true"></i>
+            <input type="search" placeholder="Buscar restaurante, bairro ou pessoa" aria-label="Buscar"
+              value={busca} onChange={(e) => setBusca(e.target.value)} />
+          </form>
 
-        <nav className="fb-nav" aria-label="Principal">
-          <NavLink to="/" end className="fb-nav-link">Início</NavLink>
-          <NavLink to="/explorar" className="fb-nav-link">Explorar</NavLink>
-          {logado && usuario.papel === 'USUARIO' && (
-            <>
-              <NavLink to="/novo-post" className="fb-nav-link">Novo post</NavLink>
-              <NavLink to="/perfil" className="fb-nav-link">Perfil</NavLink>
-              <Notificacoes />
-            </>
-          )}
-          {logado && usuario.papel === 'RESTAURANTE' && (
-            <NavLink to="/meus-restaurantes" className="fb-nav-link">Meus restaurantes</NavLink>
-          )}
-          {logado && usuario.papel === 'ADMIN' && (
-            <NavLink to="/admin" className="fb-nav-link">Painel admin</NavLink>
-          )}
-          {logado && usuario.papel !== 'USUARIO' && (
-            <button type="button" className="fb-nav-link fb-botao-texto" onClick={aoSair}>Sair</button>
-          )}
-          {!logado && <NavLink to="/login" className="fb-nav-link">Entrar</NavLink>}
-        </nav>
-      </div>
-    </header>
+          <nav className="fb-nav" aria-label="Principal">
+            <NavLink to="/" end className="fb-nav-link">Início</NavLink>
+            <NavLink to="/explorar" className="fb-nav-link">Explorar</NavLink>
+
+            {papel === 'USUARIO' && (
+              <NavLink to="/perfil" className="fb-icone-nav" aria-label="Meu perfil" title="Meu perfil">
+                <i className="bi bi-person" aria-hidden="true"></i>
+              </NavLink>
+            )}
+            {papel === 'RESTAURANTE' && (
+              <NavLink to="/meus-restaurantes" className="fb-icone-nav" aria-label="Meus restaurantes" title="Meus restaurantes">
+                <i className="bi bi-shop" aria-hidden="true"></i>
+              </NavLink>
+            )}
+            {papel === 'ADMIN' && (
+              <NavLink to="/admin" className="fb-icone-nav" aria-label="Painel admin" title="Painel admin">
+                <i className="bi bi-speedometer2" aria-hidden="true"></i>
+              </NavLink>
+            )}
+
+            {(papel === 'USUARIO' || papel === 'RESTAURANTE') && <Notificacoes />}
+
+            {logado && (
+              <button type="button" className="fb-icone-nav" onClick={aoSair} aria-label="Sair" title="Sair">
+                <i className="bi bi-box-arrow-right" aria-hidden="true"></i>
+              </button>
+            )}
+            {!logado && <NavLink to="/login" className="fb-nav-link">Entrar</NavLink>}
+          </nav>
+        </div>
+      </header>
+
+      {/* Botão flutuante para publicar uma avaliação (só conta de usuário) */}
+      {papel === 'USUARIO' && !escrevendoAvaliacao && (
+        <Link to="/novo-post" className="fb-botao-flutuante" aria-label="Novo post" title="Novo post">
+          <i className="bi bi-plus-lg" aria-hidden="true"></i>
+        </Link>
+      )}
+    </>
   )
 }
-
-

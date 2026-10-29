@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { agruparHorarios, estaAberto, formatarNota } from '../utils/formatos.js'
+import { CARACTERISTICAS } from '../utils/restaurantes.js'
 
 // Perfil do restaurante: fotos, notas, avaliações e, ao lado, mapa, horário e cardápio.
 export default function Restaurante() {
@@ -137,8 +138,11 @@ export default function Restaurante() {
                   {aberto ? 'Aberto agora' : 'Fechado agora'}
                 </span>
               )}
-              {r.aceitaPets && <span className="fb-etiqueta">Pet friendly</span>}
-              {r.acessivel && <span className="fb-etiqueta fb-etiqueta-azul">Acessível</span>}
+              {CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => (
+                <span key={c.campo} className="fb-etiqueta" style={{ background: c.cor }}>
+                  <i className={`bi ${c.icone} me-1`} aria-hidden="true"></i>{c.rotulo}
+                </span>
+              ))}
             </div>
           </div>
 

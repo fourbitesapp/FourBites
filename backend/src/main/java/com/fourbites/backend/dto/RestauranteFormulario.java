@@ -55,6 +55,14 @@ public record RestauranteFormulario(
 
         boolean acessivel,
 
+        boolean estacionamento,
+
+        boolean areaCriancas,
+
+        boolean areaFumantes,
+
+        boolean lgbtFriendly,
+
         List<@NotBlank(message = "Endereço de foto inválido.") @Size(max = 500) String> fotos,
 
         @Size(max = 500, message = "O endereço do cardápio deve ter no máximo 500 caracteres.")

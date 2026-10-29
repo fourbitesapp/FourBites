@@ -35,25 +35,27 @@ public class AnaliseRestauranteService {
     private final RestauranteService restauranteService;
     private final AvaliacaoService avaliacaoService;
     private final JsonMapper jsonMapper;
+    private final AvisoRestauranteService avisoRestauranteService;
 
     public AnaliseRestauranteService(RestauranteRepository restauranteRepository,
                                      RestauranteAlteracaoRepository alteracaoRepository,
                                      CategoriaRepository categoriaRepository,
                                      RestauranteService restauranteService,
                                      AvaliacaoService avaliacaoService,
-                                 JsonMapper jsonMapper) {
+                                     JsonMapper jsonMapper,
+                                     AvisoRestauranteService avisoRestauranteService) {
         this.restauranteRepository = restauranteRepository;
         this.alteracaoRepository = alteracaoRepository;
         this.categoriaRepository = categoriaRepository;
         this.restauranteService = restauranteService;
         this.avaliacaoService = avaliacaoService;
         this.jsonMapper = jsonMapper;
+        this.avisoRestauranteService = avisoRestauranteService;
     }
 
-    // ---------- Restaurantes ----------
+    // Restaurantes
 
     // status vazio = todos (por nome); PENDENTE = fila, do mais antigo para o mais novo.
-    // busca procura no nome, no bairro, na categoria e na categoria sugerida.
     @Transactional(readOnly = true)
     public List<RestauranteGestaoResponse> listar(StatusAnalise status, String busca) {
         List<Restaurante> restaurantes = status == null
@@ -72,8 +74,7 @@ public class AnaliseRestauranteService {
         return paraResposta(buscarRestaurante(id));
     }
 
-    // Só cadastros PENDENTES. A categoria precisa ficar definida: a que o responsável escolheu,
-    // uma existente (categoriaId) ou uma nova (novaCategoria).
+    // Só cadastros PENDENTES
     @Transactional
     public RestauranteGestaoResponse aprovarCadastro(Integer id, AprovarCadastroRequest dados) {
         Restaurante restaurante = buscarRestaurante(id);
@@ -85,6 +86,7 @@ public class AnaliseRestauranteService {
         restaurante.setStatus(StatusAnalise.APROVADO);
         restaurante.setMotivoRejeicao(null);
         restaurante.setDataAnalise(OffsetDateTime.now());
+        avisoRestauranteService.cadastroAprovado(restaurante);
         return paraResposta(restaurante);
     }
 
@@ -96,10 +98,11 @@ public class AnaliseRestauranteService {
         restaurante.setStatus(StatusAnalise.REJEITADO);
         restaurante.setMotivoRejeicao(motivo.trim());
         restaurante.setDataAnalise(OffsetDateTime.now());
+        avisoRestauranteService.cadastroRejeitado(restaurante, restaurante.getMotivoRejeicao());
         return paraResposta(restaurante);
     }
 
-    // ---------- Alterações de restaurantes aprovados ----------
+    // Alterações de restaurantes aprovados
 
     @Transactional(readOnly = true)
     public List<AlteracaoResponse> listarAlteracoes(StatusAnalise status) {
@@ -122,6 +125,7 @@ public class AnaliseRestauranteService {
 
         alteracao.setStatus(StatusAnalise.APROVADO);
         alteracao.setDataAnalise(OffsetDateTime.now());
+        avisoRestauranteService.alteracaoAprovada(restaurante);
     }
 
     @Transactional
@@ -130,9 +134,10 @@ public class AnaliseRestauranteService {
         alteracao.setStatus(StatusAnalise.REJEITADO);
         alteracao.setMotivoRejeicao(motivo.trim());
         alteracao.setDataAnalise(OffsetDateTime.now());
+        avisoRestauranteService.alteracaoRejeitada(alteracao.getRestaurante(), alteracao.getMotivoRejeicao());
     }
 
-    // ---------- Apoio ----------
+    // Apoio
 
     private Categoria resolverCategoria(Restaurante restaurante, AprovarCadastroRequest dados) {
         if (dados != null && dados.categoriaId() != null) {

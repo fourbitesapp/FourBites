@@ -62,6 +62,8 @@ export default function Login() {
 
   return (
     <TelaAcesso frase="bem-vindo de volta!" titulo="Seu próximo lugar favorito tá aqui.">
+      <Link to="/" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar para o início</Link>
+
       <div className="fb-abas">
         <span className="fb-aba ativa" aria-current="page">Entrar</span>
         <Link to="/cadastro" className="fb-aba">Criar conta</Link>

@@ -23,6 +23,10 @@ public record RestauranteResumoResponse(
         BigDecimal distanciaKm,    
         boolean aceitaPets,
         boolean acessivel,
+        boolean estacionamento,
+        boolean areaCriancas,
+        boolean areaFumantes,
+        boolean lgbtFriendly,
         StatusAnalise status,
         boolean ativo
 ) {
@@ -47,6 +51,10 @@ public record RestauranteResumoResponse(
                 distanciaKm,
                 r.isAceitaPets(),
                 r.isAcessivel(),
+                r.isEstacionamento(),
+                r.isAreaCriancas(),
+                r.isAreaFumantes(),
+                r.isLgbtFriendly(),
                 r.getStatus(),
                 r.isAtivo());
     }

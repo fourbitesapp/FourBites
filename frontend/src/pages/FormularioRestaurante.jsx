@@ -10,7 +10,7 @@ import Rodape from '../components/Rodape.jsx'
 import Seletor from '../components/Seletor.jsx'
 import * as api from '../services/apiReal.js'
 import {
-  DIAS_DA_SEMANA, FAIXAS_DE_PRECO, formularioDoRestaurante, formularioVazio, montarEnvio, podeEditar, validarFormulario,
+  CARACTERISTICAS, DIAS_DA_SEMANA, FAIXAS_DE_PRECO, formularioDoRestaurante, formularioVazio, montarEnvio, podeEditar, validarFormulario,
 } from '../utils/restaurantes.js'
 import { conferirImagem, erroDeValidacao, TAMANHO_MAXIMO_ARQUIVO, temErros } from '../utils/validacoes.js'
 
@@ -472,12 +472,10 @@ function Formulario({ modo }) {
           <section className="fb-caixa">
             <div className="fb-passo-titulo"><span className="fb-numero">5</span><h2>Comodidades</h2></div>
             <div className="fb-extras">
-              <Comodidade icone="bi-universal-access" cor="#b5dcf8" titulo="Acessível"
-                texto="Espaço acessível para pessoas com deficiência" ligado={form.acessivel}
-                aoMudar={(valor) => mudar('acessivel', valor)} />
-              <Comodidade icone="bi-heart" cor="#ffc193" titulo="Aceita pets"
-                texto="Clientes podem levar seus bichinhos" ligado={form.aceitaPets}
-                aoMudar={(valor) => mudar('aceitaPets', valor)} />
+              {CARACTERISTICAS.map((c) => (
+                <Comodidade key={c.campo} icone={c.icone} cor={c.cor} titulo={c.rotulo} texto={c.texto}
+                  ligado={form[c.campo]} aoMudar={(valor) => mudar(c.campo, valor)} />
+              ))}
             </div>
           </section>
 

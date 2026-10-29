@@ -9,7 +9,7 @@ import PainelAdmin from '../../components/PainelAdmin.jsx'
 import Seletor from '../../components/Seletor.jsx'
 import * as api from '../../services/apiReal.js'
 import { agruparHorarios, formatarData, haQuantoTempo } from '../../utils/formatos.js'
-import { formatarCnpj, formatarMesAno, nomeDaCategoria, textoEndereco } from '../../utils/restaurantes.js'
+import { CARACTERISTICAS, formatarCnpj, formatarMesAno, nomeDaCategoria, textoEndereco } from '../../utils/restaurantes.js'
 
 // Aba "Cadastros": fila de restaurantes novos esperando análise (do mais antigo ao mais novo).
 // O admin aprova (e publica) ou pede ajustes com um motivo. "?id=" escolhe qual cadastro abrir.
@@ -129,7 +129,7 @@ function DetalheDoCadastro({ restaurante: r, categorias, aoTerminar }) {
     { valor: '', rotulo: 'Escolher categoria' },
     ...categorias.map((c) => ({ valor: c.id, rotulo: c.nome })),
   ]
-  const comodidades = [r.acessivel && 'Acessível', r.aceitaPets && 'Aceita pets'].filter(Boolean).join(', ') || 'Nenhuma'
+  const comodidades = CARACTERISTICAS.filter((c) => r[c.campo]).map((c) => c.rotulo).join(', ') || 'Nenhuma'
 
   return (
     <section className="fb-caixa fb-analise-detalhe">

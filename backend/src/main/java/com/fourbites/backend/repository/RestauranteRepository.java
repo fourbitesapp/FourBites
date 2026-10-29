@@ -1,5 +1,6 @@
 package com.fourbites.backend.repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,4 +28,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Intege
     List<Restaurante> findAllByOrderByNomeAsc();
 
     long countByCategoriaId(Integer categoriaId);
+
+    // Avisos para o responsável: cadastros analisados a partir de uma data.
+    List<Restaurante> findByResponsavelIdAndDataAnaliseAfter(Integer responsavelId, OffsetDateTime desde);
 }

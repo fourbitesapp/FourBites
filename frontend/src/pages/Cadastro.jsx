@@ -87,6 +87,8 @@ export default function Cadastro() {
 
   return (
     <TelaAcesso frase={textos.frase} titulo={textos.titulo}>
+      <Link to="/" className="fb-link-discreto"><i className="bi bi-arrow-left" aria-hidden="true"></i> Voltar para o início</Link>
+
       <div className="fb-abas">
         <Link to="/login" className="fb-aba">Entrar</Link>
         <span className="fb-aba ativa" aria-current="page">Criar conta</span>
