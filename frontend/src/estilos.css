@@ -19,7 +19,7 @@
   --fb-azul-claro: #e2f1fc;
   --fb-laranja-claro: #ffe6d5;
 
-  --fb-titulo: 'Fraunces', Georgia, serif;
+  --fb-titulo: 'Baloo 2', system-ui, sans-serif;
   --fb-letra: 'Nunito', system-ui, sans-serif;
   --fb-mao: 'Caveat', cursive;
 
@@ -45,11 +45,9 @@ body {
 
 h1, h2, h3 {
   font-family: var(--fb-titulo);
-  font-variation-settings: 'SOFT' 100;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--fb-tinta);
-  letter-spacing: -0.015em;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); }
 h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 0.5rem; }
