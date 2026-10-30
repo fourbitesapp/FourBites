@@ -34,24 +34,29 @@ public class NominatimService {
                 .build();
     }
 
-    // Busca estruturada (rua + cidade) e só aceita um resultado que fique na cidade e no estado informados.
     public Optional<Coordenadas> buscar(String logradouro, String numero, String bairro,
                                         String cidade, String uf) {
-        Optional<Coordenadas> resultado = consultar(numero + " " + logradouro, cidade, uf);
-        if (resultado.isPresent()) {
-            return resultado;
+        String local = cidade + ", " + uf + ", Brasil";
+        List<String> tentativas = List.of(
+                logradouro + ", " + numero + ", " + bairro + ", " + local,
+                logradouro + ", " + numero + ", " + local,
+                logradouro + ", " + local,
+                bairro + ", " + local);
+        for (String tentativa : tentativas) {
+            Optional<Coordenadas> resultado = consultar(tentativa, cidade, uf);
+            if (resultado.isPresent()) {
+                return resultado;
+            }
         }
-        return consultar(logradouro, cidade, uf);
+        return Optional.empty();
     }
 
-    private synchronized Optional<Coordenadas> consultar(String rua, String cidade, String uf) {
+    private synchronized Optional<Coordenadas> consultar(String endereco, String cidade, String uf) {
         esperarIntervalo();
         try {
             List<Map<String, Object>> resposta = nominatim.get()
                     .uri(uri -> uri.path("/search")
-                            .queryParam("street", rua)
-                            .queryParam("city", cidade)
-                            .queryParam("country", "Brasil")
+                            .queryParam("q", endereco)
                             .queryParam("format", "jsonv2")
                             .queryParam("addressdetails", 1)
                             .queryParam("limit", 5)
@@ -70,10 +75,12 @@ public class NominatimService {
                     }
                 }
             }
-            log.warn("Nominatim não achou \"{}\" em {}/{}", rua, cidade, uf);
+            // Ajuda a entender no log do Render o que o Nominatim devolveu quando nada foi aceito
+            log.warn("Nominatim não achou \"{}\" dentro de {}/{}. Primeiro resultado: {}", endereco, cidade, uf,
+                    resposta == null || resposta.isEmpty() ? "nenhum" : resposta.get(0).get("address"));
             return Optional.empty();
         } catch (RestClientException | NumberFormatException e) {
-            log.error("Falha ao consultar o Nominatim para: {}, {}/{}", rua, cidade, uf, e);
+            log.error("Falha ao consultar o Nominatim para: {}", endereco, e);
             return Optional.empty();
         }
     }
@@ -83,7 +90,8 @@ public class NominatimService {
         if (!(lugar.get("address") instanceof Map<?, ?> endereco)) {
             return false;
         }
-        if (!("BR-" + uf.toUpperCase()).equals(endereco.get("ISO3166-2-lvl4"))) {
+        Object estado = endereco.get("ISO3166-2-lvl4");
+        if (estado != null && !("BR-" + uf.toUpperCase()).equals(estado)) {
             return false;
         }
         String cidadeProcurada = Texto.simplificar(cidade);
