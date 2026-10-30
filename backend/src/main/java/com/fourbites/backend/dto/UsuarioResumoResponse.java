@@ -7,10 +7,12 @@ public record UsuarioResumoResponse(
         Integer id,
         String nome,
         String username,
-        String fotoPerfil
+        String fotoPerfil,
+        boolean oficial     // perfil oficial do FourBites
 ) {
 
     public static UsuarioResumoResponse de(Usuario usuario) {
-        return new UsuarioResumoResponse(usuario.getId(), usuario.getNome(), usuario.getUsername(), usuario.getFotoPerfil());
+        return new UsuarioResumoResponse(usuario.getId(), usuario.getNome(), usuario.getUsername(), usuario.getFotoPerfil(),
+                usuario.isOficial());
     }
 }

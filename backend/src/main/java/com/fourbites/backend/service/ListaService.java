@@ -14,13 +14,17 @@ import com.fourbites.backend.dto.ResumoNotas;
 import com.fourbites.backend.dto.UsuarioResumoResponse;
 import com.fourbites.backend.entity.Lista;
 import com.fourbites.backend.entity.ListaRestaurante;
+import com.fourbites.backend.entity.ListaSeguidor;
+import com.fourbites.backend.entity.ListaSeguidorId;
 import com.fourbites.backend.entity.Restaurante;
 import com.fourbites.backend.entity.StatusAnalise;
 import com.fourbites.backend.entity.Usuario;
 import com.fourbites.backend.exception.ConflitoException;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
+import com.fourbites.backend.exception.RegraNegocioException;
 import com.fourbites.backend.exception.SemPermissaoException;
 import com.fourbites.backend.repository.ListaRepository;
+import com.fourbites.backend.repository.ListaSeguidorRepository;
 import com.fourbites.backend.repository.RestauranteRepository;
 import com.fourbites.backend.repository.UsuarioRepository;
 
@@ -36,13 +40,16 @@ public class ListaService {
     private final UsuarioRepository usuarioRepository;
     private final RestauranteRepository restauranteRepository;
     private final AvaliacaoService avaliacaoService;
+    private final ListaSeguidorRepository listaSeguidorRepository;
 
     public ListaService(ListaRepository listaRepository, UsuarioRepository usuarioRepository,
-                        RestauranteRepository restauranteRepository, AvaliacaoService avaliacaoService) {
+                        RestauranteRepository restauranteRepository, AvaliacaoService avaliacaoService,
+                        ListaSeguidorRepository listaSeguidorRepository) {
         this.listaRepository = listaRepository;
         this.usuarioRepository = usuarioRepository;
         this.restauranteRepository = restauranteRepository;
         this.avaliacaoService = avaliacaoService;
+        this.listaSeguidorRepository = listaSeguidorRepository;
     }
 
     // Todas as listas do usuário logado (públicas e privadas).
@@ -61,6 +68,43 @@ public class ListaService {
         return listaRepository.findByUsuarioIdAndPublicaTrueOrderByDataAtualizacaoDesc(usuario.getId()).stream()
                 .map(lista -> resumo(lista, usuarioLogadoId))
                 .toList();
+    }
+
+    // Home: listas públicas do perfil oficial (o Farelo).
+    @Transactional(readOnly = true)
+    public List<ListaResponse> listarOficiais(Integer usuarioLogadoId) {
+        return listaRepository.findByUsuarioOficialTrueAndPublicaTrueOrderByDataAtualizacaoDesc().stream()
+                .map(lista -> resumo(lista, usuarioLogadoId))
+                .toList();
+    }
+
+    // Perfil: listas (públicas) que o usuário segue.
+    @Transactional(readOnly = true)
+    public List<ListaResponse> listarSeguidasPor(String username, Integer usuarioLogadoId) {
+        Usuario usuario = usuarioRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
+        return listaRepository.seguidasPor(usuario.getId()).stream()
+                .map(lista -> resumo(lista, usuarioLogadoId))
+                .toList();
+    }
+
+    // Seguir: só listas públicas e de outra pessoa. Seguir de novo não duplica.
+    @Transactional
+    public void seguir(Integer id, Integer usuarioId) {
+        Lista lista = listaRepository.findById(id)
+                .filter(Lista::isPublica)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Lista não encontrada."));
+        if (ehDono(lista, usuarioId)) {
+            throw new RegraNegocioException("Você não pode seguir a sua própria lista.");
+        }
+        if (!listaSeguidorRepository.existsByUsuarioIdAndListaId(usuarioId, id)) {
+            listaSeguidorRepository.save(new ListaSeguidor(usuarioId, id));
+        }
+    }
+
+    @Transactional
+    public void deixarDeSeguir(Integer id, Integer usuarioId) {
+        listaSeguidorRepository.deleteById(new ListaSeguidorId(usuarioId, id));
     }
 
     // Lista privada de outra pessoa responde 404, como se não existisse.
@@ -173,12 +217,16 @@ public class ListaService {
                 .map(r -> r.getFotos().get(0).getUrl())
                 .limit(CAPAS)
                 .toList();
+        boolean minha = ehDono(lista, usuarioLogadoId);
+        boolean seguindo = usuarioLogadoId != null && !minha
+                && listaSeguidorRepository.existsByUsuarioIdAndListaId(usuarioLogadoId, lista.getId());
         return new ListaResponse(lista.getId(), lista.getNome(), lista.getDescricao(), lista.getCor(), lista.getIcone(),
                 lista.isPublica(), publicados.size(), capas, UsuarioResumoResponse.de(lista.getUsuario()),
-                ehDono(lista, usuarioLogadoId), lista.getDataAtualizacao(), restaurantes);
+                minha, seguindo, lista.getDataAtualizacao(), restaurantes);
     }
 
     private String vazioParaNulo(String texto) {
         return texto == null || texto.isBlank() ? null : texto.trim();
     }
 }
+

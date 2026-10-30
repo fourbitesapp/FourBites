@@ -15,7 +15,8 @@ public record UsuarioPublicoResponse(
         long totalAvaliacoes,
         long seguidores,
         long seguindo,
-        boolean seguidoPorMim
+        boolean seguidoPorMim,
+        boolean oficial     // perfil oficial do FourBites (mostra o selo)
 ) {
 
     public static UsuarioPublicoResponse de(Usuario usuario, long totalAvaliacoes, long seguidores,
@@ -32,6 +33,7 @@ public record UsuarioPublicoResponse(
                 totalAvaliacoes,
                 seguidores,
                 seguindo,
-                seguidoPorMim);
+                seguidoPorMim,
+                usuario.isOficial());
     }
 }

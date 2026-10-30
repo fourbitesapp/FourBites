@@ -781,3 +781,13 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
 @media (max-width: 767px) {
   .fb-dica-rolagem { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0; font-size: 0.85rem; font-weight: 700; color: var(--fb-apagado); }
 }
+/* ---------- Perfil oficial (Farelo) ---------- */
+.fb-selo-oficial { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 999px; background: var(--fb-vermelho); color: #fff; font-size: 0.82rem; font-weight: 800; white-space: nowrap; }
+.fb-selo-oficial-icone { color: var(--fb-vermelho); font-size: 0.9em; vertical-align: -0.05em; }
+
+/* ---------- Pessoas para seguir (home) ---------- */
+.fb-carrossel-pessoas > * { flex-basis: 190px; }
+.fb-sugestao { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 1.2rem 1rem 1rem; border: 1.5px solid var(--fb-linha); border-radius: 24px; background: var(--fb-branco); text-align: center; min-width: 0; }
+.fb-sugestao-perfil { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 100%; min-width: 0; text-decoration: none; color: var(--fb-tinta); }
+.fb-sugestao-perfil:hover { color: var(--fb-vermelho); }
+@media (max-width: 575px) { .fb-carrossel-pessoas > * { flex-basis: 44%; } }

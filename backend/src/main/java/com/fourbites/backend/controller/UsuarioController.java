@@ -49,6 +49,12 @@ public class UsuarioController {
         return usuarioService.buscarPerfilPublico(username, usuarioLogadoId);
     }
     
+    // Pessoas para seguir (seção da home, só conta USUARIO)
+    @GetMapping("/me/sugestoes")
+    public List<UsuarioResumoResponse> sugestoes(@AuthenticationPrincipal Integer usuarioId) {
+        return usuarioService.sugerirParaSeguir(usuarioId);
+    }
+
     @GetMapping("/me")
     public UsuarioResponse buscarMeusDados(@AuthenticationPrincipal Integer usuarioId) {
         return usuarioService.buscarPorId(usuarioId);

@@ -40,6 +40,7 @@ public class SegurancaConfig {
                 .requestMatchers("/usuarios/me/favoritos/**").hasRole("USUARIO")
                 .requestMatchers("/usuarios/*/seguir").hasRole("USUARIO")
                 .requestMatchers("/usuarios/me/listas").hasRole("USUARIO")
+                .requestMatchers("/usuarios/me/sugestoes").hasRole("USUARIO")
                 .requestMatchers(HttpMethod.POST, "/listas/**").hasRole("USUARIO")
                 .requestMatchers(HttpMethod.PUT, "/listas/**").hasRole("USUARIO")
                 .requestMatchers(HttpMethod.DELETE, "/listas/**").hasRole("USUARIO")

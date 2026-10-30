@@ -47,6 +47,30 @@ public class ListaController {
         return listaService.listarPublicasDoUsuario(username, idDoLogado(autenticacao));
     }
 
+    // Perfil: listas públicas que o usuário segue
+    @GetMapping("/usuarios/{username}/listas-seguidas")
+    public List<ListaResponse> listarSeguidas(@PathVariable String username, Authentication autenticacao) {
+        return listaService.listarSeguidasPor(username, idDoLogado(autenticacao));
+    }
+
+    // Home: "sugestões do autor" (listas públicas do perfil oficial, o Farelo)
+    @GetMapping("/listas/oficiais")
+    public List<ListaResponse> listarOficiais(Authentication autenticacao) {
+        return listaService.listarOficiais(idDoLogado(autenticacao));
+    }
+
+    @PostMapping("/listas/{id}/seguir")
+    public ResponseEntity<Void> seguir(@PathVariable Integer id, @AuthenticationPrincipal Integer usuarioId) {
+        listaService.seguir(id, usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/listas/{id}/seguir")
+    public ResponseEntity<Void> deixarDeSeguir(@PathVariable Integer id, @AuthenticationPrincipal Integer usuarioId) {
+        listaService.deixarDeSeguir(id, usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/listas/{id}")
     public ListaResponse buscar(@PathVariable Integer id, Authentication autenticacao) {
         return listaService.buscar(id, idDoLogado(autenticacao));
@@ -81,3 +105,4 @@ public class ListaController {
         return autenticacao != null && autenticacao.getPrincipal() instanceof Integer id ? id : null;
     }
 }
+

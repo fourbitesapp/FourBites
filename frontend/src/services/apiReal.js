@@ -100,6 +100,7 @@ export const listarSeguidores = (username) => chamar('GET', `/usuarios/${encodeU
 export const listarSeguindo = (username) => chamar('GET', `/usuarios/${encodeURIComponent(username)}/seguindo`)
 export const seguir = (username) => chamar('POST', `/usuarios/${encodeURIComponent(username)}/seguir`)
 export const deixarDeSeguir = (username) => chamar('DELETE', `/usuarios/${encodeURIComponent(username)}/seguir`)
+export const listarSugestoesParaSeguir = () => chamar('GET', '/usuarios/me/sugestoes')
 
 // Curtidas nas avaliações
 export const curtir = (avaliacaoId) => chamar('POST', `/avaliacoes/${avaliacaoId}/curtir`)
@@ -193,3 +194,7 @@ export const editarLista = (id, dados) => chamar('PUT', `/listas/${id}`, dados)
 export const excluirLista = (id) => chamar('DELETE', `/listas/${id}`)
 export const adicionarNaLista = (id, restauranteId) => chamar('POST', `/listas/${id}/restaurantes`, { restauranteId })
 export const tirarDaLista = (id, restauranteId) => chamar('DELETE', `/listas/${id}/restaurantes/${restauranteId}`)
+export const seguirLista = (id) => chamar('POST', `/listas/${id}/seguir`)
+export const deixarDeSeguirLista = (id) => chamar('DELETE', `/listas/${id}/seguir`)
+export const listarListasSeguidas = (username) => chamar('GET', `/usuarios/${username}/listas-seguidas`)
+export const listarListasOficiais = () => chamar('GET', '/listas/oficiais') // "sugestões do autor" (Farelo)

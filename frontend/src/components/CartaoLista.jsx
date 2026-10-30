@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 
 import { corDaLista, iconeDaLista, textoQuantidade } from '../utils/listas.js'
+import SeloOficial from './SeloOficial.jsx'
 
 // Cartão de uma lista: mosaico com as fotos de até 4 restaurantes (ou o ícone na cor da lista), nome, quantos restaurantes e um cadeado quando é privada
-export default function CartaoLista({ lista }) {
+// mostrarDono: escreve "de Fulano" (usado em "Listas que sigo", onde as listas são de outras pessoas)
+export default function CartaoLista({ lista, mostrarDono = false }) {
   const cor = corDaLista(lista)
   return (
     <Link to={`/listas/${lista.id}`} className="fb-cartao-lista">
@@ -24,7 +26,10 @@ export default function CartaoLista({ lista }) {
             <i className="bi bi-lock-fill fb-apagado" title="Lista privada" aria-label="Lista privada"></i>
           )}
         </div>
-        <div className="fb-cartao-meta mt-1">{textoQuantidade(lista.totalRestaurantes)}</div>
+        <div className="fb-cartao-meta mt-1">
+          {textoQuantidade(lista.totalRestaurantes)}
+          {mostrarDono && <> · de {lista.dono.nome} {lista.dono.oficial && <SeloOficial compacto />}</>}
+        </div>
       </div>
     </Link>
   )

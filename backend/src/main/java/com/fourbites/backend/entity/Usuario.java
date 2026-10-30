@@ -68,6 +68,10 @@ public class Usuario {
     @Column(name = "notificacoes_vistas_em")
     private OffsetDateTime notificacoesVistasEm;
 
+    // Perfil oficial do FourBites 
+    @Column(nullable = false)
+    private boolean oficial;
+
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private OffsetDateTime dataCadastro;
 

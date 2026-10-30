@@ -10,6 +10,7 @@ import CartaoLista from '../components/CartaoLista.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import JanelaPessoas from '../components/JanelaPessoas.jsx'
 import Rodape from '../components/Rodape.jsx'
+import SeloOficial from '../components/SeloOficial.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
@@ -41,6 +42,7 @@ export default function Perfil() {
   const [perfil, setPerfil] = useState(null)
   const [favoritos, setFavoritos] = useState([])
   const [listas, setListas] = useState([])
+  const [listasSeguidas, setListasSeguidas] = useState([])
   const [avaliacoes, setAvaliacoes] = useState([])
   const [preferencias, setPreferencias] = useState(null) // só no próprio perfil
   const [categorias, setCategorias] = useState([])
@@ -72,6 +74,10 @@ export default function Perfil() {
     const buscarListas = ehMeuPerfil && usuario.papel === 'USUARIO'
       ? api.listarMinhasListas() : api.listarListasDoUsuario(username)
     buscarListas.then((dados) => !cancelada && setListas(dados)).catch(() => !cancelada && setListas([]))
+    // Listas que a pessoa segue (só as públicas). Se falhar, a seção fica vazia.
+    api.listarListasSeguidas(username)
+      .then((dados) => !cancelada && setListasSeguidas(dados))
+      .catch(() => !cancelada && setListasSeguidas([]))
 
     // O resumo de preferências só aparece para o dono do perfil (conta USUARIO).
     if (ehMeuPerfil && usuario.papel === 'USUARIO') {
@@ -164,7 +170,10 @@ export default function Perfil() {
         </div>
 
         <div className="mt-3 px-sm-4">
-          <h1 className="mb-0 fb-perfil-nome">{perfil.nome}</h1>
+          <div className="d-flex flex-wrap align-items-center gap-2">
+            <h1 className="mb-0 fb-perfil-nome">{perfil.nome}</h1>
+            {perfil.oficial && <SeloOficial />}
+          </div>
           <p className="fb-autor fb-apagado mb-0">@{perfil.username}</p>
           {perfil.bio && <p className="mt-2 mb-0" style={{ color: 'var(--fb-tinta)', fontSize: '1.05rem' }}>{perfil.bio}</p>}
           <div className="mt-2"><Aviso>{erroSeguir}</Aviso></div>
@@ -281,6 +290,23 @@ export default function Perfil() {
           </div>
           {listas.length === 0 && !ehUsuarioDono && <p className="fb-vazio">Nenhuma lista pública ainda.</p>}
         </section>
+
+        {/* Listas que sigo (de outras pessoas). Nos perfis dos outros, só aparece se a pessoa seguir alguma. */}
+        {(listasSeguidas.length > 0 || ehUsuarioDono) && (
+          <section style={{ marginTop: '4rem' }}>
+            {listasSeguidas.length === 0 ? (
+              <>
+                <h2 className="mb-1">Listas que sigo</h2>
+                <p className="fb-vazio">Você ainda não segue nenhuma lista. Abra a lista de alguém e toque em "Seguir lista".</p>
+              </>
+            ) : (
+              <Carrossel nome="Listas que sigo" className="fb-carrossel-cartoes"
+                titulo={<h2 className="mb-0">{ehMeuPerfil ? 'Listas que sigo' : 'Listas que segue'}</h2>}>
+                {listasSeguidas.map((l) => <div key={l.id}><CartaoLista lista={l} mostrarDono /></div>)}
+              </Carrossel>
+            )}
+          </section>
+        )}
 
         {/* Posts */}
         <section style={{ marginTop: '4rem' }}>

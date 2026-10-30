@@ -15,6 +15,7 @@ public record ListaResponse(
         List<String> capas,
         UsuarioResumoResponse dono,
         boolean minha,
+        boolean seguindo,   // se quem está vendo segue esta lista
         OffsetDateTime dataAtualizacao,
         List<RestauranteResumoResponse> restaurantes
 ) {

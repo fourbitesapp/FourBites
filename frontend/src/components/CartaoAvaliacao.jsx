@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatarData, formatarNota } from '../utils/formatos.js'
 import Avatar from './Avatar.jsx'
 import Curtidas from './Curtidas.jsx'
+import SeloOficial from './SeloOficial.jsx'
 
 const CATEGORIAS = [
   ['Comida', 'notaComida'],
@@ -23,6 +24,7 @@ export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, 
         <Link to={`/perfil/${a.usuario.username}`}><Avatar nome={a.usuario.nome} foto={a.usuario.fotoPerfil} /></Link>
         <div className="flex-grow-1">
           <Link to={`/perfil/${a.usuario.username}`} className="fb-autor text-decoration-none">{a.usuario.nome}</Link>
+          {a.usuario.oficial && <> <SeloOficial compacto /></>}
           <div className="fb-cartao-meta mt-0">
             {mostrarRestaurante ? (
               <>avaliou <Link to={`/restaurantes/${a.restaurante.id}`} className="fb-link">{a.restaurante.nome}</Link> · </>

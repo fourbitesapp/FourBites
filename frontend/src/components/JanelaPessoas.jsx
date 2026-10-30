@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Avatar from './Avatar.jsx'
+import SeloOficial from './SeloOficial.jsx'
 
 // Janela com uma lista de pessoas (seguidores ou seguindo, no perfil; quem curtiu uma avaliação).
 
@@ -41,7 +42,7 @@ export default function JanelaPessoas({ titulo, carregar, vazio, aoFechar }) {
             <Link key={p.id} to={`/perfil/${p.username}`} className="fb-pessoa" onClick={aoFechar}>
               <Avatar nome={p.nome} foto={p.fotoPerfil} />
               <span className="text-truncate">
-                <strong className="d-block text-truncate">{p.nome}</strong>
+                <strong className="d-block text-truncate">{p.nome} {p.oficial && <SeloOficial compacto />}</strong>
                 <span className="fb-cartao-meta">@{p.username}</span>
               </span>
             </Link>

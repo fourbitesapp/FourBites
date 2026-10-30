@@ -31,4 +31,15 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             ORDER BY u.nome
             """)
     List<Usuario> buscarPorNomeOuUsername(@Param("papel") Papel papel, @Param("termo") String termo, Pageable limite);
+
+    // Sugestões para seguir: usuários (menos eu) que eu ainda não sigo; o oficial primeiro, depois os mais novos.
+    @Query("""
+            SELECT u FROM Usuario u
+            WHERE u.papel = :papel
+              AND u.id <> :meuId
+              AND u.id NOT IN (SELECT s.seguidoId FROM Seguidor s WHERE s.seguidorId = :meuId)
+            ORDER BY u.oficial DESC, u.dataCadastro DESC
+            """)
+    List<Usuario> sugestoesParaSeguir(@Param("papel") Papel papel, @Param("meuId") Integer meuId, Pageable limite);
 }
+

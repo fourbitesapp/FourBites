@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import Avatar from '../components/Avatar.jsx'
 import Aviso from '../components/Aviso.jsx'
@@ -7,6 +7,8 @@ import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import BuscaRestaurante from '../components/BuscaRestaurante.jsx'
 import CartaoRestaurante from '../components/CartaoRestaurante.jsx'
 import Rodape from '../components/Rodape.jsx'
+import SeloOficial from '../components/SeloOficial.jsx'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaLista, iconeDaLista, textoQuantidade } from '../utils/listas.js'
 
@@ -15,6 +17,9 @@ import { corDaLista, iconeDaLista, textoQuantidade } from '../utils/listas.js'
 export default function Lista() {
   const { id } = useParams()
   const navegar = useNavigate()
+  const local = useLocation()
+  const { usuario, logado } = useAuth()
+  const [seguindoAgora, setSeguindoAgora] = useState(false)
 
   const [lista, setLista] = useState(null)
   const [erro, setErro] = useState(null)
@@ -44,6 +49,20 @@ export default function Lista() {
       setLista(await api.tirarDaLista(lista.id, restaurante.id))
     } catch (falha) {
       setAviso(falha.message)
+    }
+  }
+
+  // Seguir a lista de outra pessoa (só conta USUARIO; a lista aparece em "Listas que sigo" no perfil).
+  async function alternarSeguir() {
+    setAviso(null)
+    setSeguindoAgora(true)
+    try {
+      await (lista.seguindo ? api.deixarDeSeguirLista(lista.id) : api.seguirLista(lista.id))
+      setLista({ ...lista, seguindo: !lista.seguindo })
+    } catch (falha) {
+      setAviso(falha.message)
+    } finally {
+      setSeguindoAgora(false)
     }
   }
 
@@ -108,8 +127,29 @@ export default function Lista() {
             {lista.descricao && <p className="fb-subtitulo mb-2">{lista.descricao}</p>}
             <Link to={`/perfil/${lista.dono.username}`} className="fb-lista-dono">
               <Avatar nome={lista.dono.nome} foto={lista.dono.fotoPerfil} tamanho="nav" />
-              <span>por <strong>{lista.dono.nome}</strong> · {textoQuantidade(lista.totalRestaurantes)}</span>
+              <span>
+                por <strong>{lista.dono.nome}</strong> {lista.dono.oficial && <SeloOficial compacto />}
+                {' · '}{textoQuantidade(lista.totalRestaurantes)}
+              </span>
             </Link>
+
+            {/* Seguir: lista pública de outra pessoa */}
+            {!lista.minha && lista.publica && logado && usuario.papel === 'USUARIO' && (
+              <div className="mt-3">
+                <button type="button" disabled={seguindoAgora} onClick={alternarSeguir}
+                  className={`fb-botao fb-botao-pequeno ${lista.seguindo ? 'fb-botao-claro' : 'fb-botao-principal'}`}>
+                  {lista.seguindo
+                    ? <><i className="bi bi-check-lg" aria-hidden="true"></i> Seguindo a lista</>
+                    : <><i className="bi bi-plus-lg" aria-hidden="true"></i> Seguir lista</>}
+                </button>
+              </div>
+            )}
+            {!logado && lista.publica && (
+              <div className="mt-3">
+                <Link to="/login" state={{ voltarPara: local.pathname, aviso: 'Entre na sua conta para seguir listas.' }}
+                  className="fb-botao fb-botao-principal fb-botao-pequeno">Entre para seguir a lista</Link>
+              </div>
+            )}
 
             {lista.minha && (
               <div className="d-flex flex-wrap align-items-center gap-2 mt-3">
