@@ -32,7 +32,7 @@ public record RestauranteFormulario(
         @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres.")
         String telefone,
 
-        @NotNull(message = "Informe o mês e o ano de abertura.")
+        // Opcional: nem todo restaurante sabe ou divulga quando abriu.
         @PastOrPresent(message = "A data de abertura não pode estar no futuro.")
         LocalDate dataFundacao,
 
@@ -72,4 +72,6 @@ public record RestauranteFormulario(
         String cardapioLink
 ) {
 }
+
+
 

@@ -70,7 +70,7 @@ public class Restaurante {
     @Column(name = "lgbt_friendly", nullable = false)
     private boolean lgbtFriendly;
 
-    @Column(name = "data_fundacao", nullable = false) 
+    @Column(name = "data_fundacao")
     private LocalDate dataFundacao;
 
     @Column(name = "cardapio_url", length = 500) //arquivo enviado (Cloudinary)

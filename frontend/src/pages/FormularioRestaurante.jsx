@@ -347,7 +347,7 @@ function Formulario({ modo }) {
                 )}
               </div>
               <div className="col-md-6">
-                <Campo rotulo="Abriu em" name="abriuEm" type="month" value={form.abriuEm}
+                <Campo rotulo="Abriu em (opcional)" name="abriuEm" type="month" value={form.abriuEm}
                   max={new Date().toISOString().slice(0, 7)} onChange={(e) => mudar('abriuEm', e.target.value)}
                   erro={campos.dataFundacao} ajuda="Mês e ano." />
               </div>

@@ -131,7 +131,7 @@ export default function Restaurante() {
           <div style={{ flex: '1 1 480px' }}>
             <h1 className="mb-2">{r.nome}</h1>
             <p className="fb-subtitulo fb-apagado mb-3">
-              {r.categoria?.nome} · {r.faixaPreco} · {r.bairro}, {r.cidade} · Desde {r.dataFundacao.slice(0, 4)}
+              {r.categoria?.nome} · {r.faixaPreco} · {r.bairro}, {r.cidade}{r.dataFundacao && ` · Desde ${r.dataFundacao.slice(0, 4)}`}
             </p>
             <div className="d-flex flex-wrap gap-2">
               {r.horarios.length > 0 && (

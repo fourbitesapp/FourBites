@@ -158,7 +158,6 @@ export function validarFormulario(f, { cnpjObrigatorio }) {
   if (vazio(f.telefone)) erros.telefone = 'O telefone é obrigatório.'
   if (f.categoriaId === '') erros.categoriaId = 'Escolha uma categoria.'
   if (f.categoriaId === 'outra' && vazio(f.categoriaSugerida)) erros.categoriaSugerida = 'Escreva qual é a categoria.'
-  if (vazio(f.abriuEm)) erros.dataFundacao = 'Informe o mês e o ano de abertura.'
   if (vazio(f.descricao)) erros.descricao = 'A descrição é obrigatória.'
   ;['cep', 'logradouro', 'numero', 'bairro', 'cidade', 'uf'].forEach((campo) => {
     if (vazio(f.endereco[campo])) erros[`endereco.${campo}`] = 'Obrigatório.'
@@ -218,4 +217,6 @@ export function diferencas(restaurante, proposto, categorias, formas) {
     .filter(([, antes, depois]) => String(antes ?? '') !== String(depois ?? ''))
     .map(([campo, antes, depois]) => ({ campo, antes, depois }))
 }
+
+
 

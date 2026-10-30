@@ -221,7 +221,7 @@ public class RestauranteService {
         restaurante.setAreaCriancas(dados.areaCriancas());
         restaurante.setAreaFumantes(dados.areaFumantes());
         restaurante.setLgbtFriendly(dados.lgbtFriendly());
-        restaurante.setDataFundacao(dados.dataFundacao().withDayOfMonth(1)); 
+        restaurante.setDataFundacao(dados.dataFundacao() == null ? null : dados.dataFundacao().withDayOfMonth(1));
         restaurante.setCardapioUrl(textoOuNulo(dados.cardapioUrl()));
         restaurante.setCardapioLink(textoOuNulo(dados.cardapioLink()));
 
