@@ -208,6 +208,8 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-busca-grande input { border: 0; outline: 0; flex: 1; min-width: 0; font: inherit; font-size: 1.05rem; color: var(--fb-tinta); }
 .fb-destaque-arte { flex: 1 1 380px; position: relative; height: 420px; }
 .fb-destaque-mascote { position: absolute; left: 118px; top: 22px; width: 236px; height: auto; z-index: 1; filter: drop-shadow(0 14px 18px rgba(36, 22, 18, 0.2)); }
+.fb-farelo-nome { position: absolute; left: -12px; top: -6px; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; font-family: var(--fb-mao); font-weight: 700; font-size: 1.7rem; line-height: 1; color: var(--fb-vermelho); transform: rotate(-8deg); pointer-events: none; }
+.fb-farelo-nome svg { margin-top: 2px; margin-right: -46px; }
 .fb-bolha { position: absolute; border-radius: 999px; }
 .fb-adesivo { position: absolute; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.7rem 1rem; transform: rotate(5deg); box-shadow: 0 8px 20px rgba(36, 22, 18, 0.12); text-decoration: none; }
 .fb-cozinhas { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 6px 2px 10px; scrollbar-width: none; }
@@ -822,3 +824,44 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
 .fb-sugestao-perfil:hover { color: var(--fb-vermelho); }
 .fb-sugestao .fb-avatar-medio { width: 5.5rem; height: 5.5rem; border-radius: 999px; }
 @media (max-width: 575px) { .fb-carrossel-pessoas > * { flex-basis: 44%; } }
+
+/* ---------- Sobre nós ---------- */
+.fb-sobre-topo { display: flex; flex-direction: column; gap: 1.2rem; max-width: 46rem; padding-top: 1rem; }
+.fb-sobre-topo h1 { font-size: clamp(2.3rem, 5.5vw, 3.6rem); line-height: 1.04; margin: 0; }
+.fb-sobre-topo p { font-size: 1.15rem; line-height: 1.6; margin: 0; }
+.fb-sobre-recursos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+.fb-sobre-recurso { border: 1.5px solid var(--fb-linha); border-radius: 24px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.fb-sobre-recurso strong { font-family: var(--fb-titulo); font-size: 1.3rem; color: var(--fb-tinta); }
+.fb-sobre-icone { width: 3.25rem; height: 3.25rem; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--fb-tinta); }
+.fb-sobre-farelo { background: var(--fb-amarelo); border-radius: 34px; padding: 3.5rem 4rem; display: flex; align-items: center; gap: 3.5rem; }
+.fb-sobre-farelo-arte { flex: 0 0 16rem; height: 16rem; border-radius: 50%; background: var(--fb-creme); display: flex; align-items: center; justify-content: center; }
+.fb-sobre-farelo-arte img { width: 12.5rem; height: auto; }
+.fb-sobre-farelo-texto { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1rem; color: var(--fb-tinta); }
+.fb-sobre-farelo-texto .fb-mao { color: var(--fb-vermelho-escuro); font-size: 2rem; align-self: flex-start; }
+.fb-sobre-farelo-texto h2 { margin: 0; font-size: clamp(1.8rem, 3.4vw, 2.5rem); }
+.fb-sobre-farelo-texto p { margin: 0; font-size: 1.1rem; line-height: 1.6; }
+.fb-sobre-tcc { display: flex; gap: 3rem; align-items: flex-start; }
+.fb-sobre-tcc-texto { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+.fb-sobre-tcc-texto .fb-mao { font-size: 1.9rem; align-self: flex-start; }
+.fb-sobre-tcc-texto h2 { margin: 0; font-size: clamp(1.8rem, 3.4vw, 2.5rem); }
+.fb-sobre-tcc-texto p { margin: 0; font-size: 1.1rem; line-height: 1.6; }
+.fb-sobre-chip { border-radius: 999px; background: var(--fb-creme); padding: 0.4rem 0.9rem; font-weight: 700; font-size: 0.9rem; color: var(--fb-tinta); }
+.fb-sobre-equipe { flex: 0 0 27rem; border: 1.5px solid var(--fb-linha); border-radius: 28px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.fb-sobre-equipe-titulo { font-family: var(--fb-titulo); font-size: 1.4rem; color: var(--fb-tinta); margin: 0 0 0.4rem 0.5rem; }
+.fb-sobre-pessoa { display: flex; align-items: center; gap: 0.9rem; padding: 0.6rem 0.5rem; border-radius: 16px; text-decoration: none; color: var(--fb-tinta); min-width: 0; }
+.fb-sobre-pessoa:hover, .fb-sobre-pessoa:focus-visible { background: var(--fb-creme); color: var(--fb-vermelho); }
+.fb-sobre-pessoa .bi { color: var(--fb-apagado); }
+.fb-sobre-orientacao { border-top: 1.5px solid var(--fb-linha); margin-top: 0.6rem; padding: 1rem 0.5rem 0; }
+.fb-sobre-orientacao strong { color: var(--fb-tinta); }
+@media (max-width: 991px) {
+  .fb-sobre-recursos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fb-sobre-tcc { flex-direction: column; }
+  .fb-sobre-equipe { flex-basis: auto; width: 100%; }
+}
+@media (max-width: 767px) {
+  .fb-sobre-recursos { grid-template-columns: 1fr; }
+  .fb-sobre-farelo { flex-direction: column; align-items: stretch; padding: 1.75rem 1.25rem; gap: 1.25rem; border-radius: 28px; }
+  .fb-sobre-farelo-arte { flex-basis: auto; width: 10rem; height: 10rem; align-self: center; }
+  .fb-sobre-farelo-arte img { width: 7.5rem; }
+  .fb-sobre-farelo-texto .fb-botao { align-self: stretch !important; }
+}

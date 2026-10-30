@@ -22,6 +22,7 @@ import Perfil, { MeuPerfil } from './pages/Perfil.jsx'
 import Preferencias from './pages/Preferencias.jsx'
 import RedefinirSenha from './pages/RedefinirSenha.jsx'
 import Restaurante from './pages/Restaurante.jsx'
+import Sobre from './pages/Sobre.jsx'
 
 // Mapa de telas do site
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/preferencias" element={<Preferencias />} />
       <Route path="/explorar" element={<Explorar />} />
+      <Route path="/sobre" element={<Sobre />} />
       <Route path="/restaurantes/:id" element={<Restaurante />} />
       <Route path="/restaurantes/:id/avaliar" element={<NovaAvaliacao />} />
       <Route path="/novo-post" element={<NovaAvaliacao />} />
@@ -69,3 +71,4 @@ export default function App() {
     </>
   )
 }
+

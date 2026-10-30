@@ -30,6 +30,7 @@ export default function Rodape() {
           </div>
           <div className="d-flex flex-column gap-2">
             <strong>Projeto</strong>
+            <Link to="/sobre">Sobre nós</Link>
             <span>TCC · Sistemas para Internet</span>
             <span>Fatec Rubens Lara · 2026</span>
           </div>

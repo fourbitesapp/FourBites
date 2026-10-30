@@ -164,6 +164,14 @@ export default function Inicio() {
                 style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)' }}></span>
               {/* Fora do círculo (sem overflow) para o mascote poder "sair" por cima dele */}
               <img src={mascoteSuco} alt="" className="fb-destaque-mascote" />
+               <span className="fb-farelo-nome">
+                esse é o Farelo!
+                <svg width="74" height="56" viewBox="0 0 74 56" fill="none" stroke="currentColor" strokeWidth="3"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 6c20 2 44 12 58 40" />
+                  <path d="M50 42l14 4 2-15" />
+                </svg>
+              </span>
               <span className="fb-bolha" style={{ right: '10px', top: '10px', width: '110px', height: '110px', background: '#ff8fa9' }}></span>
               <span className="fb-bolha" style={{ left: '10px', bottom: '30px', width: '96px', height: '96px', background: '#7fd1a3' }}></span>
               {primeiroDoRanking && (

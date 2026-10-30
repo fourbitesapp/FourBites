@@ -10,7 +10,7 @@ export const CORES_DE_CAPA = [
 ]
 
 export const FRASES_DE_CAPA = [
-  { codigo: 'come-bem', texto: 'perfil de quem come bem' },
+  { codigo: 'come-bem', texto: 'fã do farelo' },
   { codigo: 'sempre-fome', texto: 'sempre com fome' },
   { codigo: 'lugar-novo', texto: 'caçando lugar novo pra comer' },
   { codigo: 'sobremesa', texto: 'sobremesa primeiro, sempre' },
