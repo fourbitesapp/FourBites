@@ -162,6 +162,7 @@ export const editarMeuRestaurante = (id, dados) => chamar('PUT', `/meus-restaura
 export const adminListarRestaurantes = (filtros) => chamar('GET', '/admin/restaurantes' + montarConsulta(filtros))
 export const adminBuscarRestaurante = (id) => chamar('GET', `/admin/restaurantes/${id}`)
 export const adminCadastrarRestaurante = (dados) => chamar('POST', '/admin/restaurantes', dados)
+export const adminEditarRestaurante = (id, dados) => chamar('PUT', `/admin/restaurantes/${id}`, dados)
 export const adminAlterarAtivo = (id, ativo) => chamar('PATCH', `/admin/restaurantes/${id}/ativo`, { ativo })
 // escolha: {} (categoria já existe), { categoriaId } ou { novaCategoria }
 export const adminAprovarCadastro = (id, escolha) => chamar('POST', `/admin/restaurantes/${id}/aprovar`, escolha)

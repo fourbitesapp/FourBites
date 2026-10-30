@@ -32,6 +32,7 @@ import com.fourbites.backend.entity.StatusAnalise;
 import com.fourbites.backend.exception.CampoInvalidoException;
 import com.fourbites.backend.exception.ConflitoException;
 import com.fourbites.backend.exception.RecursoNaoEncontradoException;
+import com.fourbites.backend.exception.RegraNegocioException;
 import com.fourbites.backend.repository.CategoriaRepository;
 import com.fourbites.backend.repository.FavoritoRepository;
 import com.fourbites.backend.repository.FormaPagamentoRepository;
@@ -86,6 +87,28 @@ public class RestauranteService {
 
         Restaurante salvo = restauranteRepository.save(restaurante);
         return RestauranteGestaoResponse.de(salvo, null);
+    }
+
+    // Admin edita um restaurante já publicado: a mudança vale na hora, sem passar por análise.
+    @Transactional
+    public RestauranteGestaoResponse editarPeloAdmin(Integer id, RestauranteFormulario dados) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Restaurante não encontrado."));
+        if (restaurante.getStatus() != StatusAnalise.APROVADO) {
+            throw new RegraNegocioException("Só dá para editar restaurantes aprovados. Cadastros em análise são resolvidos na aba Cadastros.");
+        }
+
+        // CNPJ: só confere de novo se mudou (senão acusaria "já existe" com o próprio restaurante).
+        String cnpjNovo = dados.cnpj() == null || dados.cnpj().isBlank() ? null : ValidadorCnpj.somenteDigitos(dados.cnpj());
+        if (!java.util.Objects.equals(cnpjNovo, restaurante.getCnpj())) {
+            restaurante.setCnpj(conferirCnpj(dados.cnpj(), restaurante.getResponsavel() != null));
+        }
+
+        restaurante.setCategoria(resolverCategoriaDoAdmin(dados));
+        restaurante.setCategoriaSugerida(null);
+        preencherDadosComuns(restaurante, dados);
+
+        return RestauranteGestaoResponse.de(restaurante, null);
     }
 
     // Admin tira um restaurante do ar (ativo = false) ou devolve (ativo = true), sem apagar nada.
@@ -322,3 +345,4 @@ public class RestauranteService {
         return texto.trim();
     }
 }
+

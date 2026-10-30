@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,10 +66,15 @@ public class AdminRestauranteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
+    // Editar um restaurante aprovado (vale na hora)
+    @PutMapping("/{id}")
+    public RestauranteGestaoResponse editar(@PathVariable Integer id, @Valid @RequestBody RestauranteFormulario dados) {
+        return restauranteService.editarPeloAdmin(id, dados);
+    }
+
     // Ativar ou desativar um restaurante
     @PatchMapping("/{id}/ativo")
     public RestauranteGestaoResponse alterarAtivo(@PathVariable Integer id, @Valid @RequestBody AtivoRequest dados) {
         return restauranteService.alterarAtivo(id, dados.ativo());
     }
 }
-

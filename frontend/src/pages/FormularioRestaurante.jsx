@@ -18,9 +18,10 @@ import { conferirImagem, erroDeValidacao, TAMANHO_MAXIMO_ARQUIVO, temErros } fro
 //  - "novo":   o responsável cadastra um restaurante  → POST /meus-restaurantes (fica em análise)
 //  - "editar": o responsável edita ou corrige um seu → PUT /meus-restaurantes/{id}
 //  - "admin":  o admin cadastra direto → POST /admin/restaurantes (já entra publicado)
+//  - "admin-editar": o admin edita um restaurante aprovado → PUT /admin/restaurantes/{id} (vale na hora)
 export default function FormularioRestaurante({ modo }) {
   return (
-    <AreaRestrita papel={modo === 'admin' ? 'ADMIN' : 'RESTAURANTE'}>
+    <AreaRestrita papel={modo.startsWith('admin') ? 'ADMIN' : 'RESTAURANTE'}>
       <Formulario modo={modo} />
     </AreaRestrita>
   )
@@ -28,6 +29,16 @@ export default function FormularioRestaurante({ modo }) {
 
 // Os textos do topo e da faixa de envio mudam conforme o modo e a situação do cadastro.
 function textosDaTela(modo, restaurante) {
+  if (modo === 'admin-editar') {
+    return {
+      mao: 'ajuste rápido',
+      titulo: `Editar ${restaurante?.nome || ''}`,
+      subtitulo: 'Edição feita pela equipe FourBites: as mudanças valem na hora, sem passar por análise.',
+      avisoEnvio: 'Ao salvar, o site já mostra as informações novas.',
+      botao: 'Salvar mudanças',
+      depois: 'Restaurante atualizado.',
+    }
+  }
   if (modo === 'admin') {
     return {
       mao: 'cadastro direto',
@@ -97,6 +108,7 @@ function Formulario({ modo }) {
   useEffect(() => {
     const buscas = [api.listarCategorias(), api.listarFormasPagamento()]
     if (modo === 'editar') buscas.push(api.buscarMeuRestaurante(id))
+    if (modo === 'admin-editar') buscas.push(api.adminBuscarRestaurante(id))
     Promise.all(buscas)
       .then(([listaCategorias, listaFormas, meu]) => {
         setCategorias(listaCategorias)
@@ -111,7 +123,8 @@ function Formulario({ modo }) {
   }, [modo, id])
 
   const textos = textosDaTela(modo, restaurante)
-  const voltarPara = modo === 'admin' ? '/admin/restaurantes' : '/meus-restaurantes'
+  const doAdmin = modo.startsWith('admin')
+  const voltarPara = doAdmin ? '/admin/restaurantes' : '/meus-restaurantes'
   const cnpjTravado = modo === 'editar' // o CNPJ não muda depois do cadastro
   const campos = erro?.campos || {}
 
@@ -235,6 +248,7 @@ function Formulario({ modo }) {
     try {
       const corpo = montarEnvio(form)
       if (modo === 'admin') await api.adminCadastrarRestaurante(corpo)
+      else if (modo === 'admin-editar') await api.adminEditarRestaurante(id, corpo)
       else if (modo === 'novo') await api.cadastrarMeuRestaurante(corpo)
       else await api.editarMeuRestaurante(id, corpo)
       navegar(voltarPara, { state: { aviso: textos.depois } })
@@ -261,7 +275,7 @@ function Formulario({ modo }) {
   }
 
   // Ao editar: se o cadastro ou uma mudança está em análise, o back-end recusa a edição.
-  if (restaurante && !podeEditar(restaurante)) {
+  if (restaurante && !doAdmin && !podeEditar(restaurante)) {
     return (
       <>
         <BarraNavegacao />
@@ -322,7 +336,7 @@ function Formulario({ modo }) {
                     <div className="fb-ajuda">O CNPJ não muda depois do cadastro.</div>
                   </div>
                 ) : (
-                  <Campo rotulo={modo === 'admin' ? 'CNPJ (opcional)' : 'CNPJ'} name="cnpj" placeholder="00.000.000/0000-00"
+                  <Campo rotulo={doAdmin ? 'CNPJ (opcional)' : 'CNPJ'} name="cnpj" placeholder="00.000.000/0000-00"
                     inputMode="numeric" value={form.cnpj} onChange={(e) => mudar('cnpj', e.target.value)}
                     erro={campos.cnpj} />
                 )}

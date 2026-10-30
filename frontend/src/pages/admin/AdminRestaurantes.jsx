@@ -195,12 +195,22 @@ function TodosOsRestaurantes() {
                         Analisar
                       </Link>
                     ) : (
-                      <Link
-                        to={`/restaurantes/${r.id}`}
-                        className="fb-botao fb-botao-claro fb-botao-pequeno"
-                      >
-                        Ver
-                      </Link>
+                      <span className="d-inline-flex gap-2">
+                        {r.status === "APROVADO" && (
+                          <Link
+                            to={`/admin/restaurantes/${r.id}/editar`}
+                            className="fb-botao fb-botao-claro fb-botao-pequeno"
+                          >
+                            Editar
+                          </Link>
+                        )}
+                        <Link
+                          to={`/restaurantes/${r.id}`}
+                          className="fb-botao fb-botao-claro fb-botao-pequeno"
+                        >
+                          Ver
+                        </Link>
+                      </span>
                     )}
                   </td>
                 </tr>

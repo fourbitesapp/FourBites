@@ -60,6 +60,7 @@ export default function App() {
       <Route path="/admin/mudancas" element={<AdminMudancas />} />
       <Route path="/admin/restaurantes" element={<AdminRestaurantes />} />
       <Route path="/admin/restaurantes/novo" element={<FormularioRestaurante modo="admin" />} />
+      <Route path="/admin/restaurantes/:id/editar" element={<FormularioRestaurante modo="admin-editar" />} />
       <Route path="/admin/avaliacoes" element={<AdminAvaliacoes />} />
       <Route path="/admin/categorias" element={<AdminCategorias />} />
 
