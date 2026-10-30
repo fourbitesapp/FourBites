@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import CartaoAvaliacao from '../components/CartaoAvaliacao.jsx'
+import GaleriaFotos from '../components/GaleriaFotos.jsx'
 import IconeCozinha from '../components/IconeCozinha.jsx'
 import JanelaFavoritosCheia from '../components/JanelaFavoritosCheia.jsx'
 import MapaRestaurante from '../components/MapaRestaurante.jsx'
@@ -117,9 +118,7 @@ export default function Restaurante() {
       <BarraNavegacao />
       <main className="fb-conteudo">
         {r.fotos.length > 0 ? (
-          <div className={`fb-galeria fb-galeria-${Math.min(r.fotos.length, 3)}`}>
-            {r.fotos.slice(0, 3).map((url) => <img key={url} src={url} alt="" />)}
-          </div>
+          <GaleriaFotos fotos={r.fotos} nome={r.nome} />
         ) : (
           <div className="fb-galeria-vazia" style={{ background: corDaCozinha(r.categoria) }}>
             <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={110} />

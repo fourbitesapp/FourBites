@@ -248,12 +248,42 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-pino.destaque span { background: var(--fb-vermelho); color: #fff; }
 
 /* ---------- Perfil do restaurante ---------- */
-.fb-galeria { display: grid; gap: 0.9rem; height: 360px; }
-.fb-galeria img { width: 100%; height: 100%; object-fit: cover; border-radius: 26px; min-height: 0; }
+/* Galeria do restaurante: até 5 fotos na grade, a primeira maior. Clique abre a foto inteira. */
+.fb-galeria { display: grid; gap: 0.9rem; height: 400px; }
+.fb-galeria-foto { position: relative; padding: 0; border: 0; background: var(--fb-creme); border-radius: 26px; overflow: hidden; min-height: 0; min-width: 0; cursor: zoom-in; }
+.fb-galeria-foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.25s ease; }
+.fb-galeria-foto:hover img { transform: scale(1.03); }
+.fb-galeria-foto:focus-visible { outline: 3px solid var(--fb-vermelho); outline-offset: 3px; }
+.fb-galeria-mais { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(36, 22, 18, 0.5); color: #fff; font-family: var(--fb-titulo); font-weight: 800; font-size: 2rem; }
 .fb-galeria-1 { grid-template-columns: 1fr; }
-.fb-galeria-2 { grid-template-columns: 2fr 1fr; }
+.fb-galeria-2 { grid-template-columns: 3fr 2fr; }
 .fb-galeria-3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
-.fb-galeria-3 img:first-child { grid-row: span 2; }
+.fb-galeria-3 > :first-child { grid-row: span 2; }
+.fb-galeria-4 { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.fb-galeria-4 > :first-child { grid-row: span 2; }
+.fb-galeria-4 > :nth-child(2) { grid-column: span 2; }
+.fb-galeria-5 { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.fb-galeria-5 > :first-child { grid-row: span 2; }
+
+/* Visor de fotos (foto inteira, sem corte) */
+.fb-janela-fundo.fb-visor { flex-direction: column; background: rgba(20, 12, 10, 0.92); padding: 3.5rem 4.5rem; }
+.fb-visor-foto { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 16px; cursor: default; }
+.fb-visor-fechar, .fb-visor-seta { position: absolute; border: 0; border-radius: 50%; width: 2.9rem; height: 2.9rem; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.92); color: var(--fb-tinta); font-size: 1.2rem; }
+.fb-visor-fechar:hover, .fb-visor-seta:hover { background: #fff; }
+.fb-visor-fechar { top: 1rem; right: 1rem; }
+.fb-visor-seta { top: 50%; transform: translateY(-50%); }
+.fb-visor-anterior { left: 1rem; }
+.fb-visor-proxima { right: 1rem; }
+.fb-visor-contador { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 700; background: rgba(0, 0, 0, 0.35); padding: 0.25rem 0.8rem; border-radius: 999px; }
+@media (max-width: 767px) {
+  /* No celular as fotos viram uma faixa que rola para o lado */
+  .fb-galeria { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .fb-galeria::-webkit-scrollbar { display: none; }
+  .fb-galeria-foto { flex: 0 0 85%; scroll-snap-align: start; }
+  .fb-galeria-1 .fb-galeria-foto { flex-basis: 100%; }
+  .fb-janela-fundo.fb-visor { padding: 3.5rem 0.5rem; }
+  .fb-visor-seta { top: auto; bottom: 0.6rem; transform: none; }
+}
 .fb-galeria-vazia { height: 300px; border-radius: 28px; background: var(--fb-amarelo-claro); display: flex; align-items: center; justify-content: center; color: rgba(36, 22, 18, 0.4); }
 .fb-nota-grande { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--fb-titulo); font-weight: 800; font-size: 2.4rem; color: var(--fb-tinta); line-height: 1; }
 .fb-nota-grande .bi { color: var(--fb-vermelho); font-size: 0.8em; }
