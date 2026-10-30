@@ -820,4 +820,5 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
 .fb-sugestao { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 1.2rem 1rem 1rem; border: 1.5px solid var(--fb-linha); border-radius: 24px; background: var(--fb-branco); text-align: center; min-width: 0; }
 .fb-sugestao-perfil { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 100%; min-width: 0; text-decoration: none; color: var(--fb-tinta); }
 .fb-sugestao-perfil:hover { color: var(--fb-vermelho); }
+.fb-sugestao .fb-avatar-medio { width: 5.5rem; height: 5.5rem; border-radius: 999px; }
 @media (max-width: 575px) { .fb-carrossel-pessoas > * { flex-basis: 44%; } }
