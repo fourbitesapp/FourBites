@@ -94,9 +94,10 @@ public class NominatimService {
         if (estado != null && !("BR-" + uf.toUpperCase()).equals(estado)) {
             return false;
         }
+        // A cidade pode vir em campos diferentes conforme o lugar ("city", "town", "municipality"...),
+        // então vale qualquer campo do endereço com o nome exato da cidade.
         String cidadeProcurada = Texto.simplificar(cidade);
-        for (String campo : List.of("city", "town", "village", "municipality")) {
-            Object valor = endereco.get(campo);
+        for (Object valor : endereco.values()) {
             if (valor != null && Texto.simplificar(valor.toString()).equals(cidadeProcurada)) {
                 return true;
             }
