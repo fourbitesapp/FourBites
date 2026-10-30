@@ -46,8 +46,6 @@ public class UsuarioPreferencia {
     @Column(nullable = false)
     private boolean fuma;
 
-    @Column(name = "prefere_lgbt_friendly", nullable = false)
-    private boolean prefereLgbtFriendly;
 
     @Column(name = "data_atualizacao", nullable = false)
     private OffsetDateTime dataAtualizacao;

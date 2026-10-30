@@ -99,7 +99,7 @@ public class RecomendacaoService {
         historico.addAll(favoritoRepository.categoriasFavoritas(usuarioId));
 
         if (preferencia == null) {
-            return new PerfilDoUsuario(Set.of(), null, false, false, false, false, false, false, historico);
+            return new PerfilDoUsuario(Set.of(), null, false, false, false, false, false, historico);
         }
         return new PerfilDoUsuario(
                 preferencia.getCategoriaIds(),
@@ -109,7 +109,6 @@ public class RecomendacaoService {
                 preferencia.isLevaCriancas(),
                 preferencia.isPrecisaEstacionamento(),
                 preferencia.isFuma(),
-                preferencia.isPrefereLgbtFriendly(),
                 historico);
     }
 
@@ -122,7 +121,6 @@ public class RecomendacaoService {
                 restaurante.isAreaCriancas(),
                 restaurante.isEstacionamento(),
                 restaurante.isAreaFumantes(),
-                restaurante.isLgbtFriendly(),
                 notaMedia);
     }
 }

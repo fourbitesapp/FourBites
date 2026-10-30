@@ -7,9 +7,9 @@ import java.util.Set;
 // Parte 1 - preferências marcadas no primeiro acesso (60 pontos):
 // categoria preferida = 30
 // faixa de preço igual (uma faixa de diferença: 7,5) = 15
-// extras, 2,5 cada (os 15 pontos divididos entre os 6):
+// extras, 3 cada (os 15 pontos divididos entre os 5):
 //   acessibilidade (se o usuário precisa), aceita pets (se leva), área para crianças (se vai com crianças),
-//   estacionamento (se precisa), área para fumantes (se fuma), LGBT+ friendly (se prefere)
+//   estacionamento (se precisa), área para fumantes (se fuma)
 //  Critério que o usuário não marcou não atrapalha: vale os pontos inteiros.
 
 // Parte 2 - histórico do usuário na plataforma (40 pontos):
@@ -18,7 +18,7 @@ import java.util.Set;
 
 public final class Compatibilidade {
 
-    private static final double EXTRA = 2.5;
+    private static final double EXTRA = 3;
 
     private Compatibilidade() {
     }
@@ -31,7 +31,6 @@ public final class Compatibilidade {
             boolean levaCriancas,
             boolean precisaEstacionamento,
             boolean fuma,
-            boolean prefereLgbtFriendly,
             Set<Integer> categoriasDoHistorico
     ) {
     }
@@ -44,7 +43,6 @@ public final class Compatibilidade {
             boolean areaCriancas,
             boolean estacionamento,
             boolean areaFumantes,
-            boolean lgbtFriendly,
             BigDecimal notaMedia
     ) {
     }
@@ -73,9 +71,6 @@ public final class Compatibilidade {
             pontos += EXTRA;
         }
         if (!usuario.fuma() || restaurante.areaFumantes()) {
-            pontos += EXTRA;
-        }
-        if (!usuario.prefereLgbtFriendly() || restaurante.lgbtFriendly()) {
             pontos += EXTRA;
         }
 

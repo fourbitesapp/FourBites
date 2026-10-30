@@ -124,7 +124,7 @@ public class RestauranteService {
     public List<RestauranteResumoResponse> buscarPublicos(String busca, Integer categoriaId, String faixaPreco,
                                                           Double notaMin, boolean pets, boolean acessivel,
                                                           boolean estacionamento, boolean areaCriancas,
-                                                          boolean areaFumantes, boolean lgbtFriendly,
+                                                          boolean areaFumantes,
                                                           Double lat, Double lng, String ordem) {
         String termo = Texto.simplificar(busca);
         boolean temLocalizacao = lat != null && lng != null;
@@ -152,9 +152,6 @@ public class RestauranteService {
                 continue;
             }
             if (areaFumantes && !r.isAreaFumantes()) {
-                continue;
-            }
-            if (lgbtFriendly && !r.isLgbtFriendly()) {
                 continue;
             }
             if (!termo.isEmpty() && !combinaComABusca(r, termo)) {
@@ -243,7 +240,6 @@ public class RestauranteService {
         restaurante.setEstacionamento(dados.estacionamento());
         restaurante.setAreaCriancas(dados.areaCriancas());
         restaurante.setAreaFumantes(dados.areaFumantes());
-        restaurante.setLgbtFriendly(dados.lgbtFriendly());
         restaurante.setDataFundacao(dados.dataFundacao() == null ? null : dados.dataFundacao().withDayOfMonth(1));
         restaurante.setCardapioUrl(textoOuNulo(dados.cardapioUrl()));
         restaurante.setCardapioLink(textoOuNulo(dados.cardapioLink()));

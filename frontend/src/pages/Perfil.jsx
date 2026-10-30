@@ -22,7 +22,7 @@ const POSICOES = [1, 2, 3, 4]
 // Rótulos curtos das preferências extras, para as pílulas do perfil.
 const ROTULOS_DOS_EXTRAS = {
   precisaAcessibilidade: 'Acessibilidade', levaPets: 'Leva pets', levaCriancas: 'Vai com crianças',
-  precisaEstacionamento: 'Estacionamento', fuma: 'Área para fumantes', prefereLgbtFriendly: 'LGBT+ friendly',
+  precisaEstacionamento: 'Estacionamento', fuma: 'Área para fumantes',
 }
 
 // /perfil leva para o perfil de quem está logado.

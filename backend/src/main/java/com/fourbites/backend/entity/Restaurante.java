@@ -67,9 +67,6 @@ public class Restaurante {
     @Column(name = "area_fumantes", nullable = false)
     private boolean areaFumantes;
 
-    @Column(name = "lgbt_friendly", nullable = false)
-    private boolean lgbtFriendly;
-
     @Column(name = "data_fundacao")
     private LocalDate dataFundacao;
 

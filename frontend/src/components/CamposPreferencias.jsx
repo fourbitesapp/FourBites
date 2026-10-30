@@ -12,7 +12,7 @@ const FAIXAS = [
 ]
 
 // "Mais alguma coisa?": cada preferência combina com uma característica do restaurante.
-// Marcada, o restaurante que tem a característica ganha 2,5 pontos na compatibilidade.
+// Marcada, o restaurante que tem a característica ganha 3 pontos na compatibilidade.
 const EXTRAS = [
   { campo: 'precisaAcessibilidade', icone: 'bi-universal-access', cor: '#b5dcf8', titulo: 'Acessibilidade',
     texto: 'Lugares acessíveis' },
@@ -24,8 +24,6 @@ const EXTRAS = [
     texto: 'Lugares com estacionamento' },
   { campo: 'fuma', icone: 'bi-wind', cor: '#e6ddd3', titulo: 'Área para fumantes',
     texto: 'Lugares com área para fumar' },
-  { campo: 'prefereLgbtFriendly', icone: 'bi-rainbow', cor: '#d8c4f5', titulo: 'LGBT+ friendly',
-    texto: 'Ambientes acolhedores' },
 ]
 
 export const PREFERENCIAS_VAZIAS = {

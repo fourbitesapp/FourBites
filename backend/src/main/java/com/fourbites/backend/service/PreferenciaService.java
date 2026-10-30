@@ -52,7 +52,6 @@ public class PreferenciaService {
         preferencia.setLevaCriancas(dados.levaCriancas());
         preferencia.setPrecisaEstacionamento(dados.precisaEstacionamento());
         preferencia.setFuma(dados.fuma());
-        preferencia.setPrefereLgbtFriendly(dados.prefereLgbtFriendly());
         preferencia.getCategoriaIds().clear();
         preferencia.getCategoriaIds().addAll(categoriaIds);
 

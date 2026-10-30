@@ -23,8 +23,6 @@ export const CARACTERISTICAS = [
     texto: 'Espaço separado para quem fuma' },
   { campo: 'acessivel', filtro: 'acessivel', rotulo: 'Acessível', icone: 'bi-universal-access', cor: '#b5dcf8',
     texto: 'Espaço acessível para pessoas com deficiência' },
-  { campo: 'lgbtFriendly', filtro: 'lgbtFriendly', rotulo: 'LGBT+ friendly', icone: 'bi-rainbow', cor: '#d8c4f5',
-    texto: 'Ambiente acolhedor para pessoas LGBT+' },
 ]
 
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
@@ -217,6 +215,10 @@ export function diferencas(restaurante, proposto, categorias, formas) {
     .filter(([, antes, depois]) => String(antes ?? '') !== String(depois ?? ''))
     .map(([campo, antes, depois]) => ({ campo, antes, depois }))
 }
+
+
+
+
 
 
 

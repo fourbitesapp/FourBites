@@ -26,7 +26,6 @@ public record RestauranteResumoResponse(
         boolean estacionamento,
         boolean areaCriancas,
         boolean areaFumantes,
-        boolean lgbtFriendly,
         StatusAnalise status,
         boolean ativo
 ) {
@@ -54,7 +53,6 @@ public record RestauranteResumoResponse(
                 r.isEstacionamento(),
                 r.isAreaCriancas(),
                 r.isAreaFumantes(),
-                r.isLgbtFriendly(),
                 r.getStatus(),
                 r.isAtivo());
     }

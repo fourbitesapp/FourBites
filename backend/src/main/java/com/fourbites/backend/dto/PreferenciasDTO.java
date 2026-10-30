@@ -23,9 +23,7 @@ public record PreferenciasDTO(
 
         boolean precisaEstacionamento,
 
-        boolean fuma,
-
-        boolean prefereLgbtFriendly
+        boolean fuma
 ) {
 
     public static PreferenciasDTO de(UsuarioPreferencia preferencia) {
@@ -36,8 +34,9 @@ public record PreferenciasDTO(
                 preferencia.isLevaPets(),
                 preferencia.isLevaCriancas(),
                 preferencia.isPrecisaEstacionamento(),
-                preferencia.isFuma(),
-                preferencia.isPrefereLgbtFriendly());
+                preferencia.isFuma());
     }
 }
+
+
 

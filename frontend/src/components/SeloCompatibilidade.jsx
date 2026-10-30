@@ -12,7 +12,7 @@ export default function SeloCompatibilidade({ valor, dentroDeLink = false }) {
         <strong className="d-block mb-1">Como calculamos</strong>
         <span className="d-block">
           <strong>Até 60 pontos</strong> pelas suas preferências: cozinha (30), faixa de preço (15) e
-          acessibilidade, pets, crianças, estacionamento, área para fumantes e LGBT+ friendly (2,5 cada).
+          acessibilidade, pets, crianças, estacionamento e área para fumantes (3 cada).
         </span>
         <span className="d-block mt-1">
           <strong>Até 40 pontos</strong> pelo seu histórico: cozinhas que você avaliou bem ou favoritou (25) e a
