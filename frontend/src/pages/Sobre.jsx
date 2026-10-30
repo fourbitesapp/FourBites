@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import logo from '../assets/fourbites-logo.svg'
 import mascote from '../assets/mascote.webp'
 import Avatar from '../components/Avatar.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
 import Rodape from '../components/Rodape.jsx'
 import * as api from '../services/apiReal.js'
 
-// Página "Sobre nós" (link só no rodapé): o que é o FourBites, quem é o Farelo e que é um projeto de TCC.
+// Página "Sobre nós" (link só no rodapé)
 
-// Nome de usuário (o que vem depois do @) de quem fez o projeto e da conta do Farelo.
-// O nome e a foto de cada um vêm do próprio perfil no site.
 const INTEGRANTES = ['giovannamelgares', 'juliarodrigues', 'gabrielsouza']
 const USERNAME_FARELO = 'farelo'
 const ORIENTADOR = 'Davi Silvreste Moreira dos Reis'
@@ -32,15 +31,19 @@ export default function Sobre() {
       <BarraNavegacao />
       <main className="fb-conteudo">
         {/* Apresentação */}
-        <section className="fb-sobre-topo">
-          <span className="fb-mao" style={{ fontSize: '2.1rem' }}>prazer, FourBites!</span>
-          <h1>Um lugar pra descobrir onde comer e contar como foi.</h1>
-          <p>
-            O FourBites é uma plataforma de avaliação e descoberta de restaurantes. Aqui você encontra lugares em
-            Santos, lê o que outras pessoas acharam e deixa a sua avaliação. São avaliações orgânicas, sem conteúdo
-            patrocinado.
-          </p>
-          <Link to="/explorar" className="fb-botao fb-botao-principal align-self-start">Explorar restaurantes</Link>
+        <section className="fb-sobre-abertura">
+          <div className="fb-sobre-topo">
+            <span className="fb-mao" style={{ fontSize: '2.1rem' }}>prazer, FourBites!</span>
+            <h1>Um lugar pra descobrir onde comer e contar como foi.</h1>
+            <p>
+              O FourBites é uma plataforma de avaliação e descoberta de restaurantes. Aqui você encontra lugares em
+              Santos, lê o que outras pessoas acharam e deixa a sua avaliação. São avaliações orgânicas, sem conteúdo
+              patrocinado.
+            </p>
+            <Link to="/explorar" className="fb-botao fb-botao-principal align-self-start">Explorar restaurantes</Link>
+          </div>
+          {/* O garfo do logo, grande, no espaço à direita (some no celular) */}
+          <img src={logo} alt="" className="fb-sobre-logo" />
         </section>
 
         {/* O que dá pra fazer */}
