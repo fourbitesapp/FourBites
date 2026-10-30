@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { formatarNota } from '../utils/formatos.js'
 import mascoteSuco from '../assets/mascote-suco.webp'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 const FEED_POR_VEZ = 10
 
@@ -22,7 +23,7 @@ const FEED_POR_VEZ = 10
 export default function Inicio() {
   const { usuario, logado } = useAuth()
   const navegar = useNavigate()
-  const recebeRecomendacoes = usuario?.papel === 'USUARIO'
+  const recebeRecomendacoes = temRecursosDeUsuario(usuario)
 
   const [busca, setBusca] = useState('')
   const [categorias, setCategorias] = useState([])
@@ -327,3 +328,4 @@ export default function Inicio() {
     </>
   )
 }
+

@@ -7,6 +7,7 @@ import CamposPreferencias, { PREFERENCIAS_VAZIAS } from '../components/CamposPre
 import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Preferências da recomendação. Abre sozinha no primeiro acesso e pelo botão "Ajustar preferências" do perfil.
 export default function Preferencias() {
@@ -22,7 +23,7 @@ export default function Preferencias() {
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState(null)
 
-  const podeUsar = logado && usuario?.papel === 'USUARIO'
+  const podeUsar = logado && temRecursosDeUsuario(usuario)
 
   // Ao abrir: carrega as categorias e, se o usuário já tiver preferências, preenche a tela com elas.
   useEffect(() => {

@@ -35,7 +35,8 @@ public class SeguidorService {
         if (seguido.getId().equals(meuId)) {
             throw new RegraNegocioException("Você não pode seguir a si mesmo.");
         }
-        if (seguido.getPapel() != Papel.USUARIO) {
+        // Perfis de pessoas: usuários e o perfil oficial (admin). Conta de restaurante não tem perfil.
+        if (seguido.getPapel() == Papel.RESTAURANTE) {
             throw new RegraNegocioException("Só é possível seguir perfis de usuários.");
         }
         if (!seguidorRepository.existsBySeguidorIdAndSeguidoId(meuId, seguido.getId())) {

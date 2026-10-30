@@ -14,6 +14,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { agruparHorarios, estaAberto, formatarNota } from '../utils/formatos.js'
 import { CARACTERISTICAS } from '../utils/restaurantes.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Perfil do restaurante: fotos, notas, avaliações e, ao lado, mapa, horário e cardápio.
 export default function Restaurante() {
@@ -108,7 +109,7 @@ export default function Restaurante() {
     }
   }
   const aberto = estaAberto(r.horarios)
-  const podeAvaliar = usuario?.papel === 'USUARIO'
+  const podeAvaliar = temRecursosDeUsuario(usuario)
   const mapa = `https://www.openstreetmap.org/?mlat=${r.latitude}&mlon=${r.longitude}#map=17/${r.latitude}/${r.longitude}`
 
   return (

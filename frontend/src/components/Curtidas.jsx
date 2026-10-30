@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import * as api from "../services/apiReal.js";
 import JanelaPessoas from "./JanelaPessoas.jsx";
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Rodapé do cartão de avaliação: coração para curtir e o número de curtidas
 // Clicar no número abre a lista de quem curtiu
@@ -17,7 +18,7 @@ export default function Curtidas({ avaliacao }) {
 
   const podeCurtir =
     logado &&
-    usuario.papel === "USUARIO" &&
+    temRecursosDeUsuario(usuario) &&
     usuario.id !== avaliacao.usuario.id;
 
   async function alternar() {

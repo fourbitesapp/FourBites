@@ -3,7 +3,6 @@ package com.fourbites.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,23 +31,23 @@ public class UsuarioService {
 
     private static final int MAXIMO_NA_BUSCA = 12;
     private static final int MAXIMO_DE_SUGESTOES = 20;
+    // Contas com perfil de pessoa: usuários e o perfil oficial (admin = Farelo). Restaurante fica de fora.
+    private static final List<Papel> PERFIS_DE_PESSOA = List.of(Papel.USUARIO, Papel.ADMIN);
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AvaliacaoRepository avaliacaoRepository;
     private final SeguidorRepository seguidorRepository;
     private final UploadService uploadService;
-    private final String perfilOficial; // nome de usuário do Farelo
 
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
                           AvaliacaoRepository avaliacaoRepository, SeguidorRepository seguidorRepository,
-                          UploadService uploadService, @Value("${app.perfil-oficial}") String perfilOficial) {
+                          UploadService uploadService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.avaliacaoRepository = avaliacaoRepository;
         this.seguidorRepository = seguidorRepository;
         this.uploadService = uploadService;
-        this.perfilOficial = perfilOficial;
     }
 
     //Cadastrar usuário comum (papel USUARIO)
@@ -91,8 +90,6 @@ public class UsuarioService {
         usuario.setDataNascimento(dataNascimento);
         usuario.setPapel(papel);
         usuario.setSenha(passwordEncoder.encode(senha));
-        // Conta de usuário criada com o nome do perfil oficial (o Farelo) já nasce com o selo.
-        usuario.setOficial(papel == Papel.USUARIO && username.equalsIgnoreCase(perfilOficial));
 
         Usuario salvo = usuarioRepository.save(usuario);
         return UsuarioResponse.de(salvo);
@@ -125,17 +122,17 @@ public class UsuarioService {
             return List.of();
         }
         return usuarioRepository
-                .buscarPorNomeOuUsername(Papel.USUARIO, "%" + termo + "%", PageRequest.of(0, MAXIMO_NA_BUSCA))
+                .buscarPorNomeOuUsername(PERFIS_DE_PESSOA, "%" + termo + "%", PageRequest.of(0, MAXIMO_NA_BUSCA))
                 .stream()
                 .map(UsuarioResumoResponse::de)
                 .toList();
     }
 
-    // Pessoas para seguir (home): contas de usuário que eu ainda não sigo, sem contar eu mesmo.
+    // Pessoas para seguir (home): perfis que eu ainda não sigo, sem contar eu mesmo.
     // Por enquanto entram todos; o perfil oficial vem primeiro e depois os cadastros mais recentes.
     @Transactional(readOnly = true)
     public List<UsuarioResumoResponse> sugerirParaSeguir(Integer meuId) {
-        return usuarioRepository.sugestoesParaSeguir(Papel.USUARIO, meuId, PageRequest.of(0, MAXIMO_DE_SUGESTOES))
+        return usuarioRepository.sugestoesParaSeguir(PERFIS_DE_PESSOA, meuId, PageRequest.of(0, MAXIMO_DE_SUGESTOES))
                 .stream()
                 .map(UsuarioResumoResponse::de)
                 .toList();

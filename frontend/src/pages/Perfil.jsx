@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 const POSICOES = [1, 2, 3, 4]
 
@@ -52,7 +53,7 @@ export default function Perfil() {
   const [lista, setLista] = useState(null) // 'seguidores' ou 'seguindo' quando a janela está aberta
 
   const ehMeuPerfil = logado && usuario.username.toLowerCase() === username.toLowerCase()
-  const podeSeguir = logado && usuario.papel === 'USUARIO' && !ehMeuPerfil
+  const podeSeguir = logado && temRecursosDeUsuario(usuario) && !ehMeuPerfil
 
   useEffect(() => {
     let cancelada = false
@@ -71,7 +72,7 @@ export default function Perfil() {
       .catch((falha) => !cancelada && setErro(falha))
 
     // Listas: o dono vê todas (públicas e privadas); os outros, só as públicas. Se falhar, a seção fica vazia.
-    const buscarListas = ehMeuPerfil && usuario.papel === 'USUARIO'
+    const buscarListas = ehMeuPerfil && temRecursosDeUsuario(usuario)
       ? api.listarMinhasListas() : api.listarListasDoUsuario(username)
     buscarListas.then((dados) => !cancelada && setListas(dados)).catch(() => !cancelada && setListas([]))
     // Listas que a pessoa segue (só as públicas). Se falhar, a seção fica vazia.
@@ -80,7 +81,7 @@ export default function Perfil() {
       .catch(() => !cancelada && setListasSeguidas([]))
 
     // O resumo de preferências só aparece para o dono do perfil (conta USUARIO).
-    if (ehMeuPerfil && usuario.papel === 'USUARIO') {
+    if (ehMeuPerfil && temRecursosDeUsuario(usuario)) {
       api.listarCategorias().then((lista) => !cancelada && setCategorias(lista)).catch(() => {})
       api.buscarPreferencias()
         .then((dados) => !cancelada && setPreferencias(dados))
@@ -138,7 +139,7 @@ export default function Perfil() {
   const extrasMarcados = Object.entries(ROTULOS_DOS_EXTRAS)
     .filter(([campo]) => preferencias?.[campo])
     .map(([, rotulo]) => rotulo)
-  const ehUsuarioDono = ehMeuPerfil && usuario.papel === 'USUARIO'
+  const ehUsuarioDono = ehMeuPerfil && temRecursosDeUsuario(usuario)
 
   return (
     <>

@@ -6,6 +6,7 @@ import Avatar from './Avatar.jsx'
 import BotaoVoltar from './BotaoVoltar.jsx'
 import Logo from './Logo.jsx'
 import Notificacoes from './Notificacoes.jsx'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Todos: Início e Explorar
 // Usuário: perfil (foto ou iniciais), sino e sair
@@ -51,7 +52,7 @@ export default function BarraNavegacao() {
             <NavLink to="/" end className="fb-nav-link">Início</NavLink>
             <NavLink to="/explorar" className="fb-nav-link">Explorar</NavLink>
 
-            {papel === 'USUARIO' && (
+            {temRecursosDeUsuario(usuario) && (
               <NavLink to="/perfil" className="fb-avatar-link" aria-label="Meu perfil" title="Meu perfil">
                 <Avatar nome={usuario.nome} foto={usuario.fotoPerfil} tamanho="nav" />
               </NavLink>
@@ -67,7 +68,7 @@ export default function BarraNavegacao() {
               </NavLink>
             )}
 
-            {(papel === 'USUARIO' || papel === 'RESTAURANTE') && <Notificacoes />}
+            {logado && <Notificacoes />}
 
             {logado && (
               <button type="button" className="fb-icone-nav" onClick={aoSair} aria-label="Sair" title="Sair">
@@ -80,7 +81,7 @@ export default function BarraNavegacao() {
       </header>
 
       {/* Botão flutuante para publicar uma avaliação (só conta de usuário) */}
-      {papel === 'USUARIO' && !escrevendoAvaliacao && (
+      {temRecursosDeUsuario(usuario) && !escrevendoAvaliacao && (
         <Link to="/novo-post" className="fb-botao-flutuante" aria-label="Novo post">
           <i className="bi bi-plus-lg" aria-hidden="true"></i>
           <span className="fb-dica" aria-hidden="true">Novo post</span>
@@ -89,3 +90,4 @@ export default function BarraNavegacao() {
     </>
   )
 }
+

@@ -26,7 +26,7 @@ public record AvaliacaoResponse(
         boolean curtiu     
 ) {
 
-    public record Autor(Integer id, String nome, String username, String fotoPerfil) {
+    public record Autor(Integer id, String nome, String username, String fotoPerfil, boolean oficial) {
     }
 
     public record RestauranteDaAvaliacao(Integer id, String nome, String fotoCapa, CategoriaResponse categoria,
@@ -46,7 +46,7 @@ public record AvaliacaoResponse(
 
         return new AvaliacaoResponse(
                 a.getId(),
-                new Autor(autor.getId(), autor.getNome(), autor.getUsername(), autor.getFotoPerfil()),
+                new Autor(autor.getId(), autor.getNome(), autor.getUsername(), autor.getFotoPerfil(), autor.isOficial()),
                 new RestauranteDaAvaliacao(r.getId(), r.getNome(), fotoCapa,
                         CategoriaResponse.de(categoria),
                         r.getBairro()),
@@ -63,3 +63,4 @@ public record AvaliacaoResponse(
                 curtiu);
     }
 }
+

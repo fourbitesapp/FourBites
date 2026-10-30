@@ -12,6 +12,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 import { conferirImagem } from '../utils/validacoes.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 const CATEGORIAS = [
   ['notaComida', 'Comida'],
@@ -154,7 +155,7 @@ export default function NovaAvaliacao() {
         <h1 className="mt-1">{editando ? 'Editar post' : 'Novo post'}</h1>
         <p className="fb-subtitulo mb-5">Conte como foi sua experiência. A nota geral é a média das quatro notas.</p>
 
-        {usuario.papel !== 'USUARIO' ? (
+        {!temRecursosDeUsuario(usuario) ? (
           <Aviso tipo="info">Avaliar é exclusivo para contas de usuário.</Aviso>
         ) : restauranteId && !restaurante ? (
           erro ? <Aviso>{erro.message}</Aviso> : <p className="fb-vazio">Carregando…</p>
@@ -299,3 +300,4 @@ export default function NovaAvaliacao() {
     </>
   )
 }
+

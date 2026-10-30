@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 const POSICOES = [1, 2, 3, 4]
 
@@ -23,7 +24,7 @@ export default function GerenciarFavoritos() {
   const [ocupado, setOcupado] = useState(false)
   const [escolhendoEm, setEscolhendoEm] = useState(null) // posição livre em que a pessoa está buscando um restaurante
 
-  const podeUsar = logado && usuario.papel === 'USUARIO'
+  const podeUsar = logado && temRecursosDeUsuario(usuario)
 
   useEffect(() => {
     if (podeUsar) {
@@ -173,4 +174,3 @@ export default function GerenciarFavoritos() {
     </>
   )
 }
-

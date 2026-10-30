@@ -83,7 +83,7 @@ public class RecomendacaoService {
             return null;
         }
         boolean usuarioComum = usuarioRepository.findById(usuarioId)
-                .map(usuario -> usuario.getPapel() == Papel.USUARIO)
+                .map(usuario -> usuario.getPapel() != Papel.RESTAURANTE) // usuário e o perfil oficial (admin)
                 .orElse(false);
         if (!usuarioComum) {
             return null;
@@ -126,4 +126,3 @@ public class RecomendacaoService {
                 notaMedia);
     }
 }
-

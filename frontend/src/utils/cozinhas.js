@@ -46,6 +46,8 @@ const ICONES = {
   lanchonete: 'M3 14h18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3ZM4 13a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3M6 12c2-1.5 4 1.5 6 0s4 1.5 6 0',
   // tigela de ceviche com limão
   peruana: 'M3 13h18a9 7 0 0 1-18 0ZM9 10a3 3 0 0 1 6 0M12 7v3',
+  // caneca de chope com espuma
+  bar: 'M6 8h9v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2ZM15 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M6 8a2.5 2.5 0 0 1 3-3 3 3 0 0 1 5 0 2 2 0 0 1 1 3M9.5 12v6M12 12v6',
 }
 
 // Categorias criadas depois pelo admin: tenta achar o desenho por uma palavra do nome.
@@ -54,6 +56,7 @@ const PALAVRAS = [
   ['lanche', 'lanchonete'], ['cafe', 'cafeteria'], ['doce', 'doceria'], ['sorvete', 'doceria'],
   ['vegan', 'vegana e vegetariana'], ['vegetar', 'vegana e vegetariana'], ['peixe', 'frutos do mar'],
   ['mar', 'frutos do mar'], ['churras', 'churrascaria'], ['carne', 'churrascaria'], ['massa', 'italiana'],
+  ['boteco', 'bar'], ['choperia', 'bar'], ['pub', 'bar'], ['cervej', 'bar'],
 ]
 
 // Prato com talheres: quando nada combina.

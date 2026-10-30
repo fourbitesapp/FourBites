@@ -11,6 +11,7 @@ import SeloOficial from '../components/SeloOficial.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaLista, iconeDaLista, textoQuantidade } from '../utils/listas.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Uma lista de restaurantes. Qualquer pessoa vê as públicas; o dono vê as privadas também
 // e pode adicionar, tirar restaurantes, editar e excluir.
@@ -134,7 +135,7 @@ export default function Lista() {
             </Link>
 
             {/* Seguir: lista pública de outra pessoa */}
-            {!lista.minha && lista.publica && logado && usuario.papel === 'USUARIO' && (
+            {!lista.minha && lista.publica && logado && temRecursosDeUsuario(usuario) && (
               <div className="mt-3">
                 <button type="button" disabled={seguindoAgora} onClick={alternarSeguir}
                   className={`fb-botao fb-botao-pequeno ${lista.seguindo ? 'fb-botao-claro' : 'fb-botao-principal'}`}>

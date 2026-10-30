@@ -7,6 +7,7 @@ import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { CORES_DE_LISTA, ICONES_DE_LISTA, LISTA_VAZIA, textoQuantidade } from '../utils/listas.js'
+import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 // Criar (modo "nova") ou editar (modo "editar") uma lista: nome, descrição, cor, ícone e se é pública.
 // Ao lado, uma prévia de como o cartão vai aparecer no perfil.
@@ -38,7 +39,7 @@ export default function ListaFormulario({ modo }) {
       .catch(setErro)
   }, [editando, id])
 
-  if (!logado || usuario.papel !== 'USUARIO') {
+  if (!logado || !temRecursosDeUsuario(usuario)) {
     return <Navigate to="/login" replace state={{ voltarPara: editando ? `/listas/${id}/editar` : '/listas/nova' }} />
   }
 
@@ -190,4 +191,3 @@ export default function ListaFormulario({ modo }) {
     </>
   )
 }
-
