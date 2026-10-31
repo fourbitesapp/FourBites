@@ -10,7 +10,7 @@ import * as api from '../services/apiReal.js'
 
 // Página "Sobre nós" (link só no rodapé)
 
-const INTEGRANTES = ['giovannamelgares', 'juliarodrigues', 'gabrielsouza']
+const INTEGRANTES = ['giovannamelgares', 'juliarodrigues_', 'gabrielsouza']
 const USERNAME_FARELO = 'farelo'
 const ORIENTADOR = 'Davi Silvreste Moreira dos Reis'
 
