@@ -129,12 +129,8 @@ export default function Inicio() {
                   : 'Avaliações de quem foi de verdade. Entre para receber recomendações que combinam com você.'}
               </p>
 
-              {/* Mesma busca da barra de cima (com sugestões enquanto digita), no formato grande.
-                  No celular, o Farelo fica "sentado" em cima dela (no computador ele aparece na arte ao lado). */}
+              {/* Mesma busca da barra de cima*/}
               <div className="fb-busca-com-farelo">
-              <div className="fb-busca-com-farelo">
-                <BuscaGeral grande />
-              </div>
                 <BuscaGeral grande />
               </div>
 
