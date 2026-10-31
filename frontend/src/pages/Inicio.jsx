@@ -210,7 +210,7 @@ export default function Inicio() {
         {/* Sugestões do autor: listas públicas do perfil oficial (o Farelo) */}
         {listasOficiais.length > 0 && (
           <section className="fb-conteudo fb-secao pt-0">
-            <span className="fb-mao">escolhidas a dedo</span>
+            <span className="fb-mao" style={{ marginBottom: '0.6rem' }}>escolhidas a dedo</span>            
             <Carrossel nome="Sugestões do Farelo" className="fb-carrossel-cartoes" titulo={
               <div>
                 <h2 className="mb-0">
@@ -230,8 +230,8 @@ export default function Inicio() {
         {/* Ranking: faixa amarela */}
         <section className="fb-faixa-ranking">
           <div className="fb-conteudo">
-            <span className="fb-mao">os queridinhos</span>
-            {/* Fileira com setinhas: mostra o ranking inteiro (antes era "Ver todo o ranking") */}
+            <span className="fb-mao" style={{ marginBottom: '0.6rem' }}>os queridinhos</span>           
+            {/* Fileira com setinhas*/}
             <Carrossel nome="Ranking" className="fb-carrossel-cartoes"
               titulo={<h2 className="mb-0">Ranking {periodo === 'semanal' ? 'da semana' : 'do mês'}</h2>}
               acoes={
