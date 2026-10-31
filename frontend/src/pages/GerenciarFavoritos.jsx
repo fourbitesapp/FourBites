@@ -11,6 +11,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
+import { foto } from '../utils/imagens.js'
 
 const POSICOES = [1, 2, 3, 4]
 
@@ -112,7 +113,7 @@ export default function GerenciarFavoritos() {
                     <article className="fb-cartao fb-favorito-edicao">
                       <div className="fb-favorito-edicao-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                         {f.restaurante.fotoCapa
-                          ? <img src={f.restaurante.fotoCapa} alt="" />
+                          ? <img src={foto(f.restaurante.fotoCapa, 400)} alt="" />
                           : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                         <span className="fb-numero-favorito">{posicao}</span>
                       </div>

@@ -5,6 +5,7 @@ import { formatarNota } from '../utils/formatos.js'
 import { CARACTERISTICAS } from '../utils/restaurantes.js'
 import IconeCozinha from './IconeCozinha.jsx'
 import SeloCompatibilidade from './SeloCompatibilidade.jsx'
+import { foto } from '../utils/imagens.js'
 
 // Cartão de um restaurante (Início, Explorar).
 
@@ -17,7 +18,7 @@ export default function CartaoRestaurante({ restaurante, compatibilidade, rankin
       onMouseEnter={aoPassarMouse} onFocus={aoPassarMouse}>
       <div className="fb-cartao-foto" style={{ background: cor }}>
         {r.fotoCapa ? (
-          <img src={r.fotoCapa} alt="" />
+          <img src={foto(r.fotoCapa, 640)} alt="" />
         ) : (
           <span className="fb-sem-foto"><IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={48} /></span>
         )}

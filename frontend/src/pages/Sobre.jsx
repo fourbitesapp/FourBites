@@ -10,7 +10,7 @@ import * as api from '../services/apiReal.js'
 
 // Página "Sobre nós" (link só no rodapé)
 
-const INTEGRANTES = ['giovannamelgares', 'juliarodrigues_', 'gabrielsouza']
+const INTEGRANTES = ['giovannamelgares', 'juliarodrigues', 'gabrielsouza']
 const USERNAME_FARELO = 'farelo'
 const ORIENTADOR = 'Davi Silvreste Moreira dos Reis'
 
@@ -96,9 +96,6 @@ export default function Sobre() {
               Rubens Lara, em 2026. A ideia nasceu da vontade de ter um lugar com avaliações de verdade, que ajudasse a
               escolher onde comer.
             </p>
-            <div className="d-flex flex-wrap gap-2">
-              {['React', 'Spring Boot', 'PostgreSQL'].map((t) => <span key={t} className="fb-sobre-chip">{t}</span>)}
-            </div>
           </div>
           <div className="fb-sobre-equipe">
             <strong className="fb-sobre-equipe-titulo">Quem fez</strong>

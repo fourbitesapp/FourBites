@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { corDaLista, iconeDaLista, textoQuantidade } from '../utils/listas.js'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
+import { foto } from '../utils/imagens.js'
 
 // Uma lista de restaurantes. Qualquer pessoa vê as públicas; o dono vê as privadas também
 // e pode adicionar, tirar restaurantes, editar e excluir.
@@ -110,9 +111,9 @@ export default function Lista() {
           <div className={`fb-lista-capa fb-lista-capa-grande ${lista.capas.length >= 4 ? 'mosaico' : ''}`}
             style={{ background: cor }} aria-hidden="true">
             {lista.capas.length >= 4
-              ? lista.capas.map((url) => <img key={url} src={url} alt="" />)
+              ? lista.capas.map((url) => <img key={url} src={foto(url, 600)} alt="" />)
               : lista.capas.length > 0
-                ? <img src={lista.capas[0]} alt="" />
+                ? <img src={foto(lista.capas[0], 1000)} alt="" />
                 : null}
             <span className="fb-lista-selo-icone" style={{ background: cor }}>
               <i className={`bi ${iconeDaLista(lista)}`}></i>

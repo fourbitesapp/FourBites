@@ -13,6 +13,7 @@ import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 import { conferirImagem } from '../utils/validacoes.js'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
+import { foto } from '../utils/imagens.js'
 
 const CATEGORIAS = [
   ['notaComida', 'Comida'],
@@ -175,7 +176,7 @@ export default function NovaAvaliacao() {
                 <>
                   <div className="fb-restaurante-escolhido">
                     {restaurante.fotos?.[0] ? (
-                      <img src={restaurante.fotos[0]} alt="" />
+                      <img src={foto(restaurante.fotos[0], 640)} alt="" />
                     ) : (
                       <span className="fb-sem-foto" style={{ background: corDaCozinha(restaurante.categoria) }}>
                         <IconeCozinha nome={restaurante.categoria?.nome} icone={restaurante.categoria?.icone} tamanho={28} />
@@ -262,7 +263,7 @@ export default function NovaAvaliacao() {
                   <div className="d-flex flex-wrap gap-3 mb-3">
                     {fotos.map((url) => (
                       <div key={url} className="fb-miniatura">
-                        <img src={url} alt="" className="fb-foto-avaliacao" />
+                        <img src={foto(url, 320)} alt="" className="fb-foto-avaliacao" />
                         <button type="button" aria-label="Remover foto"
                           onClick={() => setFotos(fotos.filter((f) => f !== url))}>
                           <i className="bi bi-x" aria-hidden="true"></i>
@@ -300,4 +301,3 @@ export default function NovaAvaliacao() {
     </>
   )
 }
-

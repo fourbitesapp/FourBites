@@ -13,6 +13,7 @@ import {
   CARACTERISTICAS, DIAS_DA_SEMANA, FAIXAS_DE_PRECO, formularioDoRestaurante, formularioVazio, montarEnvio, podeEditar, validarFormulario,
 } from '../utils/restaurantes.js'
 import { conferirImagem, erroDeValidacao, TAMANHO_MAXIMO_ARQUIVO, temErros } from '../utils/validacoes.js'
+import { foto } from '../utils/imagens.js'
 
 // Um formulário para três situações (prop "modo"):
 //  - "novo":   o responsável cadastra um restaurante  → POST /meus-restaurantes (fica em análise)
@@ -499,7 +500,7 @@ function Formulario({ modo }) {
             <div className="d-flex flex-wrap gap-3 mt-1">
               {form.fotos.map((url, i) => (
                 <div key={url} className="fb-foto-restaurante">
-                  <img src={url} alt={`Foto ${i + 1}`} />
+                  <img src={foto(url, 400)} alt={`Foto ${i + 1}`} />
                   {i === 0 && <span className="fb-etiqueta-capa">Capa</span>}
                   <button type="button" aria-label={`Tirar foto ${i + 1}`}
                     onClick={() => mudar('fotos', form.fotos.filter((f) => f !== url))}>

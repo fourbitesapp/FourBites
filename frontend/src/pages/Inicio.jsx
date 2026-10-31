@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import Aviso from '../components/Aviso.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
+import BuscaGeral from '../components/BuscaGeral.jsx'
 import CarrosselCozinhas from '../components/CarrosselCozinhas.jsx'
 import CartaoLista from '../components/CartaoLista.jsx'
 import PessoasParaSeguir from '../components/PessoasParaSeguir.jsx'
@@ -22,10 +23,8 @@ const FEED_POR_VEZ = 10
 // Tela inicial: destaque com busca, cozinhas, recomendações (só USUARIO), ranking, avaliações recentes e "perto de você".
 export default function Inicio() {
   const { usuario, logado } = useAuth()
-  const navegar = useNavigate()
   const recebeRecomendacoes = temRecursosDeUsuario(usuario)
 
-  const [busca, setBusca] = useState('')
   const [categorias, setCategorias] = useState([])
   const [listasOficiais, setListasOficiais] = useState([]) // "sugestões do autor": listas públicas do Farelo
   const [recomendacoes, setRecomendacoes] = useState(null)
@@ -110,12 +109,6 @@ export default function Inicio() {
     )
   }
 
-  function aoBuscar(evento) {
-    evento.preventDefault()
-    const termo = busca.trim()
-    navegar(termo ? `/explorar?busca=${encodeURIComponent(termo)}` : '/explorar')
-  }
-
   const primeiroDoRanking = ranking?.[0]
 
   return (
@@ -136,12 +129,20 @@ export default function Inicio() {
                   : 'Avaliações de quem foi de verdade. Entre para receber recomendações que combinam com você.'}
               </p>
 
-              <form className="fb-busca-grande" role="search" onSubmit={aoBuscar}>
-                <i className="bi bi-search" aria-hidden="true" style={{ color: 'var(--fb-tinta)' }}></i>
-                <input type="search" placeholder="Pizza, sushi, Gonzaga…" aria-label="Buscar restaurante"
-                  value={busca} onChange={(e) => setBusca(e.target.value)} />
-                <button type="submit" className="fb-botao fb-botao-principal" style={{ boxShadow: 'none' }}>Buscar</button>
-              </form>
+              {/* Mesma busca da barra de cima (com sugestões enquanto digita), no formato grande.
+                  No celular, o Farelo fica "sentado" em cima dela (no computador ele aparece na arte ao lado). */}
+              <div className="fb-busca-com-farelo">
+                <div className="fb-farelo-celular d-md-none" aria-hidden="true">
+                  <span className="fb-mao">esse é o Farelo!</span>
+                  <svg width="54" height="40" viewBox="0 0 74 56" fill="none" stroke="currentColor" strokeWidth="3"
+                    strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 6c20 2 44 12 58 40" />
+                    <path d="M50 42l14 4 2-15" />
+                  </svg>
+                  <img src={mascote} alt="" />
+                </div>
+                <BuscaGeral grande />
+              </div>
 
               {logado ? (
                 <div className="d-flex flex-wrap gap-2">
@@ -336,4 +337,3 @@ export default function Inicio() {
     </>
   )
 }
-

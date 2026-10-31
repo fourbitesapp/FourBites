@@ -12,6 +12,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarData, formatarNota } from '../utils/formatos.js'
 import { podeEditar } from '../utils/restaurantes.js'
+import { foto } from '../utils/imagens.js'
 
 // Área do responsável: a lista dos seus restaurantes, cada um com a situação da análise.
 export default function MeusRestaurantes() {
@@ -92,7 +93,7 @@ function CartaoGestao({ restaurante: r }) {
   return (
     <article className={`fb-cartao-gestao ${precisaAtencao ? 'atencao' : ''}`}>
       <div className="fb-gestao-foto" style={{ background: corDaCozinha(r.categoria) }} aria-hidden="true">
-        {r.fotoCapa ? <img src={r.fotoCapa} alt="" /> : <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={52} />}
+        {r.fotoCapa ? <img src={foto(r.fotoCapa, 240)} alt="" /> : <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={52} />}
       </div>
 
       <div className="fb-gestao-info">

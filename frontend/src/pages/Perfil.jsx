@@ -16,6 +16,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
+import { foto, foto as fotoReduzida } from '../utils/imagens.js'
 
 const POSICOES = [1, 2, 3, 4]
 
@@ -251,7 +252,7 @@ export default function Perfil() {
                   <Link to={`/restaurantes/${f.restaurante.id}`} className="fb-cartao-restaurante">
                     <div className="fb-favorito-foto" style={{ background: corDaCozinha(f.restaurante.categoria) }}>
                       {f.restaurante.fotoCapa
-                        ? <img src={f.restaurante.fotoCapa} alt="" />
+                        ? <img src={foto(f.restaurante.fotoCapa, 400)} alt="" />
                         : <span className="fb-sem-foto"><IconeCozinha nome={f.restaurante.categoria?.nome} icone={f.restaurante.categoria?.icone} tamanho={40} /></span>}
                       <span className="fb-numero-favorito">{f.posicao}</span>
                     </div>
@@ -326,7 +327,7 @@ export default function Perfil() {
                   <Link key={a.id} to={`/restaurantes/${a.restaurante.id}`} className="fb-post"
                     style={{ background: corDaCozinha(a.restaurante.categoria) }}>
                     {foto
-                      ? <img src={foto} alt="" />
+                      ? <img src={fotoReduzida(foto, 480)} alt="" />
                       : <span className="fb-sem-foto pb-5"><IconeCozinha nome={a.restaurante.categoria?.nome} icone={a.restaurante.categoria?.icone} tamanho={40} /></span>}
                     <span className="fb-post-nota">{formatarNota(a.notaGeral, 2)}</span>
                     <span className="fb-post-nome">{a.restaurante.nome}</span>

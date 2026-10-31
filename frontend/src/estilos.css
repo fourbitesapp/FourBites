@@ -206,14 +206,14 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-destaque-texto { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 1.4rem; } /* min-width: 0 = não passa da largura da tela em celular estreito */
 .fb-destaque-texto h1 { font-size: clamp(2.6rem, 6vw, 3.8rem); line-height: 1.04; }
 .fb-sublinhado { color: var(--fb-vermelho); text-decoration: underline wavy var(--fb-amarelo); text-decoration-thickness: 4px; text-underline-offset: 10px; }
-.fb-busca-grande { display: flex; align-items: center; gap: 0.75rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.45rem 0.45rem 0.45rem 1.4rem; box-shadow: 0 10px 26px rgba(36, 22, 18, 0.1); max-width: 560px; }
+.fb-busca-grande { position: relative; display: flex; align-items: center; gap: 0.75rem; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 999px; padding: 0.45rem 0.45rem 0.45rem 1.4rem; box-shadow: 0 10px 26px rgba(36, 22, 18, 0.1); max-width: 560px; }
 .fb-busca-grande input { border: 0; outline: 0; flex: 1; min-width: 0; font: inherit; font-size: 1.05rem; color: var(--fb-tinta); }
 .fb-destaque-arte { flex: 1 1 380px; position: relative; height: 420px; }
 .fb-destaque-mascote { position: absolute; left: 95px; top: 48px; width: 280px; height: auto; z-index: 1; filter: drop-shadow(0 14px 18px rgba(36, 22, 18, 0.2)); }
 .fb-farelo-nome { position: absolute; left: -12px; top: -6px; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; font-family: var(--fb-mao); font-weight: 700; font-size: 1.7rem; line-height: 1; color: var(--fb-vermelho); transform: rotate(-8deg); pointer-events: none; }
 .fb-farelo-nome svg { margin-top: 2px; margin-right: -46px; }
 .fb-bolha { position: absolute; border-radius: 999px; }
-.fb-adesivo { position: absolute; background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.7rem 1rem; transform: rotate(5deg); box-shadow: 0 8px 20px rgba(36, 22, 18, 0.12); text-decoration: none; }
+.fb-adesivo { position: absolute; z-index: 2; /* fica na frente do Farelo */ background: var(--fb-branco); border: 1.5px solid var(--fb-linha); border-radius: 18px; padding: 0.7rem 1rem; transform: rotate(5deg); box-shadow: 0 8px 20px rgba(36, 22, 18, 0.12); text-decoration: none; }
 .fb-cozinhas { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 6px 2px 10px; scrollbar-width: none; }
 .fb-cozinhas::-webkit-scrollbar { display: none; }
 .fb-cozinha { flex: 0 0 170px; scroll-snap-align: start; border: 1.5px solid var(--fb-linha); border-radius: 26px; padding: 1.2rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 1.2rem; text-decoration: none; color: var(--fb-tinta); transition: transform 0.15s; }
@@ -904,3 +904,15 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
 .fb-busca-aviso { padding: 0.6rem 0.75rem; color: var(--fb-apagado); font-size: 0.92rem; }
 .fb-busca-todos { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--fb-vermelho); }
 .fb-busca-opcao:has(.fb-busca-todos) { border-top: 1.5px solid var(--fb-linha); border-radius: 0 0 14px 14px; margin-top: 0.35rem; padding-top: 0.75rem; }
+
+/* ---------- Home no celular: o Farelo sentado em cima da busca ---------- */
+.fb-busca-com-farelo { position: relative; }
+.fb-busca-com-farelo .fb-busca-grande { z-index: 2; } /* a busca fica na frente dos pés do Farelo */
+.fb-farelo-celular { position: relative; height: 6.2rem; pointer-events: none; }
+.fb-farelo-celular img { position: absolute; right: 1rem; bottom: -0.9rem; width: 8.3rem; height: auto; z-index: 1; filter: drop-shadow(0 10px 14px rgba(36, 22, 18, 0.2)); }
+.fb-farelo-celular .fb-mao { position: absolute; left: 0.3rem; top: 0.4rem; font-size: 1.55rem; transform: rotate(-6deg); }
+.fb-farelo-celular svg { position: absolute; left: 7.4rem; top: 1.7rem; color: var(--fb-vermelho); }
+@media (max-width: 380px) {
+  .fb-farelo-celular img { width: 7.2rem; right: 0.5rem; }
+  .fb-farelo-celular svg { left: 6.6rem; }
+}

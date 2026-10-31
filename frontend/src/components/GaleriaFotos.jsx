@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { foto } from '../utils/imagens.js'
 
 // Fotos do restaurante no topo da página.
 // Mostra até 5 na grade (a primeira grande); se tiver mais, a última ganha um "+N".
@@ -19,7 +20,7 @@ export default function GaleriaFotos({ fotos, nome }) {
         {visiveis.map((url, i) => (
           <button key={url} type="button" className="fb-galeria-foto" onClick={() => setAberta(i)}
             aria-label={`Ver foto ${i + 1} de ${fotos.length}${nome ? ` de ${nome}` : ''}`}>
-            <img src={url} alt="" />
+            <img src={foto(url, 1200)} alt="" />
             {restantes > 0 && i === visiveis.length - 1 && (
               <span className="fb-galeria-mais">+{restantes}</span>
             )}
@@ -57,7 +58,7 @@ export function VisorFotos({ fotos, inicio, aoFechar }) {
         <i className="bi bi-x-lg" aria-hidden="true"></i>
       </button>
 
-      <img src={fotos[atual]} alt={`Foto ${atual + 1} de ${total}`} className="fb-visor-foto" onClick={(e) => e.stopPropagation()} />
+      <img src={foto(fotos[atual], 1800)} alt={`Foto ${atual + 1} de ${total}`} className="fb-visor-foto" onClick={(e) => e.stopPropagation()} />
 
       {total > 1 && (
         <>

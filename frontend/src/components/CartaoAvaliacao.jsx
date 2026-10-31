@@ -6,6 +6,7 @@ import Avatar from './Avatar.jsx'
 import Curtidas from './Curtidas.jsx'
 import { VisorFotos } from './GaleriaFotos.jsx'
 import SeloOficial from './SeloOficial.jsx'
+import { foto } from '../utils/imagens.js'
 
 const CATEGORIAS = [
   ['Comida', 'notaComida'],
@@ -60,7 +61,7 @@ export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, 
           {a.fotos.map((url, i) => (
             <button key={url} type="button" className="fb-foto-botao" onClick={() => setFotoAberta(i)}
               aria-label={`Ver foto ${i + 1} de ${a.fotos.length} em tamanho maior`}>
-              <img src={url} alt="" className="fb-foto-avaliacao" />
+              <img src={foto(url, 320)} alt="" className="fb-foto-avaliacao" />
             </button>
           ))}
         </div>
@@ -75,3 +76,4 @@ export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, 
     </article>
   )
 }
+

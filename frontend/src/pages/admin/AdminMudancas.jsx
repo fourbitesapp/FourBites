@@ -9,6 +9,7 @@ import PainelAdmin from '../../components/PainelAdmin.jsx'
 import * as api from '../../services/apiReal.js'
 import { formatarData, haQuantoTempo } from '../../utils/formatos.js'
 import { diferencas } from '../../utils/restaurantes.js'
+import { foto } from '../../utils/imagens.js'
 
 // Aba "Mudanças": edições de restaurantes já publicados esperando análise.
 // Mostra só os campos que mudaram (versão no site × versão proposta). Aprovar publica a proposta.
@@ -169,7 +170,7 @@ function DetalheDaMudanca({ alteracao, categorias, formas, aoTerminar }) {
           <span className="fb-rotulo-dado">Fotos propostas</span>
           <div className="d-flex flex-wrap gap-2">
             {(proposto.fotos || []).map((url) => (
-              <img key={url} src={url} alt="" className={`fb-foto-pequena ${r.fotos.includes(url) ? '' : 'nova'}`}
+              <img key={url} src={foto(url, 300)} alt="" className={`fb-foto-pequena ${r.fotos.includes(url) ? '' : 'nova'}`}
                 title={r.fotos.includes(url) ? '' : 'Foto nova'} />
             ))}
           </div>

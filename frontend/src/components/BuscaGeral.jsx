@@ -7,6 +7,7 @@ import { formatarNota } from '../utils/formatos.js'
 import Avatar from './Avatar.jsx'
 import IconeCozinha from './IconeCozinha.jsx'
 import SeloOficial from './SeloOficial.jsx'
+import { foto } from '../utils/imagens.js'
 
 // Busca da barra de cima: enquanto a pessoa digita, mostra restaurantes, cozinhas e pessoas do site.
 // Enter (sem escolher nada) ou "Ver todos os resultados" leva para o Explorar com a busca.
@@ -20,7 +21,8 @@ const simplificar = (texto) => String(texto ?? '').normalize('NFD').replace(/[̀
 
 let categoriasEmCache = null // as categorias quase não mudam: busca uma vez só
 
-export default function BuscaGeral() {
+// grande = a busca do destaque da home (campo maior com o botão "Buscar"); sem ela, a da barra de cima.
+export default function BuscaGeral({ grande = false }) {
   const navegar = useNavigate()
   const idLista = useId()
   const caixa = useRef(null)
@@ -113,20 +115,22 @@ export default function BuscaGeral() {
   )
 
   return (
-    <form ref={caixa} className="fb-busca-barra" role="search" onSubmit={enviar}>
-      <i className="bi bi-search" aria-hidden="true"></i>
-      <input type="search" placeholder="Buscar restaurante, bairro ou pessoa" aria-label="Buscar"
+    <form ref={caixa} className={grande ? 'fb-busca-grande' : 'fb-busca-barra'} role="search" onSubmit={enviar}>
+      <i className="bi bi-search" aria-hidden="true" style={grande ? { color: 'var(--fb-tinta)' } : undefined}></i>
+      <input type="search" placeholder={grande ? 'Pizza, sushi, Gonzaga…' : 'Buscar restaurante, bairro ou pessoa'}
+        aria-label="Buscar"
         role="combobox" aria-expanded={mostrar} aria-controls={idLista} aria-autocomplete="list"
         aria-activedescendant={mostrar && ativo >= 0 ? `${idLista}-${opcoes[ativo].chave}` : undefined}
         value={texto} onChange={(e) => { setTexto(e.target.value); setAberta(true) }}
         onFocus={() => setAberta(true)} onKeyDown={teclas} />
+      {grande && <button type="submit" className="fb-botao fb-botao-principal" style={{ boxShadow: 'none' }}>Buscar</button>}
 
       {mostrar && (
         <ul id={idLista} role="listbox" aria-label="Sugestões" className="fb-busca-resultados">
           {resultado.restaurantes.length > 0 && <li className="fb-busca-grupo" role="presentation">Restaurantes</li>}
           {resultado.restaurantes.map((r) => opcao(`r${r.id}`, (
             <>
-              {r.fotoCapa ? <img src={r.fotoCapa} alt="" className="fb-busca-miniatura" /> : (
+              {r.fotoCapa ? <img src={foto(r.fotoCapa, 160)} alt="" className="fb-busca-miniatura" /> : (
                 <span className="fb-busca-miniatura" style={{ background: corDaCozinha(r.categoria) }}>
                   <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={22} />
                 </span>

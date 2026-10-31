@@ -4,6 +4,7 @@ import * as api from '../services/apiReal.js'
 import { corDaCozinha } from '../utils/cozinhas.js'
 import { formatarNota } from '../utils/formatos.js'
 import IconeCozinha from './IconeCozinha.jsx'
+import { foto } from '../utils/imagens.js'
 
 // Campo de busca com sugestões enquanto digita (usa o GET /restaurantes?busca=...,
 // que só devolve restaurantes aprovados e ativos).
@@ -44,7 +45,7 @@ export default function BuscaRestaurante({ aoEscolher }) {
         <div className="fb-sugestoes" role="listbox">
           {sugestoes.map((r) => (
             <button key={r.id} type="button" role="option" aria-selected="false" className="fb-sugestao" onClick={() => aoEscolher(r)}>
-              {r.fotoCapa ? <img src={r.fotoCapa} alt="" /> : (
+              {r.fotoCapa ? <img src={foto(r.fotoCapa, 160)} alt="" /> : (
                 <span className="fb-sem-foto" style={{ background: corDaCozinha(r.categoria) }}>
                   <IconeCozinha nome={r.categoria?.nome} icone={r.categoria?.icone} tamanho={24} />
                 </span>
@@ -63,4 +64,3 @@ export default function BuscaRestaurante({ aoEscolher }) {
     </div>
   )
 }
-
