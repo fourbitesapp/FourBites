@@ -14,7 +14,7 @@ import Rodape from '../components/Rodape.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/apiReal.js'
 import { formatarNota } from '../utils/formatos.js'
-import mascoteSuco from '../assets/mascote-suco.webp'
+import mascote from '../assets/mascote.webp'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
 
 const FEED_POR_VEZ = 10
@@ -163,7 +163,7 @@ export default function Inicio() {
               <span className="fb-bolha"
                 style={{ left: '90px', top: '60px', width: '290px', height: '290px', background: 'var(--fb-creme)' }}></span>
               {/* Fora do círculo (sem overflow) para o mascote poder "sair" por cima dele */}
-              <img src={mascoteSuco} alt="" className="fb-destaque-mascote" />
+              <img src={mascote} alt="" className="fb-destaque-mascote" />
                <span className="fb-farelo-nome">
                 esse é o Farelo!
                 <svg width="74" height="56" viewBox="0 0 74 56" fill="none" stroke="currentColor" strokeWidth="3"
