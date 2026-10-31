@@ -132,15 +132,9 @@ export default function Inicio() {
               {/* Mesma busca da barra de cima (com sugestões enquanto digita), no formato grande.
                   No celular, o Farelo fica "sentado" em cima dela (no computador ele aparece na arte ao lado). */}
               <div className="fb-busca-com-farelo">
-                <div className="fb-farelo-celular d-md-none" aria-hidden="true">
-                  <span className="fb-mao">esse é o Farelo!</span>
-                  <svg width="54" height="40" viewBox="0 0 74 56" fill="none" stroke="currentColor" strokeWidth="3"
-                    strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 6c20 2 44 12 58 40" />
-                    <path d="M50 42l14 4 2-15" />
-                  </svg>
-                  <img src={mascote} alt="" />
-                </div>
+              <div className="fb-busca-com-farelo">
+                <BuscaGeral grande />
+              </div>
                 <BuscaGeral grande />
               </div>
 
