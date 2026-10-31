@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
 import Avatar from './Avatar.jsx'
 import BotaoVoltar from './BotaoVoltar.jsx'
+import BuscaGeral from './BuscaGeral.jsx'
 import Logo from './Logo.jsx'
 import Notificacoes from './Notificacoes.jsx'
 import { temRecursosDeUsuario } from '../utils/papeis.js'
@@ -16,16 +16,9 @@ export default function BarraNavegacao() {
   const { usuario, logado, sair } = useAuth()
   const navegar = useNavigate()
   const { pathname } = useLocation()
-  const [busca, setBusca] = useState('')
 
   const papel = logado ? usuario.papel : null
   const escrevendoAvaliacao = pathname === '/novo-post' || pathname.endsWith('/avaliar')
-
-  function buscar(evento) {
-    evento.preventDefault()
-    const termo = busca.trim()
-    navegar(termo ? `/explorar?busca=${encodeURIComponent(termo)}` : '/explorar')
-  }
 
   function aoSair() {
     sair()
@@ -42,11 +35,8 @@ export default function BarraNavegacao() {
             <Link to="/" className="fb-marca"><Logo /> FourBites</Link>
           </div>
 
-          <form className="fb-busca-barra" role="search" onSubmit={buscar}>
-            <i className="bi bi-search" aria-hidden="true"></i>
-            <input type="search" placeholder="Buscar restaurante, bairro ou pessoa" aria-label="Buscar"
-              value={busca} onChange={(e) => setBusca(e.target.value)} />
-          </form>
+          {/* Busca com sugestões enquanto digita (restaurantes, cozinhas e pessoas) */}
+          <BuscaGeral />
 
           <nav className="fb-nav" aria-label="Principal">
             <NavLink to="/" end className="fb-nav-link">Início</NavLink>
