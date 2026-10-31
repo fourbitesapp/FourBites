@@ -103,7 +103,6 @@ export default function BuscaGeral() {
     const passo = evento.key === 'ArrowDown' ? 1 : -1
     setAtivo((atual) => (atual + passo + opcoes.length) % opcoes.length)
   }
-.
   const opcao = (chave, conteudo) => (
     <li key={chave} id={`${idLista}-${chave}`} role="option" aria-selected={ativo === indice(chave)}
       className={`fb-busca-opcao ${ativo === indice(chave) ? 'ativa' : ''}`}
