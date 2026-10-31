@@ -879,3 +879,13 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
   .fb-sobre-farelo-arte img { width: 7.5rem; }
   .fb-sobre-farelo-texto .fb-botao { align-self: stretch !important; }
 }
+
+/* ---------- Ajustar foto de perfil ---------- */
+.fb-ajustar-foto { max-width: 26rem; }
+.fb-ajustar-area { position: relative; margin: 0 auto; overflow: hidden; border-radius: 20px; background: var(--fb-tinta); cursor: grab; touch-action: none; user-select: none; }
+.fb-ajustar-area:active { cursor: grabbing; }
+.fb-ajustar-area:focus-visible { outline: 3px solid var(--fb-vermelho); outline-offset: 3px; }
+.fb-ajustar-area img { position: absolute; left: 50%; top: 50%; max-width: none; pointer-events: none; }
+.fb-ajustar-circulo { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 999px rgba(36, 22, 18, 0.55); border: 2px solid rgba(255, 255, 255, 0.85); pointer-events: none; }
+.fb-ajustar-zoom { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem auto 0; max-width: 280px; color: var(--fb-apagado); }
+.fb-ajustar-zoom input { flex: 1; accent-color: var(--fb-vermelho); }

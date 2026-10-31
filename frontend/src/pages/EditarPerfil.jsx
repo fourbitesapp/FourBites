@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
+import AjustarFoto from '../components/AjustarFoto.jsx'
 import Aviso from '../components/Aviso.jsx'
 import Avatar from '../components/Avatar.jsx'
 import BarraNavegacao from '../components/BarraNavegacao.jsx'
@@ -23,6 +24,7 @@ export default function EditarPerfil() {
   const [erro, setErro] = useState(null)
   const [erroFoto, setErroFoto] = useState(null)
   const [enviandoFoto, setEnviandoFoto] = useState(false)
+  const [fotoParaAjustar, setFotoParaAjustar] = useState(null) // arquivo escolhido, aberto na janela de ajuste
   const [enviando, setEnviando] = useState(false)
 
   useEffect(() => {
@@ -49,8 +51,8 @@ export default function EditarPerfil() {
     setDados({ ...dados, [evento.target.name]: evento.target.value })
   }
 
-  // A foto é salva na hora em que é escolhida (POST /usuarios/me/foto).
-  async function trocarFoto(evento) {
+  // Escolheu a foto: primeiro abre a janela para ajustar (posição e zoom).
+  function escolherFoto(evento) {
     const arquivo = evento.target.files[0]
     evento.target.value = ''
     if (!arquivo) return
@@ -60,6 +62,12 @@ export default function EditarPerfil() {
       return
     }
     setErroFoto(null)
+    setFotoParaAjustar(arquivo)
+  }
+
+  // Depois do ajuste, a foto recortada é salva na hora (POST /usuarios/me/foto).
+  async function trocarFoto(arquivo) {
+    setFotoParaAjustar(null)
     setEnviandoFoto(true)
     try {
       const atualizado = await api.atualizarFotoPerfil(arquivo)
@@ -134,7 +142,7 @@ export default function EditarPerfil() {
                 <div className="fb-cartao-meta mt-0">JPG ou PNG, até 5 MB.</div>
                 {erroFoto && <div className="fb-erro-campo ms-0">{erroFoto}</div>}
               </div>
-              <input ref={seletorDeFoto} type="file" accept="image/jpeg,image/png" hidden onChange={trocarFoto} />
+              <input ref={seletorDeFoto} type="file" accept="image/jpeg,image/png" hidden onChange={escolherFoto} />
               <div className="d-flex flex-wrap gap-2">
                 {dados.fotoPerfil && (
                   <button type="button" className="fb-botao fb-botao-texto fb-link-discreto px-2" disabled={enviandoFoto}
@@ -224,6 +232,9 @@ export default function EditarPerfil() {
         )}
       </main>
       <Rodape />
+      {fotoParaAjustar && (
+        <AjustarFoto arquivo={fotoParaAjustar} aoConfirmar={trocarFoto} aoCancelar={() => setFotoParaAjustar(null)} />
+      )}
     </>
   )
 }
