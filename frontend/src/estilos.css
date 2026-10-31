@@ -61,7 +61,7 @@ h3 { font-size: 1.2rem; }
 a { color: var(--fb-vermelho); }
 a:hover { color: var(--fb-vermelho-escuro); }
 
-.fb-mao { font-family: var(--fb-mao); font-weight: 700; color: var(--fb-vermelho); font-size: 1.6rem; line-height: 2; display: inline-block; transform: rotate(-2deg); }
+.fb-mao { font-family: var(--fb-mao); font-weight: 700; color: var(--fb-vermelho); font-size: 1.6rem; line-height: 1; display: inline-block; transform: rotate(-2deg); }
 .fb-subtitulo { color: var(--fb-texto); font-size: 1.05rem; }
 .fb-apagado, .fb-cartao-meta { color: var(--fb-apagado); }
 .fb-cartao-meta { font-size: 0.92rem; margin: 0.2rem 0 0; }
