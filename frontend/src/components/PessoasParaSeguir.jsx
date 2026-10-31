@@ -44,7 +44,7 @@ export default function PessoasParaSeguir() {
         {pessoas.map((p) => {
           const sigo = Boolean(seguindo[p.username])
           return (
-            <div key={p.id} className="fb-sugestao">
+            <div key={p.id} className="fb-pessoa-sugerida">
               <Link to={`/perfil/${p.username}`} className="fb-sugestao-perfil">
                 <Avatar nome={p.nome} foto={p.fotoPerfil} tamanho="medio" />
                 <strong className="text-truncate w-100">
@@ -63,3 +63,4 @@ export default function PessoasParaSeguir() {
     </section>
   )
 }
+

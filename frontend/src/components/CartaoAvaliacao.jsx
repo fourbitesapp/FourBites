@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { formatarData, formatarNota } from '../utils/formatos.js'
 import Avatar from './Avatar.jsx'
 import Curtidas from './Curtidas.jsx'
+import { VisorFotos } from './GaleriaFotos.jsx'
 import SeloOficial from './SeloOficial.jsx'
 
 const CATEGORIAS = [
@@ -17,6 +19,7 @@ const CATEGORIAS = [
 // "children" aparece no fim do cartão (o painel admin coloca ali o botão de excluir).
 export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, destaque = false, children }) {
   const a = avaliacao
+  const [fotoAberta, setFotoAberta] = useState(null) // índice da foto aberta no visor, ou null
 
   return (
     <article className="fb-avaliacao" style={destaque ? { borderColor: '#ffb8c8' } : undefined}>
@@ -54,8 +57,16 @@ export default function CartaoAvaliacao({ avaliacao, mostrarRestaurante = true, 
 
       {a.fotos.length > 0 && (
         <div className="d-flex flex-wrap gap-2 mt-3">
-          {a.fotos.map((url) => <img key={url} src={url} alt="" className="fb-foto-avaliacao" />)}
+          {a.fotos.map((url, i) => (
+            <button key={url} type="button" className="fb-foto-botao" onClick={() => setFotoAberta(i)}
+              aria-label={`Ver foto ${i + 1} de ${a.fotos.length} em tamanho maior`}>
+              <img src={url} alt="" className="fb-foto-avaliacao" />
+            </button>
+          ))}
         </div>
+      )}
+      {fotoAberta !== null && (
+        <VisorFotos fotos={a.fotos} inicio={fotoAberta} aoFechar={() => setFotoAberta(null)} />
       )}
 
       <Curtidas avaliacao={a} />

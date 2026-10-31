@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 // Fotos do restaurante no topo da página.
 // Mostra até 5 na grade (a primeira grande); se tiver mais, a última ganha um "+N".
@@ -33,7 +34,8 @@ export default function GaleriaFotos({ fotos, nome }) {
   )
 }
 
-function VisorFotos({ fotos, inicio, aoFechar }) {
+// Também usado nas fotos das avaliações (CartaoAvaliacao).
+export function VisorFotos({ fotos, inicio, aoFechar }) {
   const [atual, setAtual] = useState(inicio)
   const total = fotos.length
   const anterior = () => setAtual((i) => (i - 1 + total) % total)
@@ -49,8 +51,8 @@ function VisorFotos({ fotos, inicio, aoFechar }) {
     return () => document.removeEventListener('keydown', tecla)
   }, [aoFechar])
 
-  return (
-    <div className="fb-janela-fundo fb-visor" role="dialog" aria-modal="true" aria-label="Fotos do restaurante" onClick={aoFechar}>
+  return createPortal(
+    <div className="fb-janela-fundo fb-visor" role="dialog" aria-modal="true" aria-label="Fotos" onClick={aoFechar}>
       <button type="button" className="fb-visor-fechar" onClick={aoFechar} aria-label="Fechar">
         <i className="bi bi-x-lg" aria-hidden="true"></i>
       </button>
@@ -70,6 +72,7 @@ function VisorFotos({ fotos, inicio, aoFechar }) {
           <span className="fb-visor-contador">{atual + 1} / {total}</span>
         </>
       )}
-    </div>
+    </div>,
+    document.body,
   )
 }

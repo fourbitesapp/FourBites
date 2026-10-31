@@ -36,6 +36,8 @@
 }
 
 body {
+  touch-action: manipulation; /* sem zoom ao tocar duas vezes; o zoom de pinça continua funcionando */
+  overflow-x: clip; /* nada passa da largura da tela e "arrasta" a página para o lado */
   background: var(--fb-branco);
   color: var(--fb-texto);
   font-family: var(--fb-letra);
@@ -233,6 +235,9 @@ fieldset.fb-desativado { opacity: 0.5; }
 .fb-notas-avaliacao span { display: block; font-size: 0.82rem; color: var(--fb-apagado); }
 .fb-notas-avaliacao strong { color: var(--fb-tinta); font-size: 1.1rem; }
 .fb-foto-avaliacao { width: 6.5rem; height: 4.8rem; object-fit: cover; border-radius: 14px; }
+.fb-foto-botao { padding: 0; border: 0; background: none; border-radius: 14px; cursor: zoom-in; line-height: 0; }
+.fb-foto-botao:hover .fb-foto-avaliacao { opacity: 0.85; }
+.fb-foto-botao:focus-visible { outline: 3px solid var(--fb-vermelho); outline-offset: 2px; }
 .fb-avatar { flex-shrink: 0; width: 3rem; height: 3rem; border-radius: 999px; background: var(--fb-amarelo-medio); color: var(--fb-tinta); font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
 .fb-avatar-foto { object-fit: cover; }
 .fb-avatar-medio { width: 5.5rem; height: 5.5rem; font-size: 1.8rem; }
@@ -433,7 +438,12 @@ fieldset.fb-desativado { opacity: 0.5; }
   .fb-conteudo, .fb-pagina-media { padding-top: 2rem; }
   .fb-secao { margin-top: 3.5rem; }
   .fb-destaque-arte { height: 300px; }
-  .fb-notas-avaliacao { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fb-notas-avaliacao { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.45rem; margin-top: 0.9rem; }
+  .fb-notas-avaliacao div { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; padding: 0.4rem 0.7rem; border-radius: 12px; }
+  .fb-notas-avaliacao span { font-size: 0.78rem; }
+  .fb-notas-avaliacao strong { font-size: 0.98rem; white-space: nowrap; }
+  /* No iPhone, campo com letra menor que 16px faz a tela dar zoom ao tocar nele */
+  input, select, textarea { font-size: 16px !important; }
   .fb-precos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fb-perfil-capa .fb-mao { left: 1.5rem; top: 1.2rem; bottom: auto; }
   .fb-perfil-numeros strong { font-size: 1.7rem; }
@@ -819,10 +829,11 @@ button.fb-total-curtidas:hover { color: var(--fb-vermelho); text-decoration: und
 
 /* ---------- Pessoas para seguir (home) ---------- */
 .fb-carrossel-pessoas > * { flex-basis: 190px; }
-.fb-sugestao { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 1.2rem 1rem 1rem; border: 1.5px solid var(--fb-linha); border-radius: 24px; background: var(--fb-branco); text-align: center; min-width: 0; }
+/* "Pessoas para seguir" (home). Nome próprio: antes usava ".fb-sugestao", que é a lista da busca de restaurantes, e uma estragava a outra. */
+.fb-pessoa-sugerida { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 1.2rem 1rem 1rem; border: 1.5px solid var(--fb-linha); border-radius: 24px; background: var(--fb-branco); text-align: center; min-width: 0; }
 .fb-sugestao-perfil { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 100%; min-width: 0; text-decoration: none; color: var(--fb-tinta); }
 .fb-sugestao-perfil:hover { color: var(--fb-vermelho); }
-.fb-sugestao .fb-avatar-medio { width: 5.5rem; height: 5.5rem; border-radius: 999px; }
+.fb-pessoa-sugerida .fb-avatar-medio { width: 5.5rem; height: 5.5rem; border-radius: 999px; }
 @media (max-width: 575px) { .fb-carrossel-pessoas > * { flex-basis: 44%; } }
 
 /* ---------- Sobre nós ---------- */
